@@ -6,7 +6,7 @@ import { open } from '@tauri-apps/plugin-dialog';
 interface AddToolModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onAdd: (tool: { name: string; configPath: string; configFormat: ConfigFormat; description?: string }) => void;
+  onAdd: (tool: { name: string; configPath: string; configFormat: ConfigFormat; description?: string; icon?: string }) => void;
 }
 
 const FORMAT_OPTIONS: { value: ConfigFormat; label: string; icon: React.ReactNode }[] = [
@@ -16,11 +16,14 @@ const FORMAT_OPTIONS: { value: ConfigFormat; label: string; icon: React.ReactNod
   { value: 'ini', label: 'INI', icon: <FileText className="w-4 h-4" /> },
 ];
 
+const ICON_OPTIONS = ['🔧', '⚙️', '🛠️', '📦', '🚀', '💻', '🔌', '📝', '🎯', '🗂️', '💾', '🔒'];
+
 export function AddToolModal({ isOpen, onClose, onAdd }: AddToolModalProps) {
   const [name, setName] = useState('');
   const [configPath, setConfigPath] = useState('');
   const [configFormat, setConfigFormat] = useState<ConfigFormat>('json');
   const [description, setDescription] = useState('');
+  const [icon, setIcon] = useState('🔧');
 
   if (!isOpen) return null;
 
@@ -33,12 +36,14 @@ export function AddToolModal({ isOpen, onClose, onAdd }: AddToolModalProps) {
       configPath: configPath.trim(),
       configFormat,
       description: description.trim() || undefined,
+      icon,
     });
 
     setName('');
     setConfigPath('');
     setConfigFormat('json');
     setDescription('');
+    setIcon('🔧');
     onClose();
   };
 
@@ -65,22 +70,62 @@ export function AddToolModal({ isOpen, onClose, onAdd }: AddToolModalProps) {
         </div>
 
         <form onSubmit={handleSubmit} className="p-6 space-y-5">
-          <div>
-            <label className="block text-sm font-medium dark:text-gray-300 text-slate-700 mb-2">
-              Tool Name <span className="text-red-500">*</span>
-            </label>
-            <input
-              type="text"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              placeholder="My Custom CLI"
-              className="w-full px-4 py-2.5 dark:bg-gray-900/50 bg-slate-50 dark:text-white text-slate-800 rounded-lg text-sm
-                         dark:placeholder-gray-500 placeholder-slate-400 border dark:border-gray-700/50 border-slate-200
-                         focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500
-                         transition-all"
-              required
-              autoFocus
-            />
+          <div className="flex gap-4">
+            <div>
+              <label className="block text-sm font-medium dark:text-gray-300 text-slate-700 mb-2">
+                Icon
+              </label>
+              <div className="relative">
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    const menu = e.currentTarget.nextElementSibling;
+                    menu?.classList.toggle('hidden');
+                  }}
+                  className="w-12 h-12 flex items-center justify-center text-2xl rounded-lg border 
+                             dark:bg-gray-900/50 bg-slate-50 dark:border-gray-700/50 border-slate-200
+                             hover:border-blue-500 transition-colors"
+                >
+                  {icon}
+                </button>
+                <div className="hidden absolute left-0 top-full mt-1 z-20 dark:bg-gray-800 bg-white rounded-lg shadow-lg border dark:border-gray-700 border-slate-200 p-2 grid grid-cols-6 gap-1">
+                  {ICON_OPTIONS.map((opt) => (
+                    <button
+                      key={opt}
+                      type="button"
+                      onClick={(e) => {
+                        setIcon(opt);
+                        e.currentTarget.parentElement?.classList.add('hidden');
+                      }}
+                      className={`w-8 h-8 flex items-center justify-center text-lg rounded-md transition-colors
+                                 ${icon === opt 
+                                   ? 'bg-blue-600 text-white' 
+                                   : 'dark:hover:bg-gray-700 hover:bg-slate-100'}`}
+                    >
+                      {opt}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            <div className="flex-1">
+              <label className="block text-sm font-medium dark:text-gray-300 text-slate-700 mb-2">
+                Tool Name <span className="text-red-500">*</span>
+              </label>
+              <input
+                type="text"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder="My Custom CLI"
+                className="w-full px-4 py-2.5 dark:bg-gray-900/50 bg-slate-50 dark:text-white text-slate-800 rounded-lg text-sm
+                           dark:placeholder-gray-500 placeholder-slate-400 border dark:border-gray-700/50 border-slate-200
+                           focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500
+                           transition-all"
+                required
+                autoFocus
+              />
+            </div>
           </div>
 
           <div>

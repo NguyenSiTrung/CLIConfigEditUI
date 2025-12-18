@@ -42,6 +42,7 @@ export interface CustomTool {
   configPath: string;
   configFormat: ConfigFormat;
   description?: string;
+  icon?: string;
 }
 
 // Legacy - keep for backward compatibility

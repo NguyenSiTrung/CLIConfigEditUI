@@ -19,7 +19,6 @@ import {
   Trash2,
   MoreVertical,
   Gem,
-  Settings,
 } from 'lucide-react';
 
 const TOOL_ICONS: Record<string, React.ReactNode> = {
@@ -41,7 +40,8 @@ interface SidebarProps {
   onAddCustomTool: () => void;
   onEditCustomTool: (tool: CustomTool) => void;
   onDeleteCustomTool: (toolId: string) => void;
-  onCustomToolSelect: (tool: CustomTool) => void;
+  onAddCustomToolConfigFile: (tool: CustomTool) => void;
+  onEditCustomToolConfigFile: (tool: CustomTool, configFile: ConfigFile) => void;
 }
 
 export function Sidebar({
@@ -52,7 +52,8 @@ export function Sidebar({
   onAddCustomTool,
   onEditCustomTool,
   onDeleteCustomTool,
-  onCustomToolSelect,
+  onAddCustomToolConfigFile,
+  onEditCustomToolConfigFile,
 }: SidebarProps) {
   const {
     activeToolId,
@@ -119,11 +120,18 @@ export function Sidebar({
         <CustomToolSection
           title="Custom"
           tools={custom}
-          activeId={activeToolId}
-          onSelect={onCustomToolSelect}
-          onAdd={onAddCustomTool}
-          onEdit={onEditCustomTool}
-          onDelete={onDeleteCustomTool}
+          activeToolId={activeToolId}
+          activeConfigFileId={activeConfigFileId}
+          expandedTools={expandedTools}
+          onToggleExpanded={toggleToolExpanded}
+          getToolConfigFiles={getToolConfigFiles}
+          onConfigFileSelect={onConfigFileSelect}
+          onAddConfigFile={onAddCustomToolConfigFile}
+          onEditConfigFile={onEditCustomToolConfigFile}
+          onDeleteConfigFile={onDeleteConfigFile}
+          onAddTool={onAddCustomTool}
+          onEditTool={onEditCustomTool}
+          onDeleteTool={onDeleteCustomTool}
         />
       </div>
     </aside>
@@ -293,19 +301,180 @@ function ConfigFileItem({ configFile, isActive, onSelect, onEdit, onDelete }: Co
   );
 }
 
+interface CustomToolItemProps {
+  tool: CustomTool;
+  isExpanded: boolean;
+  onToggle: () => void;
+  configFiles: ConfigFile[];
+  activeToolId: string | null;
+  activeConfigFileId: string | null;
+  onConfigFileSelect: (toolId: string, configFile: ConfigFile) => void;
+  onAddConfigFile: (tool: CustomTool) => void;
+  onEditConfigFile: (tool: CustomTool, configFile: ConfigFile) => void;
+  onDeleteConfigFile: (toolId: string, configFileId: string) => void;
+  onEditTool: (tool: CustomTool) => void;
+  onDeleteTool: (toolId: string) => void;
+}
+
+function CustomToolItem({
+  tool,
+  isExpanded,
+  onToggle,
+  configFiles,
+  activeToolId,
+  activeConfigFileId,
+  onConfigFileSelect,
+  onAddConfigFile,
+  onEditConfigFile,
+  onDeleteConfigFile,
+  onEditTool,
+  onDeleteTool,
+}: CustomToolItemProps) {
+  const [menuOpen, setMenuOpen] = useState(false);
+  const hasConfigs = configFiles.length > 0;
+  const isActive = activeToolId === tool.id;
+
+  return (
+    <li>
+      <div className="relative group">
+        <button
+          onClick={onToggle}
+          className={`w-full px-2 py-2 text-left flex items-center gap-2 text-sm rounded-lg
+                     transition-all duration-150 group
+                     ${isActive && !activeConfigFileId
+                       ? 'bg-blue-600/10 dark:text-blue-400 text-blue-600'
+                       : 'dark:text-gray-300 text-slate-700 dark:hover:bg-gray-800/50 hover:bg-white hover:shadow-sm'
+                     }`}
+        >
+          <span className={`flex-shrink-0 transition-transform duration-200 ${isExpanded ? 'rotate-0' : '-rotate-90'}`}>
+            <ChevronDown className="w-3 h-3 dark:text-gray-500 text-slate-400" />
+          </span>
+          <span className="flex-shrink-0 text-base">
+            {tool.icon || '🔧'}
+          </span>
+          <span className="truncate font-medium flex-1">{tool.name}</span>
+          {hasConfigs && (
+            <span className="px-1.5 py-0.5 text-[10px] dark:bg-gray-700/50 bg-slate-200 dark:text-gray-400 text-slate-500 rounded-md">
+              {configFiles.length}
+            </span>
+          )}
+          <span
+            onClick={(e) => {
+              e.stopPropagation();
+              setMenuOpen(!menuOpen);
+            }}
+            className={`p-0.5 rounded opacity-0 group-hover:opacity-100 transition-opacity
+                       ${isActive ? 'hover:bg-blue-500/20' : 'dark:hover:bg-gray-700 hover:bg-slate-200'}`}
+          >
+            <MoreVertical className="w-3 h-3" />
+          </span>
+        </button>
+
+        {menuOpen && (
+          <>
+            <div 
+              className="fixed inset-0 z-10" 
+              onClick={() => setMenuOpen(false)}
+            />
+            <div className="absolute right-0 top-full mt-1 z-20 dark:bg-gray-800 bg-white rounded-lg shadow-lg border dark:border-gray-700 border-slate-200 py-1 min-w-[100px]">
+              <button
+                onClick={() => {
+                  onEditTool(tool);
+                  setMenuOpen(false);
+                }}
+                className="w-full px-3 py-1.5 text-left text-sm flex items-center gap-2 dark:text-gray-300 text-slate-700 dark:hover:bg-gray-700 hover:bg-slate-100"
+              >
+                <Pencil className="w-3 h-3" />
+                Edit
+              </button>
+              <button
+                onClick={async (e) => {
+                  e.stopPropagation();
+                  e.preventDefault();
+                  setMenuOpen(false);
+                  const confirmed = await ask(`Delete "${tool.name}"?`, {
+                    title: 'Confirm Delete',
+                    kind: 'warning',
+                  });
+                  if (confirmed) {
+                    onDeleteTool(tool.id);
+                  }
+                }}
+                className="w-full px-3 py-1.5 text-left text-sm flex items-center gap-2 text-red-500 dark:hover:bg-gray-700 hover:bg-slate-100"
+              >
+                <Trash2 className="w-3 h-3" />
+                Delete
+              </button>
+            </div>
+          </>
+        )}
+      </div>
+
+      {isExpanded && (
+        <ul className="ml-5 mt-1 space-y-0.5 border-l dark:border-gray-700/50 border-slate-200 pl-2">
+          {configFiles.map((configFile) => (
+            <ConfigFileItem
+              key={configFile.id}
+              tool={tool as unknown as CliTool}
+              configFile={configFile}
+              isActive={activeToolId === tool.id && activeConfigFileId === configFile.id}
+              onSelect={() => onConfigFileSelect(tool.id, configFile)}
+              onEdit={() => onEditConfigFile(tool, configFile)}
+              onDelete={() => onDeleteConfigFile(tool.id, configFile.id)}
+            />
+          ))}
+          <li>
+            <button
+              onClick={() => onAddConfigFile(tool)}
+              className="w-full px-2 py-1.5 text-left flex items-center gap-2 text-xs rounded-md
+                         dark:text-gray-500 text-slate-400 hover:text-blue-500 dark:hover:text-blue-400
+                         dark:hover:bg-gray-800/30 hover:bg-blue-50
+                         transition-all duration-150"
+            >
+              <Plus className="w-3 h-3" />
+              <span>Add config file</span>
+            </button>
+          </li>
+        </ul>
+      )}
+    </li>
+  );
+}
+
 interface CustomToolSectionProps {
   title: string;
   tools: CustomTool[];
-  activeId: string | null;
-  onSelect: (tool: CustomTool) => void;
-  onAdd: () => void;
-  onEdit: (tool: CustomTool) => void;
-  onDelete: (toolId: string) => void;
+  activeToolId: string | null;
+  activeConfigFileId: string | null;
+  expandedTools: Set<string>;
+  onToggleExpanded: (toolId: string) => void;
+  getToolConfigFiles: (toolId: string) => ConfigFile[];
+  onConfigFileSelect: (toolId: string, configFile: ConfigFile) => void;
+  onAddConfigFile: (tool: CustomTool) => void;
+  onEditConfigFile: (tool: CustomTool, configFile: ConfigFile) => void;
+  onDeleteConfigFile: (toolId: string, configFileId: string) => void;
+  onAddTool: () => void;
+  onEditTool: (tool: CustomTool) => void;
+  onDeleteTool: (toolId: string) => void;
 }
 
-function CustomToolSection({ title, tools, activeId, onSelect, onAdd, onEdit, onDelete }: CustomToolSectionProps) {
+function CustomToolSection({
+  title,
+  tools,
+  activeToolId,
+  activeConfigFileId,
+  expandedTools,
+  onToggleExpanded,
+  getToolConfigFiles,
+  onConfigFileSelect,
+  onAddConfigFile,
+  onEditConfigFile,
+  onDeleteConfigFile,
+  onAddTool,
+  onEditTool,
+  onDeleteTool,
+}: CustomToolSectionProps) {
   const [isExpanded, setIsExpanded] = useState(true);
-  const [menuOpenId, setMenuOpenId] = useState<string | null>(null);
 
   return (
     <div className="mb-2">
@@ -330,79 +499,32 @@ function CustomToolSection({ title, tools, activeId, onSelect, onAdd, onEdit, on
       {isExpanded && (
         <ul className="mt-1 space-y-0.5">
           {tools.map((tool) => (
-            <li key={tool.id} className="relative group">
-              <button
-                onClick={() => onSelect(tool)}
-                className={`w-full px-2 py-2 text-left flex items-center gap-2.5 text-sm rounded-lg
-                           transition-all duration-150
-                           ${activeId === tool.id
-                             ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/20'
-                             : 'dark:text-gray-300 text-slate-700 dark:hover:bg-gray-800/50 hover:bg-white hover:shadow-sm'
-                           }`}
-              >
-                <Settings className={`w-4 h-4 flex-shrink-0 ${activeId === tool.id ? 'text-white' : 'dark:text-gray-400 text-slate-500'}`} />
-                <span className="truncate font-medium flex-1">{tool.name}</span>
-                <span
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setMenuOpenId(menuOpenId === tool.id ? null : tool.id);
-                  }}
-                  className={`p-1 rounded opacity-0 group-hover:opacity-100 transition-opacity
-                             ${activeId === tool.id ? 'hover:bg-blue-500' : 'dark:hover:bg-gray-700 hover:bg-slate-200'}`}
-                >
-                  <MoreVertical className="w-3.5 h-3.5" />
-                </span>
-              </button>
-              {menuOpenId === tool.id && (
-                <>
-                  <div 
-                    className="fixed inset-0 z-10" 
-                    onClick={() => setMenuOpenId(null)}
-                  />
-                  <div className="absolute right-0 top-full mt-1 z-20 dark:bg-gray-800 bg-white rounded-lg shadow-lg border dark:border-gray-700 border-slate-200 py-1 min-w-[120px]">
-                    <button
-                      onClick={() => {
-                        onEdit(tool);
-                        setMenuOpenId(null);
-                      }}
-                      className="w-full px-3 py-1.5 text-left text-sm flex items-center gap-2 dark:text-gray-300 text-slate-700 dark:hover:bg-gray-700 hover:bg-slate-100"
-                    >
-                      <Pencil className="w-3.5 h-3.5" />
-                      Edit
-                    </button>
-                    <button
-                      onClick={async (e) => {
-                        e.stopPropagation();
-                        e.preventDefault();
-                        setMenuOpenId(null);
-                        const confirmed = await ask(`Delete "${tool.name}"?`, {
-                          title: 'Confirm Delete',
-                          kind: 'warning',
-                        });
-                        if (confirmed) {
-                          onDelete(tool.id);
-                        }
-                      }}
-                      className="w-full px-3 py-1.5 text-left text-sm flex items-center gap-2 text-red-500 dark:hover:bg-gray-700 hover:bg-slate-100"
-                    >
-                      <Trash2 className="w-3.5 h-3.5" />
-                      Delete
-                    </button>
-                  </div>
-                </>
-              )}
-            </li>
+            <CustomToolItem
+              key={tool.id}
+              tool={tool}
+              isExpanded={expandedTools.has(tool.id)}
+              onToggle={() => onToggleExpanded(tool.id)}
+              configFiles={getToolConfigFiles(tool.id)}
+              activeToolId={activeToolId}
+              activeConfigFileId={activeConfigFileId}
+              onConfigFileSelect={onConfigFileSelect}
+              onAddConfigFile={onAddConfigFile}
+              onEditConfigFile={onEditConfigFile}
+              onDeleteConfigFile={onDeleteConfigFile}
+              onEditTool={onEditTool}
+              onDeleteTool={onDeleteTool}
+            />
           ))}
           <li>
             <button
-              onClick={onAdd}
-              className="w-full px-2 py-2 text-left flex items-center gap-2.5 text-sm rounded-lg
-                         dark:text-gray-500 text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 dark:hover:bg-blue-500/10 hover:bg-blue-50 
-                         border border-dashed dark:border-gray-700 border-slate-300 hover:border-blue-400
+              onClick={onAddTool}
+              className="w-full px-2 py-1.5 text-left flex items-center gap-2 text-xs rounded-md
+                         dark:text-gray-500 text-slate-400 hover:text-blue-500 dark:hover:text-blue-400
+                         dark:hover:bg-gray-800/30 hover:bg-blue-50
                          transition-all duration-150"
             >
-              <Plus className="w-4 h-4" />
-              <span className="font-medium">Add Custom Tool</span>
+              <Plus className="w-3 h-3" />
+              <span>Add custom tool</span>
             </button>
           </li>
         </ul>

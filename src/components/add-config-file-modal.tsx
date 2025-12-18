@@ -1,12 +1,12 @@
 import { useState, useEffect } from 'react';
-import { ConfigFormat, CliTool, SuggestedConfig } from '@/types';
+import { ConfigFormat, CliTool, CustomTool, SuggestedConfig } from '@/types';
 import { X, FolderOpen, FileJson, FileCode, FileText, Sparkles, Check } from 'lucide-react';
 import { open } from '@tauri-apps/plugin-dialog';
 import { invoke } from '@tauri-apps/api/core';
 
 interface AddConfigFileModalProps {
   isOpen: boolean;
-  tool: CliTool | null;
+  tool: CliTool | CustomTool | null;
   onClose: () => void;
   onAdd: (configFile: { label: string; path: string; format: ConfigFormat; icon?: string }) => void;
 }
@@ -35,7 +35,7 @@ export function AddConfigFileModal({ isOpen, tool, onClose, onAdd }: AddConfigFi
   const [showSuggestions, setShowSuggestions] = useState(true);
 
   useEffect(() => {
-    if (isOpen && tool?.suggestedConfigs) {
+    if (isOpen && tool && 'suggestedConfigs' in tool && tool.suggestedConfigs) {
       checkSuggestions(tool.suggestedConfigs);
     } else {
       setSuggestions([]);
