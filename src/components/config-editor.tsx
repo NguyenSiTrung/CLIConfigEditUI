@@ -57,6 +57,7 @@ export function ConfigEditor({
     isLoading,
     error,
     theme,
+    editorSettings,
   } = useAppStore();
 
   const handleEditorChange = (value: string | undefined) => {
@@ -190,14 +191,14 @@ export function ConfigEditor({
           onChange={handleEditorChange}
           theme={theme === 'dark' ? 'vs-dark' : 'light'}
           options={{
-            minimap: { enabled: false },
-            fontSize: 13,
-            fontFamily: "'JetBrains Mono', 'Fira Code', monospace",
-            lineNumbers: 'on',
+            minimap: { enabled: editorSettings.minimap },
+            fontSize: editorSettings.fontSize,
+            fontFamily: editorSettings.fontFamily,
+            lineNumbers: editorSettings.lineNumbers,
             scrollBeyondLastLine: false,
             automaticLayout: true,
-            tabSize: 2,
-            wordWrap: 'on',
+            tabSize: editorSettings.tabSize,
+            wordWrap: editorSettings.wordWrap,
             formatOnPaste: true,
             padding: { top: 12, bottom: 12 },
             smoothScrolling: true,

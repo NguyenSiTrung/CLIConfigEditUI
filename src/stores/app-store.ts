@@ -3,6 +3,27 @@ import { persist } from 'zustand/middleware';
 import { CliTool, ConfigFile, ConfigFormat, CustomTool, ToolConfigFiles } from '@/types';
 import { CLI_TOOLS } from '@/utils/cli-tools';
 
+interface EditorSettings {
+  fontSize: number;
+  fontFamily: string;
+  tabSize: number;
+  wordWrap: 'on' | 'off' | 'wordWrapColumn';
+  lineNumbers: 'on' | 'off' | 'relative';
+  minimap: boolean;
+  formatOnSave: boolean;
+}
+
+interface BackupSettings {
+  enabled: boolean;
+  maxBackups: number;
+}
+
+interface BehaviorSettings {
+  confirmBeforeDelete: boolean;
+  expandToolsByDefault: boolean;
+  rememberLastOpenedFile: boolean;
+}
+
 interface AppState {
   // Tools config - user-managed config files per tool
   toolConfigs: ToolConfigFiles[];
@@ -26,6 +47,11 @@ interface AppState {
   error: string | null;
   theme: 'dark' | 'light';
 
+  // Settings
+  editorSettings: EditorSettings;
+  backupSettings: BackupSettings;
+  behaviorSettings: BehaviorSettings;
+
   // Actions
   setActiveToolId: (id: string | null) => void;
   setActiveConfigFileId: (id: string | null) => void;
@@ -39,6 +65,12 @@ interface AppState {
   setError: (error: string | null) => void;
   toggleTheme: () => void;
   toggleToolExpanded: (toolId: string) => void;
+
+  // Settings actions
+  updateEditorSettings: (settings: Partial<EditorSettings>) => void;
+  updateBackupSettings: (settings: Partial<BackupSettings>) => void;
+  updateBehaviorSettings: (settings: Partial<BehaviorSettings>) => void;
+  resetSettings: () => void;
 
   // Config file management
   addConfigFile: (toolId: string, configFile: Omit<ConfigFile, 'id'>) => void;
@@ -77,6 +109,26 @@ export const useAppStore = create<AppState>()(
       error: null,
       theme: 'dark',
 
+      // Default settings
+      editorSettings: {
+        fontSize: 13,
+        fontFamily: "'JetBrains Mono', 'Fira Code', monospace",
+        tabSize: 2,
+        wordWrap: 'on',
+        lineNumbers: 'on',
+        minimap: false,
+        formatOnSave: false,
+      },
+      backupSettings: {
+        enabled: true,
+        maxBackups: 5,
+      },
+      behaviorSettings: {
+        confirmBeforeDelete: true,
+        expandToolsByDefault: false,
+        rememberLastOpenedFile: true,
+      },
+
       // Actions
       setActiveToolId: (id) => set({ activeToolId: id }),
       setActiveConfigFileId: (id) => set({ activeConfigFileId: id }),
@@ -103,6 +155,41 @@ export const useAppStore = create<AppState>()(
             newExpanded.add(toolId);
           }
           return { expandedTools: newExpanded };
+        }),
+
+      // Settings actions
+      updateEditorSettings: (settings) =>
+        set((state) => ({
+          editorSettings: { ...state.editorSettings, ...settings },
+        })),
+      updateBackupSettings: (settings) =>
+        set((state) => ({
+          backupSettings: { ...state.backupSettings, ...settings },
+        })),
+      updateBehaviorSettings: (settings) =>
+        set((state) => ({
+          behaviorSettings: { ...state.behaviorSettings, ...settings },
+        })),
+      resetSettings: () =>
+        set({
+          editorSettings: {
+            fontSize: 13,
+            fontFamily: "'JetBrains Mono', 'Fira Code', monospace",
+            tabSize: 2,
+            wordWrap: 'on',
+            lineNumbers: 'on',
+            minimap: false,
+            formatOnSave: false,
+          },
+          backupSettings: {
+            enabled: true,
+            maxBackups: 5,
+          },
+          behaviorSettings: {
+            confirmBeforeDelete: true,
+            expandToolsByDefault: false,
+            rememberLastOpenedFile: true,
+          },
         }),
 
       // Config file management
@@ -217,6 +304,9 @@ export const useAppStore = create<AppState>()(
         sidebarCollapsed: state.sidebarCollapsed,
         theme: state.theme,
         expandedTools: Array.from(state.expandedTools),
+        editorSettings: state.editorSettings,
+        backupSettings: state.backupSettings,
+        behaviorSettings: state.behaviorSettings,
       }),
       merge: (persisted, current) => {
         const persistedState = persisted as Partial<AppState> & { expandedTools?: string[] };
