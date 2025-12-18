@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { ConfigFormat, CliTool, CustomTool, SuggestedConfig } from '@/types';
-import { X, FolderOpen, FileJson, FileCode, FileText, Sparkles, Check } from 'lucide-react';
+import { X, FolderOpen, Sparkles, Check } from 'lucide-react';
 import { open } from '@tauri-apps/plugin-dialog';
 import { invoke } from '@tauri-apps/api/core';
 
@@ -11,12 +11,12 @@ interface AddConfigFileModalProps {
   onAdd: (configFile: { label: string; path: string; format: ConfigFormat; icon?: string }) => void;
 }
 
-const FORMAT_OPTIONS: { value: ConfigFormat; label: string; icon: React.ReactNode }[] = [
-  { value: 'json', label: 'JSON', icon: <FileJson className="w-4 h-4" /> },
-  { value: 'yaml', label: 'YAML', icon: <FileCode className="w-4 h-4" /> },
-  { value: 'toml', label: 'TOML', icon: <FileText className="w-4 h-4" /> },
-  { value: 'ini', label: 'INI', icon: <FileText className="w-4 h-4" /> },
-  { value: 'md', label: 'Markdown', icon: <FileText className="w-4 h-4" /> },
+const FORMAT_OPTIONS: { value: ConfigFormat; label: string; color: string }[] = [
+  { value: 'json', label: 'JSON', color: 'bg-amber-500/15 text-amber-600 dark:text-amber-400 border-amber-500/30' },
+  { value: 'yaml', label: 'YAML', color: 'bg-purple-500/15 text-purple-600 dark:text-purple-400 border-purple-500/30' },
+  { value: 'toml', label: 'TOML', color: 'bg-cyan-500/15 text-cyan-600 dark:text-cyan-400 border-cyan-500/30' },
+  { value: 'ini', label: 'INI', color: 'bg-rose-500/15 text-rose-600 dark:text-rose-400 border-rose-500/30' },
+  { value: 'md', label: 'MD', color: 'bg-blue-500/15 text-blue-600 dark:text-blue-400 border-blue-500/30' },
 ];
 
 const ICON_OPTIONS = ['⚙️', '🔌', '📝', '🔧', '📋', '🗂️', '💾', '🎯'];
@@ -156,12 +156,14 @@ export function AddConfigFileModal({ isOpen, tool, onClose, onAdd }: AddConfigFi
                     </div>
                     <div className="flex items-center gap-2">
                       {suggestion.exists && (
-                        <span className="flex items-center gap-1 px-2 py-0.5 rounded-full text-xs bg-green-500/10 text-green-500">
+                        <span className="flex items-center gap-1 px-2 py-0.5 rounded-full text-xs bg-emerald-500/15 text-emerald-600 dark:text-emerald-400">
                           <Check className="w-3 h-3" />
                           Exists
                         </span>
                       )}
-                      <span className="text-xs px-2 py-0.5 rounded-md dark:bg-gray-700 bg-slate-200 dark:text-gray-400 text-slate-500 uppercase">
+                      <span className={`text-xs px-2 py-0.5 rounded-md uppercase font-medium ${
+                        FORMAT_OPTIONS.find(f => f.value === suggestion.format)?.color || 'bg-slate-200 dark:bg-gray-700 text-slate-500 dark:text-gray-400'
+                      }`}>
                         {suggestion.format}
                       </span>
                     </div>
@@ -270,15 +272,13 @@ export function AddConfigFileModal({ isOpen, tool, onClose, onAdd }: AddConfigFi
                   key={option.value}
                   type="button"
                   onClick={() => setFormat(option.value)}
-                  className={`px-2 py-2 rounded-lg text-xs font-medium flex flex-col items-center gap-1
-                             border transition-all
+                  className={`px-2 py-2.5 rounded-lg text-xs font-semibold border transition-all
                              ${format === option.value
-                               ? 'bg-blue-600 border-blue-500 text-white shadow-md'
+                               ? `${option.color} border shadow-sm ring-1 ring-current/20`
                                : 'dark:bg-gray-900/50 bg-slate-50 dark:border-gray-700/50 border-slate-200 dark:text-gray-400 text-slate-500 dark:hover:text-white hover:text-slate-700 dark:hover:border-gray-600 hover:border-slate-300'
                              }`}
                 >
-                  {option.icon}
-                  <span>{option.label}</span>
+                  {option.label}
                 </button>
               ))}
             </div>

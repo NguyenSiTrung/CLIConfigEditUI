@@ -8,11 +8,8 @@ import { invoke } from '@tauri-apps/api/core';
 import {
   Save,
   AlignLeft,
-  FileJson,
-  FileCode,
   Loader2,
   AlertCircle,
-  FileText,
   RefreshCw,
   X,
   History,
@@ -26,12 +23,12 @@ const FORMAT_TO_LANGUAGE: Record<ConfigFormat, string> = {
   md: 'markdown',
 };
 
-const FORMAT_LABELS: Record<ConfigFormat, { label: string; icon: React.ReactNode }> = {
-  json: { label: 'JSON', icon: <FileJson className="w-3 h-3" /> },
-  yaml: { label: 'YAML', icon: <FileCode className="w-3 h-3" /> },
-  toml: { label: 'TOML', icon: <FileText className="w-3 h-3" /> },
-  ini: { label: 'INI', icon: <FileText className="w-3 h-3" /> },
-  md: { label: 'Markdown', icon: <FileText className="w-3 h-3" /> },
+const FORMAT_LABELS: Record<ConfigFormat, { label: string; color: string }> = {
+  json: { label: 'JSON', color: 'bg-amber-500/15 text-amber-600 dark:text-amber-400' },
+  yaml: { label: 'YAML', color: 'bg-purple-500/15 text-purple-600 dark:text-purple-400' },
+  toml: { label: 'TOML', color: 'bg-cyan-500/15 text-cyan-600 dark:text-cyan-400' },
+  ini: { label: 'INI', color: 'bg-rose-500/15 text-rose-600 dark:text-rose-400' },
+  md: { label: 'MD', color: 'bg-blue-500/15 text-blue-600 dark:text-blue-400' },
 };
 
 interface ConfigEditorProps {
@@ -170,11 +167,7 @@ export function ConfigEditor({
             <span className="dark:text-gray-300 text-slate-700 font-medium truncate max-w-[300px]">
               {currentFilePath?.split('/').pop()}
             </span>
-            <span className={`px-2 py-0.5 rounded text-xs font-medium flex items-center gap-1
-                            ${isDirty() 
-                              ? 'dark:bg-yellow-500/20 bg-amber-100 dark:text-yellow-400 text-amber-700' 
-                              : 'dark:bg-gray-700/50 bg-slate-100 dark:text-gray-400 text-slate-500'}`}>
-              {formatInfo.icon}
+            <span className={`px-2 py-0.5 rounded text-xs font-medium ${formatInfo.color}`}>
               {formatInfo.label}
             </span>
           </div>

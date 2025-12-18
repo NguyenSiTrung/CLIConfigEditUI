@@ -87,7 +87,7 @@ export function Sidebar({
           <div className="px-2 py-1.5 flex items-center justify-between text-xs font-semibold 
                          dark:text-gray-400 text-slate-500 uppercase tracking-wider">
             <span>CLI Tools</span>
-            <span className="px-1.5 py-0.5 text-[10px] dark:bg-gray-700/50 bg-slate-200 dark:text-gray-400 text-slate-600 rounded-md font-medium">
+            <span className="px-1.5 py-0.5 text-[10px] bg-blue-500/15 text-blue-600 dark:text-blue-400 rounded-md font-medium">
               {tools.length}
             </span>
           </div>
@@ -180,7 +180,7 @@ function ToolItem({
         </span>
         <span className="truncate font-medium flex-1">{tool.name}</span>
         {hasConfigs && (
-          <span className="px-1.5 py-0.5 text-[10px] dark:bg-gray-700/50 bg-slate-200 dark:text-gray-400 text-slate-500 rounded-md">
+          <span className="px-1.5 py-0.5 text-[10px] bg-teal-500/15 text-teal-600 dark:text-teal-400 rounded-md">
             {configFiles.length}
           </span>
         )}
@@ -349,7 +349,7 @@ function CustomToolItem({
           </span>
           <span className="truncate font-medium flex-1">{tool.name}</span>
           {hasConfigs && (
-            <span className="px-1.5 py-0.5 text-[10px] dark:bg-gray-700/50 bg-slate-200 dark:text-gray-400 text-slate-500 rounded-md">
+            <span className="px-1.5 py-0.5 text-[10px] bg-teal-500/15 text-teal-600 dark:text-teal-400 rounded-md">
               {configFiles.length}
             </span>
           )}
@@ -486,7 +486,7 @@ function CustomToolSection({
           )}
           {title}
         </span>
-        <span className="px-1.5 py-0.5 text-[10px] dark:bg-gray-700/50 bg-slate-200 dark:text-gray-400 text-slate-600 rounded-md font-medium">
+        <span className="px-1.5 py-0.5 text-[10px] bg-violet-500/15 text-violet-600 dark:text-violet-400 rounded-md font-medium">
           {tools.length}
         </span>
       </button>
