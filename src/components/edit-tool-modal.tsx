@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { ConfigFormat, CustomTool } from '@/types';
 import { X, FolderOpen, FileJson, FileCode, FileText } from 'lucide-react';
 import { open } from '@tauri-apps/plugin-dialog';
+import { IconPicker } from './icon-picker';
 
 interface EditToolModalProps {
   isOpen: boolean;
@@ -16,8 +17,6 @@ const FORMAT_OPTIONS: { value: ConfigFormat; label: string; icon: React.ReactNod
   { value: 'toml', label: 'TOML', icon: <FileText className="w-4 h-4" /> },
   { value: 'ini', label: 'INI', icon: <FileText className="w-4 h-4" /> },
 ];
-
-const ICON_OPTIONS = ['🔧', '⚙️', '🛠️', '📦', '🚀', '💻', '🔌', '📝', '🎯', '🗂️', '💾', '🔒'];
 
 export function EditToolModal({ isOpen, tool, onClose, onSave }: EditToolModalProps) {
   const [name, setName] = useState('');
@@ -76,43 +75,12 @@ export function EditToolModal({ isOpen, tool, onClose, onSave }: EditToolModalPr
         </div>
 
         <form onSubmit={handleSubmit} className="p-6 space-y-5">
-          <div className="flex gap-4">
+          <div className="flex gap-4 items-start">
             <div>
               <label className="block text-sm font-medium dark:text-gray-300 text-slate-700 mb-2">
                 Icon
               </label>
-              <div className="relative">
-                <button
-                  type="button"
-                  onClick={(e) => {
-                    const menu = e.currentTarget.nextElementSibling;
-                    menu?.classList.toggle('hidden');
-                  }}
-                  className="w-12 h-12 flex items-center justify-center text-2xl rounded-lg border 
-                             dark:bg-gray-900/50 bg-slate-50 dark:border-gray-700/50 border-slate-200
-                             hover:border-blue-500 transition-colors"
-                >
-                  {icon}
-                </button>
-                <div className="hidden absolute left-0 top-full mt-1 z-20 dark:bg-gray-800 bg-white rounded-lg shadow-lg border dark:border-gray-700 border-slate-200 p-2 grid grid-cols-6 gap-1">
-                  {ICON_OPTIONS.map((opt) => (
-                    <button
-                      key={opt}
-                      type="button"
-                      onClick={(e) => {
-                        setIcon(opt);
-                        e.currentTarget.parentElement?.classList.add('hidden');
-                      }}
-                      className={`w-8 h-8 flex items-center justify-center text-lg rounded-md transition-colors
-                                 ${icon === opt 
-                                   ? 'bg-blue-600 text-white' 
-                                   : 'dark:hover:bg-gray-700 hover:bg-slate-100'}`}
-                    >
-                      {opt}
-                    </button>
-                  ))}
-                </div>
-              </div>
+              <IconPicker value={icon} onChange={setIcon} />
             </div>
 
             <div className="flex-1">
