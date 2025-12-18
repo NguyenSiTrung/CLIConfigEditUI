@@ -1,0 +1,30 @@
+{
+  "$schema": "https://schema.tauri.app/config/2/capabilities",
+  "identifier": "main",
+  "description": "Main application capabilities",
+  "windows": ["main"],
+  "permissions": [
+    "core:default",
+    "core:window:allow-minimize",
+    "core:window:allow-maximize",
+    "core:window:allow-toggle-maximize",
+    "core:window:allow-close",
+    "core:window:allow-start-dragging",
+    "dialog:default",
+    "dialog:allow-open",
+    "dialog:allow-save",
+    "fs:default",
+    "fs:allow-read-text-file",
+    "fs:allow-write-text-file",
+    "fs:allow-exists",
+    "fs:allow-watch",
+    {
+      "identifier": "fs:scope",
+      "allow": [
+        "$HOME/**",
+        "$CONFIG/**",
+        "$APPDATA/**"
+      ]
+    }
+  ]
+}

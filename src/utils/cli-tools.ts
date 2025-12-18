@@ -1,0 +1,95 @@
+import { CliTool } from '@/types';
+
+export const CLI_TOOLS: CliTool[] = [
+  {
+    id: 'claude-cli',
+    name: 'Claude CLI',
+    icon: '🤖',
+    configPaths: {
+      macos: ['~/.claude/settings.json', '~/.claude.json'],
+      linux: ['~/.claude/settings.json', '~/.claude.json'],
+      windows: ['%USERPROFILE%\\.claude\\settings.json'],
+    },
+    configFormat: 'json',
+    docsUrl: 'https://docs.anthropic.com/claude-cli',
+    description: "Anthropic's official Claude CLI",
+  },
+  {
+    id: 'aider',
+    name: 'Aider',
+    icon: '🔧',
+    configPaths: {
+      macos: ['~/.aider.conf.yml', '~/.config/aider/aider.conf.yml'],
+      linux: ['~/.aider.conf.yml', '~/.config/aider/aider.conf.yml'],
+      windows: ['%USERPROFILE%\\.aider.conf.yml'],
+    },
+    configFormat: 'yaml',
+    docsUrl: 'https://aider.chat/docs/config.html',
+    description: 'AI pair programming in your terminal',
+  },
+  {
+    id: 'continue',
+    name: 'Continue',
+    icon: '▶️',
+    configPaths: {
+      macos: ['~/.continue/config.json'],
+      linux: ['~/.continue/config.json'],
+      windows: ['%USERPROFILE%\\.continue\\config.json'],
+    },
+    configFormat: 'json',
+    docsUrl: 'https://docs.continue.dev/',
+    description: 'Open-source AI code assistant',
+  },
+  {
+    id: 'amp',
+    name: 'Amp',
+    icon: '⚡',
+    configPaths: {
+      macos: ['~/.config/amp/settings.toml', '~/.amprc'],
+      linux: ['~/.config/amp/settings.toml', '~/.amprc'],
+      windows: ['%APPDATA%\\amp\\settings.toml'],
+    },
+    configFormat: 'toml',
+    docsUrl: 'https://ampcode.com/manual',
+    description: "Anthropic's AI coding agent",
+  },
+  {
+    id: 'gh-copilot',
+    name: 'GitHub Copilot CLI',
+    icon: '🐙',
+    configPaths: {
+      macos: ['~/.config/gh-copilot/config.yml'],
+      linux: ['~/.config/gh-copilot/config.yml'],
+      windows: ['%APPDATA%\\gh-copilot\\config.yml'],
+    },
+    configFormat: 'yaml',
+    docsUrl: 'https://docs.github.com/en/copilot/github-copilot-in-the-cli',
+    description: "GitHub's AI-powered CLI assistant",
+  },
+  {
+    id: 'cursor',
+    name: 'Cursor',
+    icon: '📝',
+    configPaths: {
+      macos: ['~/Library/Application Support/Cursor/User/settings.json'],
+      linux: ['~/.config/Cursor/User/settings.json'],
+      windows: ['%APPDATA%\\Cursor\\User\\settings.json'],
+    },
+    configFormat: 'json',
+    docsUrl: 'https://cursor.sh/docs',
+    description: 'AI-first code editor',
+  },
+  {
+    id: 'cody',
+    name: 'Cody CLI',
+    icon: '🧠',
+    configPaths: {
+      macos: ['~/.cody/config.json'],
+      linux: ['~/.cody/config.json'],
+      windows: ['%USERPROFILE%\\.cody\\config.json'],
+    },
+    configFormat: 'json',
+    docsUrl: 'https://sourcegraph.com/docs/cody',
+    description: "Sourcegraph's AI coding assistant",
+  },
+];

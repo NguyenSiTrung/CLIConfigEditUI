@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <rect width="100" height="100" rx="20" fill="#1a1a2e"/>
+  <text x="50" y="62" font-family="system-ui" font-size="40" fill="#4ade80" text-anchor="middle" font-weight="bold">CLI</text>
+  <circle cx="75" cy="25" r="8" fill="#3b82f6"/>
+  <path d="M20 75 L35 60 L50 70 L65 55 L80 65" stroke="#f59e0b" stroke-width="3" fill="none" stroke-linecap="round"/>
+</svg>
