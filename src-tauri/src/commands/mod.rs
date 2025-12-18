@@ -13,6 +13,10 @@ pub enum CommandError {
     Io(#[from] std::io::Error),
     #[error("Failed to resolve path: {0}")]
     PathResolution(String),
+    #[error("JSON parse error: {0}")]
+    JsonParse(String),
+    #[error("JSON path not found: {0}")]
+    JsonPathNotFound(String),
 }
 
 impl Serialize for CommandError {
@@ -302,4 +306,113 @@ fn create_backup_fn(file_path: &PathBuf, max_backups: u32) -> Result<(), std::io
     }
     
     Ok(())
+}
+
+#[tauri::command]
+pub fn read_json_path(path: String, json_path: String) -> Result<String, CommandError> {
+    let expanded = expand_path(&path)
+        .ok_or_else(|| CommandError::PathResolution(path.clone()))?;
+
+    if !expanded.exists() {
+        return Err(CommandError::ConfigNotFound(
+            expanded.to_string_lossy().to_string(),
+        ));
+    }
+
+    let content = fs::read_to_string(&expanded)?;
+    let root: serde_json::Value = serde_json::from_str(&content)
+        .map_err(|e| CommandError::JsonParse(e.to_string()))?;
+
+    let value = get_json_value(&root, &json_path)
+        .ok_or_else(|| CommandError::JsonPathNotFound(json_path.clone()))?;
+
+    serde_json::to_string_pretty(value)
+        .map_err(|e| CommandError::JsonParse(e.to_string()))
+}
+
+#[tauri::command]
+pub fn write_json_path(
+    path: String,
+    json_path: String,
+    content: String,
+    backup_settings: Option<BackupSettings>,
+) -> Result<(), CommandError> {
+    let expanded = expand_path(&path)
+        .ok_or_else(|| CommandError::PathResolution(path.clone()))?;
+
+    // Create parent directories if needed
+    if let Some(parent) = expanded.parent() {
+        fs::create_dir_all(parent)?;
+    }
+
+    // Parse the new content to validate it's valid JSON
+    let new_value: serde_json::Value = serde_json::from_str(&content)
+        .map_err(|e| CommandError::JsonParse(e.to_string()))?;
+
+    // Read existing file or create empty object
+    let mut root: serde_json::Value = if expanded.exists() {
+        let existing = fs::read_to_string(&expanded)?;
+        serde_json::from_str(&existing)
+            .map_err(|e| CommandError::JsonParse(e.to_string()))?
+    } else {
+        serde_json::json!({})
+    };
+
+    // Set the value at the specified path
+    set_json_value(&mut root, &json_path, new_value)
+        .ok_or_else(|| CommandError::JsonPathNotFound(json_path.clone()))?;
+
+    // Serialize the updated root
+    let final_content = serde_json::to_string_pretty(&root)
+        .map_err(|e| CommandError::JsonParse(e.to_string()))?;
+
+    // Create backup if enabled and file exists
+    let settings = backup_settings.unwrap_or(BackupSettings { enabled: true, max_backups: 1 });
+    if settings.enabled && expanded.exists() && settings.max_backups > 0 {
+        create_backup(&expanded, settings.max_backups)?;
+    }
+
+    // Write atomically via temp file
+    let temp_path = expanded.with_extension("tmp");
+    fs::write(&temp_path, &final_content)?;
+    fs::rename(&temp_path, &expanded)?;
+
+    Ok(())
+}
+
+fn get_json_value<'a>(root: &'a serde_json::Value, path: &str) -> Option<&'a serde_json::Value> {
+    let parts: Vec<&str> = path.split('.').collect();
+    let mut current = root;
+    
+    for part in parts {
+        current = current.get(part)?;
+    }
+    
+    Some(current)
+}
+
+fn set_json_value(root: &mut serde_json::Value, path: &str, value: serde_json::Value) -> Option<()> {
+    let parts: Vec<&str> = path.split('.').collect();
+    let mut current = root;
+    
+    for (i, part) in parts.iter().enumerate() {
+        if i == parts.len() - 1 {
+            // Last part - set the value
+            if let serde_json::Value::Object(map) = current {
+                map.insert(part.to_string(), value);
+                return Some(());
+            }
+            return None;
+        } else {
+            // Traverse or create intermediate objects
+            if current.get(part).is_none() {
+                if let serde_json::Value::Object(map) = current {
+                    map.insert(part.to_string(), serde_json::json!({}));
+                }
+            }
+            current = current.get_mut(part)?;
+        }
+    }
+    
+    Some(())
 }

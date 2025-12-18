@@ -3,7 +3,7 @@ mod config;
 
 use commands::{
     check_multiple_paths, delete_file, file_exists, get_tools, list_backups, read_backup,
-    read_file, resolve_path, restore_backup, write_file,
+    read_file, read_json_path, resolve_path, restore_backup, write_file, write_json_path,
 };
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
@@ -15,6 +15,8 @@ pub fn run() {
             get_tools,
             read_file,
             write_file,
+            read_json_path,
+            write_json_path,
             file_exists,
             check_multiple_paths,
             resolve_path,

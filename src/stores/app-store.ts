@@ -38,6 +38,7 @@ interface AppState {
   originalContent: string;
   currentFilePath: string | null;
   currentFormat: ConfigFormat;
+  currentJsonPath: string | null;  // For partial JSON editing
 
   // UI state
   searchQuery: string;
@@ -59,6 +60,7 @@ interface AppState {
   setOriginalContent: (content: string) => void;
   setCurrentFilePath: (path: string | null) => void;
   setCurrentFormat: (format: ConfigFormat) => void;
+  setCurrentJsonPath: (jsonPath: string | null) => void;
   setSearchQuery: (query: string) => void;
   setSidebarCollapsed: (collapsed: boolean) => void;
   setLoading: (loading: boolean) => void;
@@ -102,6 +104,7 @@ export const useAppStore = create<AppState>()(
       originalContent: '',
       currentFilePath: null,
       currentFormat: 'json',
+      currentJsonPath: null,
       searchQuery: '',
       expandedTools: new Set<string>(),
       sidebarCollapsed: false,
@@ -136,6 +139,7 @@ export const useAppStore = create<AppState>()(
       setOriginalContent: (content) => set({ originalContent: content }),
       setCurrentFilePath: (path) => set({ currentFilePath: path }),
       setCurrentFormat: (format) => set({ currentFormat: format }),
+      setCurrentJsonPath: (jsonPath) => set({ currentJsonPath: jsonPath }),
       setSearchQuery: (query) => set({ searchQuery: query }),
       setSidebarCollapsed: (collapsed) => set({ sidebarCollapsed: collapsed }),
       setLoading: (loading) => set({ isLoading: loading }),

@@ -7,6 +7,7 @@ export interface ConfigFile {
   path: string;         // File path
   format: ConfigFormat;
   icon?: string;        // Optional icon/emoji
+  jsonPath?: string;    // For partial JSON editing - dot-notation path to extract/edit (e.g., "mcpServers")
 }
 
 // CLI Tool metadata (no config paths - all user-managed)
@@ -27,6 +28,7 @@ export interface SuggestedConfig {
   format: ConfigFormat;
   icon?: string;
   description?: string;
+  jsonPath?: string;    // For partial JSON editing - dot-notation path to extract/edit (e.g., "mcpServers")
 }
 
 // User's config files for a tool (persisted)

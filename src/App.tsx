@@ -49,10 +49,12 @@ function App() {
     setOriginalContent,
     setCurrentFilePath,
     setCurrentFormat,
+    setCurrentJsonPath,
     setLoading,
     setError,
     editorContent,
     currentFilePath,
+    currentJsonPath,
     addCustomTool,
     updateCustomTool,
     removeCustomTool,
@@ -92,7 +94,15 @@ function App() {
   const handleReloadFile = useCallback(async () => {
     if (!currentFilePath) return;
     try {
-      const content = await invoke<string>('read_file', { path: currentFilePath });
+      let content: string;
+      if (currentJsonPath) {
+        content = await invoke<string>('read_json_path', { 
+          path: currentFilePath, 
+          jsonPath: currentJsonPath 
+        });
+      } else {
+        content = await invoke<string>('read_file', { path: currentFilePath });
+      }
       setEditorContent(content);
       setOriginalContent(content);
       toast.success('File reloaded');
@@ -100,7 +110,7 @@ function App() {
       toast.error(`Failed to reload: ${err instanceof Error ? err.message : String(err)}`);
     }
     setExternalChangeDetected(false);
-  }, [currentFilePath, setEditorContent, setOriginalContent]);
+  }, [currentFilePath, currentJsonPath, setEditorContent, setOriginalContent]);
 
   const handleDismissExternalChange = useCallback(() => {
     setExternalChangeDetected(false);
@@ -122,18 +132,28 @@ function App() {
       setError(null);
 
       try {
-        const content = await invoke<string>('read_file', { path: configFile.path });
+        let content: string;
+        if (configFile.jsonPath) {
+          content = await invoke<string>('read_json_path', { 
+            path: configFile.path, 
+            jsonPath: configFile.jsonPath 
+          });
+        } else {
+          content = await invoke<string>('read_file', { path: configFile.path });
+        }
         setEditorContent(content);
         setOriginalContent(content);
         setCurrentFilePath(configFile.path);
         setCurrentFormat(configFile.format);
-      } catch (err) {
-        // File doesn't exist - create with default content
-        const defaultContent = getDefaultContent(configFile.format);
+        setCurrentJsonPath(configFile.jsonPath || null);
+      } catch {
+        // File doesn't exist or jsonPath not found - create with default content
+        const defaultContent = configFile.jsonPath ? '{}' : getDefaultContent(configFile.format);
         setEditorContent(defaultContent);
         setOriginalContent(defaultContent);
         setCurrentFilePath(configFile.path);
         setCurrentFormat(configFile.format);
+        setCurrentJsonPath(configFile.jsonPath || null);
         setError(`File not found. It will be created when you save.`);
       } finally {
         setLoading(false);
@@ -149,6 +169,7 @@ function App() {
       setOriginalContent,
       setCurrentFilePath,
       setCurrentFormat,
+      setCurrentJsonPath,
     ]
   );
 
@@ -159,21 +180,33 @@ function App() {
     
     try {
       markAsInternalWrite();
-      await invoke('write_file', {
-        path: currentFilePath,
-        content: editorContent,
-        backupSettings: {
-          enabled: backupSettings.enabled,
-          maxBackups: backupSettings.maxBackups,
-        },
-      });
+      if (currentJsonPath) {
+        await invoke('write_json_path', {
+          path: currentFilePath,
+          jsonPath: currentJsonPath,
+          content: editorContent,
+          backupSettings: {
+            enabled: backupSettings.enabled,
+            maxBackups: backupSettings.maxBackups,
+          },
+        });
+      } else {
+        await invoke('write_file', {
+          path: currentFilePath,
+          content: editorContent,
+          backupSettings: {
+            enabled: backupSettings.enabled,
+            maxBackups: backupSettings.maxBackups,
+          },
+        });
+      }
       setOriginalContent(editorContent);
       setError(null);
       toast.success('Configuration saved successfully');
     } catch (err) {
       toast.error(`Failed to save: ${err instanceof Error ? err.message : String(err)}`);
     }
-  }, [currentFilePath, editorContent, setOriginalContent, markAsInternalWrite, setError]);
+  }, [currentFilePath, currentJsonPath, editorContent, setOriginalContent, markAsInternalWrite, setError]);
 
   const handleFormat = useCallback(() => {
     try {

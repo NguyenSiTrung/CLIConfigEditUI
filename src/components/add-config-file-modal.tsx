@@ -8,7 +8,7 @@ interface AddConfigFileModalProps {
   isOpen: boolean;
   tool: CliTool | CustomTool | null;
   onClose: () => void;
-  onAdd: (configFile: { label: string; path: string; format: ConfigFormat; icon?: string }) => void;
+  onAdd: (configFile: { label: string; path: string; format: ConfigFormat; icon?: string; jsonPath?: string }) => void;
 }
 
 const FORMAT_OPTIONS: { value: ConfigFormat; label: string; color: string }[] = [
@@ -31,6 +31,7 @@ export function AddConfigFileModal({ isOpen, tool, onClose, onAdd }: AddConfigFi
   const [path, setPath] = useState('');
   const [format, setFormat] = useState<ConfigFormat>('json');
   const [icon, setIcon] = useState('⚙️');
+  const [jsonPath, setJsonPath] = useState<string | undefined>(undefined);
   const [suggestions, setSuggestions] = useState<SuggestionWithStatus[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(true);
 
@@ -74,6 +75,7 @@ export function AddConfigFileModal({ isOpen, tool, onClose, onAdd }: AddConfigFi
       path: path.trim(),
       format,
       icon,
+      jsonPath,
     });
 
     resetForm();
@@ -85,6 +87,7 @@ export function AddConfigFileModal({ isOpen, tool, onClose, onAdd }: AddConfigFi
     setPath(suggestion.path);
     setFormat(suggestion.format);
     if (suggestion.icon) setIcon(suggestion.icon);
+    setJsonPath(suggestion.jsonPath);
     setShowSuggestions(false);
   };
 
@@ -93,6 +96,7 @@ export function AddConfigFileModal({ isOpen, tool, onClose, onAdd }: AddConfigFi
     setPath('');
     setFormat('json');
     setIcon('⚙️');
+    setJsonPath(undefined);
     setShowSuggestions(true);
   };
 

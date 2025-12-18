@@ -17,8 +17,9 @@ Each CLI tool can now have **multiple configuration files**. Users can add, edit
 
 | Label | Path | Format | Description |
 |-------|------|--------|-------------|
-| Settings | `~/.claude/settings.json` | JSON | Main settings file |
-| MCP Servers | `.mcp.json` | JSON | Project-level MCP configuration |
+| Settings | `~/.claude/settings.json` | JSON | User settings file |
+| MCP Servers (User) | `~/.claude.json` | JSON | User-level MCP config (edits `mcpServers` only) |
+| MCP Servers (Project) | `.mcp.json` | JSON | Project-level MCP configuration |
 | Memory | `~/.claude/CLAUDE.md` | Markdown | Global instructions/memory |
 
 ---
@@ -42,13 +43,14 @@ Anthropic's official Claude Code CLI for terminal-based AI assistance.
 
 **Suggested Config Files:**
 
-| Label | Path | Format |
-|-------|------|--------|
-| Settings | `~/.claude/settings.json` | JSON |
-| MCP Servers | `.mcp.json` | JSON |
-| Memory | `~/.claude/CLAUDE.md` | Markdown |
+| Label | Path | Format | Notes |
+|-------|------|--------|-------|
+| Settings | `~/.claude/settings.json` | JSON | User settings (permissions, env, hooks, model) |
+| MCP Servers (User) | `~/.claude.json` | JSON | User-level MCP servers (edits `mcpServers` key only) |
+| MCP Servers (Project) | `.mcp.json` | JSON | Project-level MCP server configuration |
+| Memory | `~/.claude/CLAUDE.md` | Markdown | Global instructions/memory |
 
-**Example Settings:**
+**Example Settings (`~/.claude/settings.json`):**
 ```json
 {
   "permissions": {
@@ -59,7 +61,20 @@ Anthropic's official Claude Code CLI for terminal-based AI assistance.
 }
 ```
 
-**Example MCP Config:**
+**Example MCP Config (User-level at `~/.claude.json`):**
+
+The app only shows and edits the `mcpServers` section:
+```json
+{
+  "server-name": {
+    "type": "stdio",
+    "command": "npx",
+    "args": ["-y", "@modelcontextprotocol/server-filesystem", "/path/to/dir"]
+  }
+}
+```
+
+**Example MCP Config (Project-level at `.mcp.json`):**
 ```json
 {
   "mcpServers": {
@@ -71,7 +86,7 @@ Anthropic's official Claude Code CLI for terminal-based AI assistance.
 }
 ```
 
-**Documentation:** https://docs.anthropic.com/claude-code
+**Documentation:** https://code.claude.com/docs/en/settings
 
 ---
 

@@ -5,7 +5,7 @@ export const CLI_TOOLS: CliTool[] = [
     id: 'claude-code',
     name: 'Claude Code',
     icon: '🤖',
-    docsUrl: 'https://docs.anthropic.com/claude-code',
+    docsUrl: 'https://code.claude.com/docs/en/settings',
     description: "Anthropic's official Claude Code CLI",
     suggestedConfigs: [
       {
@@ -13,13 +13,21 @@ export const CLI_TOOLS: CliTool[] = [
         path: '~/.claude/settings.json',
         format: 'json',
         icon: '⚙️',
-        description: 'Main settings file',
+        description: 'User settings (permissions, env, hooks, model)',
       },
       {
-        label: 'MCP Servers',
-        path: '.mcp.json',
+        label: 'MCP Servers (User)',
+        path: '~/.claude.json',
         format: 'json',
         icon: '🔌',
+        description: 'User-level MCP server configuration',
+        jsonPath: 'mcpServers',
+      },
+      {
+        label: 'MCP Servers (Project)',
+        path: '.mcp.json',
+        format: 'json',
+        icon: '📁',
         description: 'Project-level MCP server configuration',
       },
       {
