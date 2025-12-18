@@ -8,4 +8,5 @@ export { AddConfigFileModal } from './add-config-file-modal';
 export { EditConfigFileModal } from './edit-config-file-modal';
 export { SettingsModal } from './settings-modal';
 export { WelcomeScreen } from './welcome-screen';
+export { BackupModal } from './backup-modal';
 export { ToastContainer, toast, useToastStore } from './toast';

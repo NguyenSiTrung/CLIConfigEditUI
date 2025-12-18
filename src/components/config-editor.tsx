@@ -2,6 +2,9 @@ import Editor from '@monaco-editor/react';
 import { useAppStore } from '@/stores/app-store';
 import { ConfigFormat } from '@/types';
 import { WelcomeScreen } from './welcome-screen';
+import { BackupModal } from './backup-modal';
+import { useState, useEffect, useCallback } from 'react';
+import { invoke } from '@tauri-apps/api/core';
 import {
   Save,
   AlignLeft,
@@ -12,6 +15,7 @@ import {
   FileText,
   RefreshCw,
   X,
+  History,
 } from 'lucide-react';
 
 const FORMAT_TO_LANGUAGE: Record<ConfigFormat, string> = {
@@ -59,6 +63,31 @@ export function ConfigEditor({
     theme,
     editorSettings,
   } = useAppStore();
+
+  const [showBackupModal, setShowBackupModal] = useState(false);
+  const [hasBackups, setHasBackups] = useState(false);
+
+  const checkBackups = useCallback(async () => {
+    if (!currentFilePath) {
+      setHasBackups(false);
+      return;
+    }
+    try {
+      const backups = await invoke<{ path: string }[]>('list_backups', { path: currentFilePath });
+      setHasBackups(backups.length > 0);
+    } catch {
+      setHasBackups(false);
+    }
+  }, [currentFilePath]);
+
+  useEffect(() => {
+    checkBackups();
+  }, [checkBackups]);
+
+  const handleBackupRestored = useCallback(() => {
+    onReloadFile?.();
+    checkBackups();
+  }, [onReloadFile, checkBackups]);
 
   const handleEditorChange = (value: string | undefined) => {
     if (value !== undefined) {
@@ -158,6 +187,19 @@ export function ConfigEditor({
         </div>
 
         <div className="flex items-center gap-2">
+          {hasBackups && (
+            <button
+              onClick={() => setShowBackupModal(true)}
+              className="px-3 py-1.5 text-sm flex items-center gap-1.5 
+                         dark:bg-gray-700/50 bg-slate-100 dark:hover:bg-gray-600/50 hover:bg-slate-200 dark:text-gray-300 text-slate-600 rounded-lg 
+                         border dark:border-gray-600/50 border-slate-200 transition-colors relative"
+              title="View backup history"
+            >
+              <History className="w-4 h-4" />
+              <span className="hidden sm:inline">Backups</span>
+              <span className="absolute -top-1 -right-1 w-2 h-2 bg-blue-500 rounded-full" />
+            </button>
+          )}
           <button
             onClick={onFormat}
             className="px-3 py-1.5 text-sm flex items-center gap-1.5 
@@ -222,6 +264,14 @@ export function ConfigEditor({
           <span>UTF-8</span>
         </div>
       </div>
+
+      <BackupModal
+        isOpen={showBackupModal}
+        onClose={() => setShowBackupModal(false)}
+        filePath={currentFilePath || ''}
+        currentContent={editorContent}
+        onRestored={handleBackupRestored}
+      />
     </div>
   );
 }

@@ -155,11 +155,17 @@ function App() {
   const handleSave = useCallback(async () => {
     if (!currentFilePath) return;
 
+    const { backupSettings } = useAppStore.getState();
+    
     try {
       markAsInternalWrite();
       await invoke('write_file', {
         path: currentFilePath,
         content: editorContent,
+        backupSettings: {
+          enabled: backupSettings.enabled,
+          maxBackups: backupSettings.maxBackups,
+        },
       });
       setOriginalContent(editorContent);
       setError(null);

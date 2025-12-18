@@ -121,7 +121,7 @@ export const useAppStore = create<AppState>()(
       },
       backupSettings: {
         enabled: true,
-        maxBackups: 5,
+        maxBackups: 1,
       },
       behaviorSettings: {
         confirmBeforeDelete: true,
@@ -183,7 +183,7 @@ export const useAppStore = create<AppState>()(
           },
           backupSettings: {
             enabled: true,
-            maxBackups: 5,
+            maxBackups: 1,
           },
           behaviorSettings: {
             confirmBeforeDelete: true,

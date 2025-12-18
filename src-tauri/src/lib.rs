@@ -2,7 +2,8 @@ mod commands;
 mod config;
 
 use commands::{
-    check_multiple_paths, delete_file, file_exists, get_tools, read_file, resolve_path, write_file,
+    check_multiple_paths, delete_file, file_exists, get_tools, list_backups, read_backup,
+    read_file, resolve_path, restore_backup, write_file,
 };
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
@@ -18,6 +19,9 @@ pub fn run() {
             check_multiple_paths,
             resolve_path,
             delete_file,
+            list_backups,
+            read_backup,
+            restore_backup,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

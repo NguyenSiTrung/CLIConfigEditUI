@@ -2,6 +2,7 @@ use crate::config::{get_cli_tools, CliTool};
 use serde::{Deserialize, Serialize};
 use std::fs;
 use std::path::PathBuf;
+use std::time::UNIX_EPOCH;
 use thiserror::Error;
 
 #[derive(Error, Debug)]
@@ -29,6 +30,22 @@ pub struct FileExistsResult {
     pub path: String,
     pub exists: bool,
     pub resolved_path: String,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct BackupSettings {
+    pub enabled: bool,
+    pub max_backups: u32,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct BackupInfo {
+    pub path: String,
+    pub name: String,
+    pub modified_at: u64,
+    pub size: u64,
 }
 
 pub fn expand_path(path: &str) -> Option<PathBuf> {
@@ -66,7 +83,7 @@ pub fn read_file(path: String) -> Result<String, CommandError> {
 }
 
 #[tauri::command]
-pub fn write_file(path: String, content: String) -> Result<(), CommandError> {
+pub fn write_file(path: String, content: String, backup_settings: Option<BackupSettings>) -> Result<(), CommandError> {
     let expanded = expand_path(&path)
         .ok_or_else(|| CommandError::PathResolution(path.clone()))?;
 
@@ -75,10 +92,10 @@ pub fn write_file(path: String, content: String) -> Result<(), CommandError> {
         fs::create_dir_all(parent)?;
     }
 
-    // Create backup if file exists
-    if expanded.exists() {
-        let backup_path = expanded.with_extension("bak");
-        fs::copy(&expanded, &backup_path)?;
+    // Create backup if enabled and file exists
+    let settings = backup_settings.unwrap_or(BackupSettings { enabled: true, max_backups: 1 });
+    if settings.enabled && expanded.exists() && settings.max_backups > 0 {
+        create_backup(&expanded, settings.max_backups)?;
     }
 
     // Write atomically via temp file
@@ -86,6 +103,38 @@ pub fn write_file(path: String, content: String) -> Result<(), CommandError> {
     fs::write(&temp_path, &content)?;
     fs::rename(&temp_path, &expanded)?;
 
+    Ok(())
+}
+
+fn create_backup(file_path: &PathBuf, max_backups: u32) -> Result<(), std::io::Error> {
+    let parent = file_path.parent().unwrap_or(file_path);
+    let file_name = file_path.file_name().unwrap_or_default().to_string_lossy();
+    
+    if max_backups == 1 {
+        // Simple case: single .bak file
+        let backup_path = file_path.with_extension("bak");
+        fs::copy(file_path, &backup_path)?;
+    } else {
+        // Rotate existing backups: .bak.2 -> .bak.3, .bak.1 -> .bak.2, .bak -> .bak.1
+        for i in (1..max_backups).rev() {
+            let old_backup = parent.join(format!("{}.bak.{}", file_name, i));
+            let new_backup = parent.join(format!("{}.bak.{}", file_name, i + 1));
+            if old_backup.exists() {
+                fs::rename(&old_backup, &new_backup)?;
+            }
+        }
+        
+        // Rotate .bak -> .bak.1
+        let first_backup = file_path.with_extension("bak");
+        if first_backup.exists() {
+            let second_backup = parent.join(format!("{}.bak.1", file_name));
+            fs::rename(&first_backup, &second_backup)?;
+        }
+        
+        // Create new .bak from current file
+        fs::copy(file_path, &first_backup)?;
+    }
+    
     Ok(())
 }
 
@@ -140,5 +189,117 @@ pub fn delete_file(path: String) -> Result<(), CommandError> {
     }
 
     fs::remove_file(&expanded)?;
+    Ok(())
+}
+
+#[tauri::command]
+pub fn list_backups(path: String) -> Result<Vec<BackupInfo>, CommandError> {
+    let expanded = expand_path(&path)
+        .ok_or_else(|| CommandError::PathResolution(path.clone()))?;
+    
+    let parent = expanded.parent().unwrap_or(&expanded);
+    let file_name = expanded.file_name().unwrap_or_default().to_string_lossy();
+    
+    let mut backups = Vec::new();
+    
+    // Check for .bak file
+    let bak_path = expanded.with_extension("bak");
+    if bak_path.exists() {
+        if let Some(info) = get_backup_info(&bak_path, "Latest backup (.bak)") {
+            backups.push(info);
+        }
+    }
+    
+    // Check for numbered backups .bak.1, .bak.2, etc.
+    for i in 1..=20 {
+        let numbered_bak = parent.join(format!("{}.bak.{}", file_name, i));
+        if numbered_bak.exists() {
+            let name = format!("Backup #{} (.bak.{})", i, i);
+            if let Some(info) = get_backup_info(&numbered_bak, &name) {
+                backups.push(info);
+            }
+        } else {
+            break;
+        }
+    }
+    
+    Ok(backups)
+}
+
+fn get_backup_info(path: &PathBuf, name: &str) -> Option<BackupInfo> {
+    let metadata = fs::metadata(path).ok()?;
+    let modified = metadata
+        .modified()
+        .ok()?
+        .duration_since(UNIX_EPOCH)
+        .ok()?
+        .as_secs();
+    
+    Some(BackupInfo {
+        path: path.to_string_lossy().to_string(),
+        name: name.to_string(),
+        modified_at: modified,
+        size: metadata.len(),
+    })
+}
+
+#[tauri::command]
+pub fn read_backup(backup_path: String) -> Result<String, CommandError> {
+    let path = PathBuf::from(&backup_path);
+    
+    if !path.exists() {
+        return Err(CommandError::ConfigNotFound(backup_path));
+    }
+    
+    Ok(fs::read_to_string(&path)?)
+}
+
+#[tauri::command]
+pub fn restore_backup(original_path: String, backup_path: String, create_backup: bool) -> Result<(), CommandError> {
+    let original = expand_path(&original_path)
+        .ok_or_else(|| CommandError::PathResolution(original_path.clone()))?;
+    let backup = PathBuf::from(&backup_path);
+    
+    if !backup.exists() {
+        return Err(CommandError::ConfigNotFound(backup_path));
+    }
+    
+    // Optionally create a backup of current file before restoring
+    if create_backup && original.exists() {
+        create_backup_fn(&original, 1)?;
+    }
+    
+    // Read backup content and write to original
+    let content = fs::read_to_string(&backup)?;
+    fs::write(&original, content)?;
+    
+    Ok(())
+}
+
+fn create_backup_fn(file_path: &PathBuf, max_backups: u32) -> Result<(), std::io::Error> {
+    let parent = file_path.parent().unwrap_or(file_path);
+    let file_name = file_path.file_name().unwrap_or_default().to_string_lossy();
+    
+    if max_backups == 1 {
+        let backup_path = file_path.with_extension("bak");
+        fs::copy(file_path, &backup_path)?;
+    } else {
+        for i in (1..max_backups).rev() {
+            let old_backup = parent.join(format!("{}.bak.{}", file_name, i));
+            let new_backup = parent.join(format!("{}.bak.{}", file_name, i + 1));
+            if old_backup.exists() {
+                fs::rename(&old_backup, &new_backup)?;
+            }
+        }
+        
+        let first_backup = file_path.with_extension("bak");
+        if first_backup.exists() {
+            let second_backup = parent.join(format!("{}.bak.1", file_name));
+            fs::rename(&first_backup, &second_backup)?;
+        }
+        
+        fs::copy(file_path, &first_backup)?;
+    }
+    
     Ok(())
 }
