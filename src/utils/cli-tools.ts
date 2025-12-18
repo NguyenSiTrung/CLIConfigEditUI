@@ -54,38 +54,7 @@ export const CLI_TOOLS: CliTool[] = [
       },
     ],
   },
-  {
-    id: 'aider',
-    name: 'Aider',
-    icon: '🔧',
-    docsUrl: 'https://aider.chat/docs/config.html',
-    description: 'AI pair programming in your terminal',
-    suggestedConfigs: [
-      {
-        label: 'Settings',
-        path: '~/.aider.conf.yml',
-        format: 'yaml',
-        icon: '⚙️',
-        description: 'Main configuration file',
-      },
-    ],
-  },
-  {
-    id: 'continue',
-    name: 'Continue',
-    icon: '▶️',
-    docsUrl: 'https://docs.continue.dev/',
-    description: 'Open-source AI code assistant',
-    suggestedConfigs: [
-      {
-        label: 'Settings',
-        path: '~/.continue/config.json',
-        format: 'json',
-        icon: '⚙️',
-        description: 'Main configuration file',
-      },
-    ],
-  },
+
   {
     id: 'amp',
     name: 'Amp',
@@ -131,22 +100,6 @@ export const CLI_TOOLS: CliTool[] = [
         format: 'json',
         icon: '⚙️',
         description: 'User settings file',
-      },
-    ],
-  },
-  {
-    id: 'cody',
-    name: 'Cody CLI',
-    icon: '🧠',
-    docsUrl: 'https://sourcegraph.com/docs/cody',
-    description: "Sourcegraph's AI coding assistant",
-    suggestedConfigs: [
-      {
-        label: 'Settings',
-        path: '~/.cody/config.json',
-        format: 'json',
-        icon: '⚙️',
-        description: 'Main configuration file',
       },
     ],
   },

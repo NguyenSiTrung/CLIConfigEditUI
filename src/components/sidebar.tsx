@@ -8,12 +8,9 @@ import {
   ChevronRight,
   Plus,
   Bot,
-  Wrench,
   Zap,
-  Terminal,
   Github,
   FileCode,
-  Brain,
   Folder,
   Pencil,
   Trash2,
@@ -24,12 +21,9 @@ import {
 const TOOL_ICONS: Record<string, React.ReactNode> = {
   'claude-code': <Bot className="w-4 h-4" />,
   'gemini-cli': <Gem className="w-4 h-4" />,
-  'aider': <Wrench className="w-4 h-4" />,
   'amp': <Zap className="w-4 h-4" />,
-  'continue': <Terminal className="w-4 h-4" />,
   'gh-copilot': <Github className="w-4 h-4" />,
   'cursor': <FileCode className="w-4 h-4" />,
-  'cody': <Brain className="w-4 h-4" />,
 };
 
 interface SidebarProps {
