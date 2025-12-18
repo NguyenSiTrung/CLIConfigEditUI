@@ -6,8 +6,6 @@ use thiserror::Error;
 
 #[derive(Error, Debug)]
 pub enum CommandError {
-    #[error("Tool not found: {0}")]
-    ToolNotFound(String),
     #[error("Config file not found: {0}")]
     ConfigNotFound(String),
     #[error("IO error: {0}")]
@@ -34,8 +32,10 @@ pub struct FileExistsResult {
 }
 
 pub fn expand_path(path: &str) -> Option<PathBuf> {
-    let path = if path.starts_with('~') {
-        dirs::home_dir()?.join(path.strip_prefix("~/").unwrap_or(&path[1..]))
+    let path = if let Some(stripped) = path.strip_prefix("~/") {
+        dirs::home_dir()?.join(stripped)
+    } else if let Some(stripped) = path.strip_prefix('~') {
+        dirs::home_dir()?.join(stripped)
     } else if path.starts_with("%USERPROFILE%") {
         dirs::home_dir()?.join(path.strip_prefix("%USERPROFILE%\\").unwrap_or(""))
     } else if path.starts_with("%APPDATA%") {
