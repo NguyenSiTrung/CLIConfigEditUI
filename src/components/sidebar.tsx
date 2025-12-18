@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { ask } from '@tauri-apps/plugin-dialog';
 import { useAppStore } from '@/stores/app-store';
 import { CliTool, ConfigFile, CustomTool } from '@/types';
 import {
@@ -268,10 +269,16 @@ function ConfigFileItem({ configFile, isActive, onSelect, onEdit, onDelete }: Co
               Edit
             </button>
             <button
-              onClick={() => {
-                if (window.confirm(`Delete "${configFile.label}"?`)) {
+              onClick={async (e) => {
+                e.stopPropagation();
+                e.preventDefault();
+                setMenuOpen(false);
+                const confirmed = await ask(`Delete "${configFile.label}"?`, {
+                  title: 'Confirm Delete',
+                  kind: 'warning',
+                });
+                if (confirmed) {
                   onDelete();
-                  setMenuOpen(false);
                 }
               }}
               className="w-full px-3 py-1.5 text-left text-sm flex items-center gap-2 text-red-500 dark:hover:bg-gray-700 hover:bg-slate-100"
@@ -364,10 +371,16 @@ function CustomToolSection({ title, tools, activeId, onSelect, onAdd, onEdit, on
                       Edit
                     </button>
                     <button
-                      onClick={() => {
-                        if (window.confirm(`Delete "${tool.name}"?`)) {
+                      onClick={async (e) => {
+                        e.stopPropagation();
+                        e.preventDefault();
+                        setMenuOpenId(null);
+                        const confirmed = await ask(`Delete "${tool.name}"?`, {
+                          title: 'Confirm Delete',
+                          kind: 'warning',
+                        });
+                        if (confirmed) {
                           onDelete(tool.id);
-                          setMenuOpenId(null);
                         }
                       }}
                       className="w-full px-3 py-1.5 text-left text-sm flex items-center gap-2 text-red-500 dark:hover:bg-gray-700 hover:bg-slate-100"

@@ -14,6 +14,7 @@ import {
 import { useAppStore } from '@/stores/app-store';
 import { useFileWatcher } from '@/hooks';
 import { invoke } from '@tauri-apps/api/core';
+import { ask } from '@tauri-apps/plugin-dialog';
 import { ConfigFormat, CustomTool, CliTool, ConfigFile } from '@/types';
 
 function getDefaultContent(format: ConfigFormat): string {
@@ -108,8 +109,9 @@ function App() {
   const handleConfigFileSelect = useCallback(
     async (toolId: string, configFile: ConfigFile) => {
       if (isDirty()) {
-        const confirmed = window.confirm(
-          'You have unsaved changes. Do you want to discard them?'
+        const confirmed = await ask(
+          'You have unsaved changes. Do you want to discard them?',
+          { title: 'Unsaved Changes', kind: 'warning' }
         );
         if (!confirmed) return;
       }
@@ -153,8 +155,9 @@ function App() {
   const handleCustomToolSelect = useCallback(
     async (tool: CustomTool) => {
       if (isDirty()) {
-        const confirmed = window.confirm(
-          'You have unsaved changes. Do you want to discard them?'
+        const confirmed = await ask(
+          'You have unsaved changes. Do you want to discard them?',
+          { title: 'Unsaved Changes', kind: 'warning' }
         );
         if (!confirmed) return;
       }
