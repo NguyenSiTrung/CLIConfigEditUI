@@ -1,6 +1,7 @@
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct PlatformPaths {
     pub macos: Vec<String>,
     pub linux: Vec<String>,
@@ -17,6 +18,7 @@ pub enum ConfigFormat {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct CliTool {
     pub id: String,
     pub name: String,
