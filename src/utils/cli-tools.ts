@@ -34,7 +34,7 @@ export const CLI_TOOLS: CliTool[] = [
   {
     id: 'gemini-cli',
     name: 'Gemini CLI',
-    icon: '💎',
+    icon: '✨',
     docsUrl: 'https://geminicli.com/docs/',
     description: "Google's Gemini CLI",
     suggestedConfigs: [
@@ -90,8 +90,8 @@ export const CLI_TOOLS: CliTool[] = [
   {
     id: 'cursor',
     name: 'Cursor',
-    icon: '📝',
-    docsUrl: 'https://cursor.sh/docs',
+    icon: '▢',
+    docsUrl: 'https://cursor.com/docs',
     description: 'AI-first code editor',
     suggestedConfigs: [
       {

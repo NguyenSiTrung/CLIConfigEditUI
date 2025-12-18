@@ -10,20 +10,20 @@ import {
   Bot,
   Zap,
   Github,
-  FileCode,
   Folder,
   Pencil,
   Trash2,
   MoreVertical,
-  Gem,
+  Sparkles,
+  Box,
 } from 'lucide-react';
 
 const TOOL_ICONS: Record<string, React.ReactNode> = {
   'claude-code': <Bot className="w-4 h-4" />,
-  'gemini-cli': <Gem className="w-4 h-4" />,
+  'gemini-cli': <Sparkles className="w-4 h-4" />,
   'amp': <Zap className="w-4 h-4" />,
   'gh-copilot': <Github className="w-4 h-4" />,
-  'cursor': <FileCode className="w-4 h-4" />,
+  'cursor': <Box className="w-4 h-4" />,
   'opencode': <span className="w-4 h-4 flex items-center justify-center text-sm">⌬</span>,
 };
 
