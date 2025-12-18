@@ -103,4 +103,27 @@ export const CLI_TOOLS: CliTool[] = [
       },
     ],
   },
+  {
+    id: 'opencode',
+    name: 'OpenCode',
+    icon: '⌬',
+    docsUrl: 'https://opencode.ai/docs/config/',
+    description: 'AI coding agent for the terminal by SST',
+    suggestedConfigs: [
+      {
+        label: 'Global Config',
+        path: '~/.config/opencode/opencode.json',
+        format: 'json',
+        icon: '⚙️',
+        description: 'Global configuration file',
+      },
+      {
+        label: 'Project Config',
+        path: 'opencode.json',
+        format: 'json',
+        icon: '📁',
+        description: 'Project-level configuration',
+      },
+    ],
+  },
 ];

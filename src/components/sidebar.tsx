@@ -24,6 +24,7 @@ const TOOL_ICONS: Record<string, React.ReactNode> = {
   'amp': <Zap className="w-4 h-4" />,
   'gh-copilot': <Github className="w-4 h-4" />,
   'cursor': <FileCode className="w-4 h-4" />,
+  'opencode': <span className="w-4 h-4 flex items-center justify-center text-sm">⌬</span>,
 };
 
 interface SidebarProps {
