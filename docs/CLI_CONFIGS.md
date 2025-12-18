@@ -1,6 +1,27 @@
 # CLI Tool Configuration Reference
 
-This document details the configuration file locations for supported AI CLI tools across all platforms.
+This document details the configuration file locations for supported AI CLI tools.
+
+## New: Multi-Config File Support
+
+Each CLI tool can now have **multiple configuration files**. Users can add, edit, and delete config files per tool.
+
+### How It Works
+
+1. **Tools have no hardcoded config paths** - everything is user-managed
+2. **Suggested configs** are provided for quick setup
+3. **All config files** (Settings, MCP, Memory, etc.) are fully editable/deletable
+4. **Data persists** in local storage
+
+### Example: Claude Code
+
+| Label | Path | Format | Description |
+|-------|------|--------|-------------|
+| Settings | `~/.claude/settings.json` | JSON | Main settings file |
+| MCP Servers | `.mcp.json` | JSON | Project-level MCP configuration |
+| Memory | `~/.claude/CLAUDE.md` | Markdown | Global instructions/memory |
+
+---
 
 ## Path Variables
 
@@ -13,33 +34,72 @@ This document details the configuration file locations for supported AI CLI tool
 
 ---
 
-## Pre-configured Tools
+## Supported Tools
 
-### Claude CLI
+### Claude Code
 
-Anthropic's official Claude CLI for terminal-based AI assistance.
+Anthropic's official Claude Code CLI for terminal-based AI assistance.
 
-| Platform | Config Path |
-|----------|-------------|
-| macOS | `~/.claude/settings.json` |
-| Linux | `~/.claude/settings.json` |
-| Windows | `%USERPROFILE%\.claude\settings.json` |
+**Suggested Config Files:**
 
-**Format:** JSON
+| Label | Path | Format |
+|-------|------|--------|
+| Settings | `~/.claude/settings.json` | JSON |
+| MCP Servers | `.mcp.json` | JSON |
+| Memory | `~/.claude/CLAUDE.md` | Markdown |
 
-**Example:**
+**Example Settings:**
 ```json
 {
   "permissions": {
-    "allow_file_access": true,
-    "allow_web_access": false
+    "allow": ["Bash(npm run *)"],
+    "deny": ["Read(.env*)"]
   },
-  "model": "claude-sonnet-4-20250514",
-  "theme": "dark"
+  "model": "claude-sonnet-4-20250514"
 }
 ```
 
-**Documentation:** https://docs.anthropic.com/claude-cli
+**Example MCP Config:**
+```json
+{
+  "mcpServers": {
+    "filesystem": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-filesystem", "/path/to/dir"]
+    }
+  }
+}
+```
+
+**Documentation:** https://docs.anthropic.com/claude-code
+
+---
+
+### Gemini CLI
+
+Google's Gemini CLI for terminal-based AI assistance.
+
+**Suggested Config Files:**
+
+| Label | Path | Format |
+|-------|------|--------|
+| Settings | `~/.gemini/settings.json` | JSON |
+| Memory | `~/.gemini/GEMINI.md` | Markdown |
+
+**Example Settings:**
+```json
+{
+  "theme": "Default",
+  "mcpServers": {
+    "github": {
+      "httpUrl": "https://api.githubcopilot.com/mcp/",
+      "timeout": 5000
+    }
+  }
+}
+```
+
+**Documentation:** https://geminicli.com/docs/
 
 ---
 
@@ -47,17 +107,11 @@ Anthropic's official Claude CLI for terminal-based AI assistance.
 
 AI pair programming in your terminal.
 
-| Platform | Config Path |
-|----------|-------------|
-| macOS | `~/.aider.conf.yml` |
-| Linux | `~/.aider.conf.yml` |
-| Windows | `%USERPROFILE%\.aider.conf.yml` |
+**Suggested Config Files:**
 
-**Alternative locations:**
-- `.aider.conf.yml` in current project directory
-- `~/.config/aider/aider.conf.yml`
-
-**Format:** YAML
+| Label | Path | Format |
+|-------|------|--------|
+| Settings | `~/.aider.conf.yml` | YAML |
 
 **Example:**
 ```yaml
@@ -73,32 +127,24 @@ show-diffs: true
 
 ### Continue
 
-Open-source AI code assistant (VS Code / JetBrains extension with CLI).
+Open-source AI code assistant.
 
-| Platform | Config Path |
-|----------|-------------|
-| macOS | `~/.continue/config.json` |
-| Linux | `~/.continue/config.json` |
-| Windows | `%USERPROFILE%\.continue\config.json` |
+**Suggested Config Files:**
 
-**Format:** JSON
+| Label | Path | Format |
+|-------|------|--------|
+| Settings | `~/.continue/config.json` | JSON |
 
 **Example:**
 ```json
 {
   "models": [
     {
-      "title": "Claude 3.5 Sonnet",
+      "title": "Claude Sonnet 4",
       "provider": "anthropic",
-      "model": "claude-sonnet-4-20250514",
-      "apiKey": "..."
+      "model": "claude-sonnet-4-20250514"
     }
-  ],
-  "tabAutocompleteModel": {
-    "title": "Codestral",
-    "provider": "mistral",
-    "model": "codestral-latest"
-  }
+  ]
 }
 ```
 
@@ -108,17 +154,13 @@ Open-source AI code assistant (VS Code / JetBrains extension with CLI).
 
 ### Amp
 
-Anthropic's AI coding agent.
+Sourcegraph's AI coding agent.
 
-| Platform | Config Path |
-|----------|-------------|
-| macOS | `~/.config/amp/settings.toml` |
-| Linux | `~/.config/amp/settings.toml` |
-| Windows | `%APPDATA%\amp\settings.toml` |
+**Suggested Config Files:**
 
-**Alternative:** `~/.amprc`
-
-**Format:** TOML
+| Label | Path | Format |
+|-------|------|--------|
+| Settings | `~/.config/amp/settings.toml` | TOML |
 
 **Example:**
 ```toml
@@ -127,7 +169,6 @@ theme = "dark"
 
 [editor]
 font_size = 14
-line_numbers = true
 ```
 
 **Documentation:** https://ampcode.com/manual
@@ -138,13 +179,11 @@ line_numbers = true
 
 GitHub's AI-powered CLI assistant.
 
-| Platform | Config Path |
-|----------|-------------|
-| macOS | `~/.config/gh-copilot/config.yml` |
-| Linux | `~/.config/gh-copilot/config.yml` |
-| Windows | `%APPDATA%\gh-copilot\config.yml` |
+**Suggested Config Files:**
 
-**Format:** YAML
+| Label | Path | Format |
+|-------|------|--------|
+| Settings | `~/.config/gh-copilot/config.yml` | YAML |
 
 **Example:**
 ```yaml
@@ -157,21 +196,18 @@ optional_analytics: false
 
 ### Cursor
 
-AI-first code editor (settings file).
+AI-first code editor.
 
-| Platform | Config Path |
-|----------|-------------|
-| macOS | `~/Library/Application Support/Cursor/User/settings.json` |
-| Linux | `~/.config/Cursor/User/settings.json` |
-| Windows | `%APPDATA%\Cursor\User\settings.json` |
+**Suggested Config Files:**
 
-**Format:** JSON (VS Code settings format)
+| Label | Path | Format |
+|-------|------|--------|
+| Settings | `~/.config/Cursor/User/settings.json` | JSON |
 
 **Example:**
 ```json
 {
   "cursor.ai.model": "gpt-4",
-  "cursor.ai.enableAutoComplete": true,
   "editor.fontSize": 14
 }
 ```
@@ -184,20 +220,17 @@ AI-first code editor (settings file).
 
 Sourcegraph's AI coding assistant.
 
-| Platform | Config Path |
-|----------|-------------|
-| macOS | `~/.cody/config.json` |
-| Linux | `~/.cody/config.json` |
-| Windows | `%USERPROFILE%\.cody\config.json` |
+**Suggested Config Files:**
 
-**Format:** JSON
+| Label | Path | Format |
+|-------|------|--------|
+| Settings | `~/.cody/config.json` | JSON |
 
 **Example:**
 ```json
 {
   "endpoint": "https://sourcegraph.com",
-  "accessToken": "...",
-  "customHeaders": {}
+  "accessToken": "..."
 }
 ```
 
@@ -205,62 +238,45 @@ Sourcegraph's AI coding assistant.
 
 ---
 
-## Adding Custom Tools
+## Adding Config Files
 
-Users can add custom CLI tools by providing:
+To add a config file for any tool:
 
-1. **Name**: Display name for the tool
-2. **Config Path**: Absolute path to the configuration file
-3. **Format**: JSON, YAML, TOML, or INI
-4. **Description** (optional): Brief description
+1. Click the tool name in the sidebar to expand it
+2. Click **"Add config file"**
+3. Either select a **suggested config** or enter custom details:
+   - **Label**: Display name (e.g., "MCP", "Memory")
+   - **Path**: File path (supports `~` for home directory)
+   - **Format**: JSON, YAML, TOML, INI, or Markdown
+   - **Icon**: Optional emoji icon
 
-### Example Custom Tool
+### Managing Config Files
 
-```json
-{
-  "name": "My Custom CLI",
-  "configPath": "/home/user/.mycli/config.yaml",
-  "format": "yaml",
-  "description": "Internal team CLI tool"
-}
-```
+- **Edit**: Click the menu (⋮) and select "Edit"
+- **Delete**: Click the menu (⋮) and select "Delete"
+- **Select**: Click on any config file to open it in the editor
 
 ---
 
-## Detection Logic
+## Custom Tools
 
-The app detects installed tools by:
+Users can still add completely custom CLI tools by:
 
-1. Checking if the config file exists at known paths
-2. Checking if the CLI binary is in PATH (optional enhancement)
-3. Checking for tool-specific markers (e.g., lock files)
-
-### Priority Order
-
-When multiple config paths exist (e.g., project-local vs global):
-
-1. **Project-local** (if in a project context)
-2. **User home** (`~/.toolname/`)
-3. **XDG config** (`~/.config/toolname/`)
-4. **System-wide** (`/etc/toolname/` - read-only display)
+1. Clicking **"Add Custom Tool"** in the sidebar
+2. Providing:
+   - **Name**: Display name
+   - **Config Path**: Full path to configuration file
+   - **Format**: JSON, YAML, TOML, INI, or Markdown
+   - **Description** (optional)
 
 ---
 
-## Format Specifications
+## Format Support
 
-### JSON
-- Standard JSON with optional comments (JSONC) support
-- Validated with JSON Schema when available
-
-### YAML
-- YAML 1.2 specification
-- Comments preserved during editing
-
-### TOML
-- TOML v1.0 specification
-- Comments preserved during editing
-
-### INI
-- Standard INI format
-- Section headers in `[brackets]`
-- Key-value pairs with `=`
+| Format | Extension | Features |
+|--------|-----------|----------|
+| JSON | `.json` | Syntax highlighting, formatting, validation |
+| YAML | `.yml`, `.yaml` | Syntax highlighting |
+| TOML | `.toml` | Syntax highlighting |
+| INI | `.ini` | Syntax highlighting |
+| Markdown | `.md` | Syntax highlighting (for memory/instruction files) |

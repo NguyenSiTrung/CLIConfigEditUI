@@ -4,6 +4,8 @@ export { ConfigEditor } from './config-editor';
 export { AddToolModal } from './add-tool-modal';
 export { EditToolModal } from './edit-tool-modal';
 export { ConfigureToolModal } from './configure-tool-modal';
+export { AddConfigFileModal } from './add-config-file-modal';
+export { EditConfigFileModal } from './edit-config-file-modal';
 export { SettingsModal } from './settings-modal';
 export { WelcomeScreen } from './welcome-screen';
 export { ToastContainer, toast, useToastStore } from './toast';

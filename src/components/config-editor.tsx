@@ -19,6 +19,7 @@ const FORMAT_TO_LANGUAGE: Record<ConfigFormat, string> = {
   yaml: 'yaml',
   toml: 'ini',
   ini: 'ini',
+  md: 'markdown',
 };
 
 const FORMAT_LABELS: Record<ConfigFormat, { label: string; icon: React.ReactNode }> = {
@@ -26,6 +27,7 @@ const FORMAT_LABELS: Record<ConfigFormat, { label: string; icon: React.ReactNode
   yaml: { label: 'YAML', icon: <FileCode className="w-3 h-3" /> },
   toml: { label: 'TOML', icon: <FileText className="w-3 h-3" /> },
   ini: { label: 'INI', icon: <FileText className="w-3 h-3" /> },
+  md: { label: 'Markdown', icon: <FileText className="w-3 h-3" /> },
 };
 
 interface ConfigEditorProps {

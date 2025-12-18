@@ -1,10 +1,20 @@
 import { useState, useCallback, useEffect } from 'react';
-import { Header, Sidebar, ConfigEditor, AddToolModal, EditToolModal, ConfigureToolModal, SettingsModal, ToastContainer, toast } from '@/components';
+import {
+  Header,
+  Sidebar,
+  ConfigEditor,
+  AddToolModal,
+  EditToolModal,
+  AddConfigFileModal,
+  EditConfigFileModal,
+  SettingsModal,
+  ToastContainer,
+  toast,
+} from '@/components';
 import { useAppStore } from '@/stores/app-store';
 import { useFileWatcher } from '@/hooks';
-import { CLI_TOOLS } from '@/utils/cli-tools';
 import { invoke } from '@tauri-apps/api/core';
-import { ConfigFormat, CustomTool, CliTool } from '@/types';
+import { ConfigFormat, CustomTool, CliTool, ConfigFile } from '@/types';
 
 function getDefaultContent(format: ConfigFormat): string {
   switch (format) {
@@ -16,28 +26,30 @@ function getDefaultContent(format: ConfigFormat): string {
       return '# Configuration\n\n';
     case 'ini':
       return '; Configuration\n\n';
+    case 'md':
+      return '# Instructions\n\n';
     default:
       return '';
   }
 }
 
 function App() {
-  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [isAddToolModalOpen, setIsAddToolModalOpen] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [editingTool, setEditingTool] = useState<CustomTool | null>(null);
-  const [configuringTool, setConfiguringTool] = useState<CliTool | null>(null);
-  const [configuringToolPath, setConfiguringToolPath] = useState<string | null>(null);
+  const [addConfigFileTool, setAddConfigFileTool] = useState<CliTool | null>(null);
+  const [editingConfigFile, setEditingConfigFile] = useState<{ tool: CliTool; configFile: ConfigFile } | null>(null);
   const [externalChangeDetected, setExternalChangeDetected] = useState(false);
 
   const {
     setActiveToolId,
+    setActiveConfigFileId,
     setEditorContent,
     setOriginalContent,
     setCurrentFilePath,
     setCurrentFormat,
     setLoading,
     setError,
-    setInstalledTools,
     editorContent,
     currentFilePath,
     addCustomTool,
@@ -45,20 +57,28 @@ function App() {
     removeCustomTool,
     customTools,
     activeToolId,
+    activeConfigFileId,
     isDirty,
+    addConfigFile,
+    updateConfigFile,
+    removeConfigFile,
+    toggleToolExpanded,
+    getAllTools,
   } = useAppStore();
 
+  // Auto-expand tools on first load
   useEffect(() => {
-    const detectTools = async () => {
-      try {
-        const tools = await invoke<CliTool[]>('detect_installed_tools');
-        setInstalledTools(tools);
-      } catch (err) {
-        console.error('Failed to detect installed tools:', err);
+    const tools = getAllTools();
+    tools.forEach((tool) => {
+      const configFiles = useAppStore.getState().getToolConfigFiles(tool.id);
+      if (configFiles.length > 0) {
+        const { expandedTools } = useAppStore.getState();
+        if (!expandedTools.has(tool.id)) {
+          toggleToolExpanded(tool.id);
+        }
       }
-    };
-    detectTools();
-  }, [setInstalledTools]);
+    });
+  }, [getAllTools, toggleToolExpanded]);
 
   const handleExternalChange = useCallback(() => {
     setExternalChangeDetected(true);
@@ -85,8 +105,8 @@ function App() {
     setExternalChangeDetected(false);
   }, []);
 
-  const handleToolSelect = useCallback(
-    async (toolId: string, isCustom: boolean) => {
+  const handleConfigFileSelect = useCallback(
+    async (toolId: string, configFile: ConfigFile) => {
       if (isDirty()) {
         const confirmed = window.confirm(
           'You have unsaved changes. Do you want to discard them?'
@@ -95,41 +115,61 @@ function App() {
       }
 
       setActiveToolId(toolId);
+      setActiveConfigFileId(configFile.id);
       setLoading(true);
       setError(null);
 
       try {
-        let configPath: string;
-        let format: ConfigFormat;
-
-        if (isCustom) {
-          const customTool = customTools.find((t) => t.id === toolId);
-          if (!customTool) throw new Error('Custom tool not found');
-          configPath = customTool.configPath;
-          format = customTool.configFormat;
-        } else {
-          const tool = CLI_TOOLS.find((t) => t.id === toolId);
-          if (!tool) throw new Error('Tool not found');
-          format = tool.configFormat;
-
-          const result = await invoke<{ path: string; content: string }>(
-            'read_config',
-            { toolId }
-          );
-          configPath = result.path;
-          setEditorContent(result.content);
-          setOriginalContent(result.content);
-          setCurrentFilePath(configPath);
-          setCurrentFormat(format);
-          setLoading(false);
-          return;
-        }
-
-        const content = await invoke<string>('read_file', { path: configPath });
+        const content = await invoke<string>('read_file', { path: configFile.path });
         setEditorContent(content);
         setOriginalContent(content);
-        setCurrentFilePath(configPath);
-        setCurrentFormat(format);
+        setCurrentFilePath(configFile.path);
+        setCurrentFormat(configFile.format);
+      } catch (err) {
+        // File doesn't exist - create with default content
+        const defaultContent = getDefaultContent(configFile.format);
+        setEditorContent(defaultContent);
+        setOriginalContent(defaultContent);
+        setCurrentFilePath(configFile.path);
+        setCurrentFormat(configFile.format);
+        setError(`File not found. It will be created when you save.`);
+      } finally {
+        setLoading(false);
+      }
+    },
+    [
+      isDirty,
+      setActiveToolId,
+      setActiveConfigFileId,
+      setLoading,
+      setError,
+      setEditorContent,
+      setOriginalContent,
+      setCurrentFilePath,
+      setCurrentFormat,
+    ]
+  );
+
+  const handleCustomToolSelect = useCallback(
+    async (tool: CustomTool) => {
+      if (isDirty()) {
+        const confirmed = window.confirm(
+          'You have unsaved changes. Do you want to discard them?'
+        );
+        if (!confirmed) return;
+      }
+
+      setActiveToolId(tool.id);
+      setActiveConfigFileId(null);
+      setLoading(true);
+      setError(null);
+
+      try {
+        const content = await invoke<string>('read_file', { path: tool.configPath });
+        setEditorContent(content);
+        setOriginalContent(content);
+        setCurrentFilePath(tool.configPath);
+        setCurrentFormat(tool.configFormat);
       } catch (err) {
         setError(err instanceof Error ? err.message : String(err));
         setEditorContent('');
@@ -141,9 +181,9 @@ function App() {
     [
       isDirty,
       setActiveToolId,
+      setActiveConfigFileId,
       setLoading,
       setError,
-      customTools,
       setEditorContent,
       setOriginalContent,
       setCurrentFilePath,
@@ -161,11 +201,12 @@ function App() {
         content: editorContent,
       });
       setOriginalContent(editorContent);
+      setError(null);
       toast.success('Configuration saved successfully');
     } catch (err) {
       toast.error(`Failed to save: ${err instanceof Error ? err.message : String(err)}`);
     }
-  }, [currentFilePath, editorContent, setOriginalContent, markAsInternalWrite]);
+  }, [currentFilePath, editorContent, setOriginalContent, markAsInternalWrite, setError]);
 
   const handleFormat = useCallback(() => {
     try {
@@ -208,54 +249,73 @@ function App() {
       removeCustomTool(toolId);
       if (activeToolId === toolId) {
         setActiveToolId(null);
+        setActiveConfigFileId(null);
         setEditorContent('');
         setOriginalContent('');
         setCurrentFilePath(null);
       }
       toast.success(`Deleted "${tool?.name || 'tool'}"`);
     },
-    [customTools, removeCustomTool, activeToolId, setActiveToolId, setEditorContent, setOriginalContent, setCurrentFilePath]
+    [customTools, removeCustomTool, activeToolId, setActiveToolId, setActiveConfigFileId, setEditorContent, setOriginalContent, setCurrentFilePath]
   );
 
-  const handleConfigureTool = useCallback(async (tool: CliTool) => {
-    let existingPath: string | null = null;
-    try {
-      const result = await invoke<{ path: string; content: string }>('read_config', { toolId: tool.id });
-      existingPath = result.path;
-    } catch {
-      existingPath = null;
-    }
-    setConfiguringToolPath(existingPath);
-    setConfiguringTool(tool);
+  const handleAddConfigFile = useCallback((tool: CliTool) => {
+    setAddConfigFileTool(tool);
   }, []);
 
-  const handleSaveConfiguredTool = useCallback(
-    async (toolId: string, configPath: string) => {
-      const tool = CLI_TOOLS.find((t) => t.id === toolId);
-      if (!tool) return;
-
-      try {
-        const isNewConfig = !configuringToolPath;
-        
-        if (isNewConfig) {
-          const defaultContent = getDefaultContent(tool.configFormat);
-          await invoke('write_file', {
-            path: configPath,
-            content: defaultContent,
-          });
-        }
-
-        const tools = await invoke<CliTool[]>('detect_installed_tools');
-        setInstalledTools(tools);
-
-        toast.success(isNewConfig ? `Created config for "${tool.name}"` : `Updated config path for "${tool.name}"`);
-
-        handleToolSelect(toolId, false);
-      } catch (err) {
-        toast.error(`Failed to save config: ${err instanceof Error ? err.message : String(err)}`);
+  const handleSaveNewConfigFile = useCallback(
+    (configFile: { label: string; path: string; format: ConfigFormat; icon?: string }) => {
+      if (!addConfigFileTool) return;
+      
+      addConfigFile(addConfigFileTool.id, configFile);
+      toast.success(`Added "${configFile.label}" to ${addConfigFileTool.name}`);
+      
+      // Auto-expand the tool
+      const { expandedTools } = useAppStore.getState();
+      if (!expandedTools.has(addConfigFileTool.id)) {
+        toggleToolExpanded(addConfigFileTool.id);
       }
     },
-    [setInstalledTools, handleToolSelect, configuringToolPath]
+    [addConfigFileTool, addConfigFile, toggleToolExpanded]
+  );
+
+  const handleEditConfigFile = useCallback((tool: CliTool, configFile: ConfigFile) => {
+    setEditingConfigFile({ tool, configFile });
+  }, []);
+
+  const handleSaveEditedConfigFile = useCallback(
+    (updates: Partial<ConfigFile>) => {
+      if (!editingConfigFile) return;
+      
+      updateConfigFile(editingConfigFile.tool.id, editingConfigFile.configFile.id, updates);
+      toast.success('Config file updated');
+      
+      // Update current file path if this is the active config
+      if (activeConfigFileId === editingConfigFile.configFile.id && updates.path) {
+        setCurrentFilePath(updates.path);
+      }
+      if (activeConfigFileId === editingConfigFile.configFile.id && updates.format) {
+        setCurrentFormat(updates.format);
+      }
+    },
+    [editingConfigFile, updateConfigFile, activeConfigFileId, setCurrentFilePath, setCurrentFormat]
+  );
+
+  const handleDeleteConfigFile = useCallback(
+    (toolId: string, configFileId: string) => {
+      removeConfigFile(toolId, configFileId);
+      
+      if (activeToolId === toolId && activeConfigFileId === configFileId) {
+        setActiveToolId(null);
+        setActiveConfigFileId(null);
+        setEditorContent('');
+        setOriginalContent('');
+        setCurrentFilePath(null);
+      }
+      
+      toast.success('Config file removed');
+    },
+    [removeConfigFile, activeToolId, activeConfigFileId, setActiveToolId, setActiveConfigFileId, setEditorContent, setOriginalContent, setCurrentFilePath]
   );
 
   return (
@@ -263,24 +323,27 @@ function App() {
       <Header onSettingsClick={() => setIsSettingsOpen(true)} />
       <div className="flex-1 flex min-h-0">
         <Sidebar
-          onToolSelect={handleToolSelect}
-          onAddCustomTool={() => setIsAddModalOpen(true)}
+          onConfigFileSelect={handleConfigFileSelect}
+          onAddConfigFile={handleAddConfigFile}
+          onEditConfigFile={handleEditConfigFile}
+          onDeleteConfigFile={handleDeleteConfigFile}
+          onAddCustomTool={() => setIsAddToolModalOpen(true)}
           onEditCustomTool={handleEditCustomTool}
           onDeleteCustomTool={handleDeleteCustomTool}
-          onConfigureTool={handleConfigureTool}
+          onCustomToolSelect={handleCustomToolSelect}
         />
         <ConfigEditor
           onSave={handleSave}
           onFormat={handleFormat}
-          onAddCustomTool={() => setIsAddModalOpen(true)}
+          onAddCustomTool={() => setIsAddToolModalOpen(true)}
           externalChangeDetected={externalChangeDetected}
           onReloadFile={handleReloadFile}
           onDismissExternalChange={handleDismissExternalChange}
         />
       </div>
       <AddToolModal
-        isOpen={isAddModalOpen}
-        onClose={() => setIsAddModalOpen(false)}
+        isOpen={isAddToolModalOpen}
+        onClose={() => setIsAddToolModalOpen(false)}
         onAdd={handleAddCustomTool}
       />
       <EditToolModal
@@ -289,15 +352,18 @@ function App() {
         onClose={() => setEditingTool(null)}
         onSave={handleSaveEditedTool}
       />
-      <ConfigureToolModal
-        isOpen={configuringTool !== null}
-        tool={configuringTool}
-        currentPath={configuringToolPath}
-        onClose={() => {
-          setConfiguringTool(null);
-          setConfiguringToolPath(null);
-        }}
-        onSave={handleSaveConfiguredTool}
+      <AddConfigFileModal
+        isOpen={addConfigFileTool !== null}
+        tool={addConfigFileTool}
+        onClose={() => setAddConfigFileTool(null)}
+        onAdd={handleSaveNewConfigFile}
+      />
+      <EditConfigFileModal
+        isOpen={editingConfigFile !== null}
+        configFile={editingConfigFile?.configFile || null}
+        toolName={editingConfigFile?.tool.name || ''}
+        onClose={() => setEditingConfigFile(null)}
+        onSave={handleSaveEditedConfigFile}
       />
       <SettingsModal
         isOpen={isSettingsOpen}

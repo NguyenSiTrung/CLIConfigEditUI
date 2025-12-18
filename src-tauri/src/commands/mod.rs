@@ -1,5 +1,5 @@
 use crate::config::{get_cli_tools, CliTool};
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 use std::fs;
 use std::path::PathBuf;
 use thiserror::Error;
@@ -25,13 +25,15 @@ impl Serialize for CommandError {
     }
 }
 
-#[derive(Debug, Serialize)]
-pub struct ConfigReadResult {
+#[derive(Debug, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct FileExistsResult {
     pub path: String,
-    pub content: String,
+    pub exists: bool,
+    pub resolved_path: String,
 }
 
-fn expand_path(path: &str) -> Option<PathBuf> {
+pub fn expand_path(path: &str) -> Option<PathBuf> {
     let path = if path.starts_with('~') {
         dirs::home_dir()?.join(path.strip_prefix("~/").unwrap_or(&path[1..]))
     } else if path.starts_with("%USERPROFILE%") {
@@ -44,75 +46,9 @@ fn expand_path(path: &str) -> Option<PathBuf> {
     Some(path)
 }
 
-fn get_platform_paths(tool: &CliTool) -> &Vec<String> {
-    #[cfg(target_os = "macos")]
-    {
-        &tool.config_paths.macos
-    }
-    #[cfg(target_os = "linux")]
-    {
-        &tool.config_paths.linux
-    }
-    #[cfg(target_os = "windows")]
-    {
-        &tool.config_paths.windows
-    }
-}
-
-fn find_config_path(tool: &CliTool) -> Option<PathBuf> {
-    let paths = get_platform_paths(tool);
-    for path_str in paths {
-        if let Some(path) = expand_path(path_str) {
-            if path.exists() {
-                return Some(path);
-            }
-        }
-    }
-    // Return first path even if doesn't exist (for creation)
-    paths.first().and_then(|p| expand_path(p))
-}
-
 #[tauri::command]
 pub fn get_tools() -> Vec<CliTool> {
     get_cli_tools()
-}
-
-#[tauri::command]
-pub fn detect_installed_tools() -> Vec<CliTool> {
-    get_cli_tools()
-        .into_iter()
-        .filter(|tool| {
-            let paths = get_platform_paths(tool);
-            paths.iter().any(|p| {
-                expand_path(p).map(|path| path.exists()).unwrap_or(false)
-            })
-        })
-        .collect()
-}
-
-#[tauri::command]
-pub fn read_config(tool_id: String) -> Result<ConfigReadResult, CommandError> {
-    let tools = get_cli_tools();
-    let tool = tools
-        .iter()
-        .find(|t| t.id == tool_id)
-        .ok_or_else(|| CommandError::ToolNotFound(tool_id.clone()))?;
-
-    let path = find_config_path(tool)
-        .ok_or_else(|| CommandError::PathResolution("Could not resolve config path".to_string()))?;
-
-    if !path.exists() {
-        return Err(CommandError::ConfigNotFound(
-            path.to_string_lossy().to_string(),
-        ));
-    }
-
-    let content = fs::read_to_string(&path)?;
-
-    Ok(ConfigReadResult {
-        path: path.to_string_lossy().to_string(),
-        content,
-    })
 }
 
 #[tauri::command]
@@ -154,6 +90,55 @@ pub fn write_file(path: String, content: String) -> Result<(), CommandError> {
 }
 
 #[tauri::command]
-pub fn file_exists(path: String) -> bool {
-    expand_path(&path).map(|p| p.exists()).unwrap_or(false)
+pub fn file_exists(path: String) -> FileExistsResult {
+    let resolved = expand_path(&path);
+    let exists = resolved.as_ref().map(|p| p.exists()).unwrap_or(false);
+    let resolved_path = resolved
+        .map(|p| p.to_string_lossy().to_string())
+        .unwrap_or_else(|| path.clone());
+    
+    FileExistsResult {
+        path,
+        exists,
+        resolved_path,
+    }
+}
+
+#[tauri::command]
+pub fn check_multiple_paths(paths: Vec<String>) -> Vec<FileExistsResult> {
+    paths.into_iter().map(|path| {
+        let resolved = expand_path(&path);
+        let exists = resolved.as_ref().map(|p| p.exists()).unwrap_or(false);
+        let resolved_path = resolved
+            .map(|p| p.to_string_lossy().to_string())
+            .unwrap_or_else(|| path.clone());
+        
+        FileExistsResult {
+            path,
+            exists,
+            resolved_path,
+        }
+    }).collect()
+}
+
+#[tauri::command]
+pub fn resolve_path(path: String) -> Result<String, CommandError> {
+    let expanded = expand_path(&path)
+        .ok_or_else(|| CommandError::PathResolution(path.clone()))?;
+    Ok(expanded.to_string_lossy().to_string())
+}
+
+#[tauri::command]
+pub fn delete_file(path: String) -> Result<(), CommandError> {
+    let expanded = expand_path(&path)
+        .ok_or_else(|| CommandError::PathResolution(path.clone()))?;
+
+    if !expanded.exists() {
+        return Err(CommandError::ConfigNotFound(
+            expanded.to_string_lossy().to_string(),
+        ));
+    }
+
+    fs::remove_file(&expanded)?;
+    Ok(())
 }
