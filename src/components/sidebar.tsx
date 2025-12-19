@@ -232,7 +232,7 @@ const ConfigFileItem = memo(function ConfigFileItem({ configFile, isActive, onSe
     <div className="relative group/config">
       <button
         onClick={onSelect}
-        className={`w-full px-2 py-1.5 text-left flex items-center gap-2 text-sm rounded-md
+        className={`w-full px-2 py-1.5 pr-8 text-left flex items-center gap-2 text-sm rounded-md
                    transition-colors duration-150 relative overflow-hidden
                    ${isActive
             ? 'text-indigo-700 dark:text-indigo-300 bg-indigo-50/80 dark:bg-indigo-500/15'
@@ -242,18 +242,21 @@ const ConfigFileItem = memo(function ConfigFileItem({ configFile, isActive, onSe
         {isActive && <div className="absolute left-0 top-1/2 -translate-y-1/2 h-4 w-0.5 bg-indigo-500 rounded-full" />}
         <span className="text-base opacity-75">{configFile.icon || '📄'}</span>
         <span className="truncate font-medium flex-1 pl-1">{configFile.label}</span>
-
-        <div
-          onClick={(e) => {
-            e.stopPropagation();
-            setMenuOpen(!menuOpen);
-          }}
-          className={`p-1 rounded transition-opacity flex-shrink-0
-                     ${menuOpen ? 'opacity-100 bg-slate-200 dark:bg-slate-700' : 'opacity-0 group-hover/config:opacity-100'}
-                     hover:bg-slate-200 dark:hover:bg-slate-700`}
-        >
-          <MoreVertical className="w-3 h-3" />
-        </div>
+      </button>
+      <button
+        type="button"
+        onClick={(e) => {
+          e.stopPropagation();
+          setMenuOpen(!menuOpen);
+        }}
+        className={`absolute right-1 top-1/2 -translate-y-1/2 p-1 rounded transition-opacity
+                   ${menuOpen
+            ? 'opacity-100 bg-slate-200 dark:bg-slate-700'
+            : 'opacity-0 pointer-events-none group-hover/config:opacity-100 group-hover/config:pointer-events-auto'}
+                   hover:bg-slate-200 dark:hover:bg-slate-700`}
+        aria-label="Open config menu"
+      >
+        <MoreVertical className="w-3 h-3" />
       </button>
 
       {menuOpen && (
