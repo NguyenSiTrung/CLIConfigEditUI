@@ -381,6 +381,12 @@ pub fn write_json_path(
 }
 
 fn get_json_value<'a>(root: &'a serde_json::Value, path: &str) -> Option<&'a serde_json::Value> {
+    // First try the path as a literal key (for keys like "amp.mcpServers")
+    if let Some(value) = root.get(path) {
+        return Some(value);
+    }
+    
+    // Fall back to nested path traversal (for paths like "foo.bar.baz")
     let parts: Vec<&str> = path.split('.').collect();
     let mut current = root;
     
@@ -392,6 +398,15 @@ fn get_json_value<'a>(root: &'a serde_json::Value, path: &str) -> Option<&'a ser
 }
 
 fn set_json_value(root: &mut serde_json::Value, path: &str, value: serde_json::Value) -> Option<()> {
+    // First check if the path exists as a literal key (for keys like "amp.mcpServers")
+    if root.get(path).is_some() {
+        if let serde_json::Value::Object(map) = root {
+            map.insert(path.to_string(), value);
+            return Some(());
+        }
+    }
+    
+    // Fall back to nested path traversal
     let parts: Vec<&str> = path.split('.').collect();
     let mut current = root;
     

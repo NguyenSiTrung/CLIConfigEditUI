@@ -192,7 +192,7 @@ xcode-select --install
 | Claude CLI | `~/.claude/settings.json` | JSON |
 | Aider | `~/.aider.conf.yml` | YAML |
 | Continue | `~/.continue/config.json` | JSON |
-| Amp | `~/.config/amp/settings.toml` | TOML |
+| Amp | `~/.config/amp/settings.json` | JSON |
 | GitHub Copilot CLI | `~/.config/gh-copilot/config.yml` | YAML |
 | Cursor | `~/.cursor/settings.json` | JSON |
 | Cody CLI | `~/.cody/config.json` | JSON |
