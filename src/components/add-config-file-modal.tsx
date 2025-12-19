@@ -8,7 +8,7 @@ interface AddConfigFileModalProps {
   isOpen: boolean;
   tool: CliTool | CustomTool | null;
   onClose: () => void;
-  onAdd: (configFile: { label: string; path: string; format: ConfigFormat; icon?: string; jsonPath?: string }) => void;
+  onAdd: (configFile: { label: string; path: string; format: ConfigFormat; jsonPath?: string }) => void;
 }
 
 const FORMAT_OPTIONS: { value: ConfigFormat; label: string; color: string }[] = [
@@ -19,7 +19,7 @@ const FORMAT_OPTIONS: { value: ConfigFormat; label: string; color: string }[] = 
   { value: 'md', label: 'MD', color: 'bg-indigo-100 dark:bg-indigo-500/15 text-indigo-700 dark:text-indigo-400 border-indigo-500/30' },
 ];
 
-const ICON_OPTIONS = ['⚙️', '🔌', '📝', '🔧', '📋', '🗂️', '💾', '🎯'];
+
 
 interface SuggestionWithStatus extends SuggestedConfig {
   exists: boolean;
@@ -30,7 +30,7 @@ export function AddConfigFileModal({ isOpen, tool, onClose, onAdd }: AddConfigFi
   const [label, setLabel] = useState('');
   const [path, setPath] = useState('');
   const [format, setFormat] = useState<ConfigFormat>('json');
-  const [icon, setIcon] = useState('⚙️');
+
   const [jsonPath, setJsonPath] = useState<string | undefined>(undefined);
   const [suggestions, setSuggestions] = useState<SuggestionWithStatus[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(true);
@@ -74,7 +74,6 @@ export function AddConfigFileModal({ isOpen, tool, onClose, onAdd }: AddConfigFi
       label: label.trim(),
       path: path.trim(),
       format,
-      icon,
       jsonPath,
     });
 
@@ -86,7 +85,6 @@ export function AddConfigFileModal({ isOpen, tool, onClose, onAdd }: AddConfigFi
     setLabel(suggestion.label);
     setPath(suggestion.path);
     setFormat(suggestion.format);
-    if (suggestion.icon) setIcon(suggestion.icon);
     setJsonPath(suggestion.jsonPath);
     setShowSuggestions(false);
   };
@@ -95,7 +93,6 @@ export function AddConfigFileModal({ isOpen, tool, onClose, onAdd }: AddConfigFi
     setLabel('');
     setPath('');
     setFormat('json');
-    setIcon('⚙️');
     setJsonPath(undefined);
     setShowSuggestions(true);
   };
@@ -287,27 +284,7 @@ export function AddConfigFileModal({ isOpen, tool, onClose, onAdd }: AddConfigFi
             </div>
           </div>
 
-          <div>
-            <label className="block text-sm font-medium dark:text-slate-300 text-slate-700 mb-2">
-              Icon
-            </label>
-            <div className="flex gap-2 flex-wrap">
-              {ICON_OPTIONS.map((opt) => (
-                <button
-                  key={opt}
-                  type="button"
-                  onClick={() => setIcon(opt)}
-                  className={`w-9 h-9 rounded-lg text-lg flex items-center justify-center border transition-all
-                             ${icon === opt
-                      ? 'bg-indigo-600 border-indigo-500 shadow-lg shadow-indigo-500/20 scale-110'
-                      : 'bg-slate-50 dark:bg-black/20 border-slate-200 dark:border-white/5 hover:border-slate-300 dark:hover:border-white/20 hover:scale-105'
-                    }`}
-                >
-                  {opt}
-                </button>
-              ))}
-            </div>
-          </div>
+
 
           <div className="flex justify-end gap-3 pt-2">
             <button
