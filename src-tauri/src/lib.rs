@@ -2,8 +2,8 @@ mod commands;
 mod config;
 
 use commands::{
-    check_multiple_paths, delete_file, file_exists, get_tools, list_backups, read_backup,
-    read_file, read_json_path, resolve_path, restore_backup, write_file, write_json_path,
+    check_multiple_paths, delete_file, file_exists, get_current_os, get_tools, list_backups, read_backup,
+    read_file, read_json_path, read_json_prefix, resolve_path, restore_backup, write_file, write_json_path, write_json_prefix,
 };
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
@@ -13,10 +13,13 @@ pub fn run() {
         .plugin(tauri_plugin_fs::init())
         .invoke_handler(tauri::generate_handler![
             get_tools,
+            get_current_os,
             read_file,
             write_file,
             read_json_path,
+            read_json_prefix,
             write_json_path,
+            write_json_prefix,
             file_exists,
             check_multiple_paths,
             resolve_path,

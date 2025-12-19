@@ -22,12 +22,6 @@ export const IDE_EXTENSIONS: IdeExtension[] = [
         icon: '🔒',
         description: 'Tool permissions configuration',
       },
-      {
-        label: 'MCP Permissions',
-        jsonPath: 'mcpPermissions',
-        icon: '🛡️',
-        description: 'MCP server permissions',
-      },
     ],
   },
 ];

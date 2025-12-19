@@ -16,6 +16,7 @@ import { useFileWatcher } from '@/hooks';
 import { invoke } from '@tauri-apps/api/core';
 import { ask } from '@tauri-apps/plugin-dialog';
 import { ConfigFormat, CustomTool, CliTool, ConfigFile } from '@/types';
+import { IDE_PLATFORMS } from '@/utils/cli-tools';
 
 function getDefaultContent(format: ConfigFormat): string {
   switch (format) {
@@ -50,11 +51,13 @@ function App() {
     setCurrentFilePath,
     setCurrentFormat,
     setCurrentJsonPath,
+    setCurrentJsonPrefix,
     setLoading,
     setError,
     editorContent,
     currentFilePath,
     currentJsonPath,
+    currentJsonPrefix,
     addCustomTool,
     updateCustomTool,
     removeCustomTool,
@@ -173,6 +176,95 @@ function App() {
     ]
   );
 
+  const handleIdeExtensionConfigSelect = useCallback(
+    async (platformId: string, extensionId: string, settingPath: string | null) => {
+      if (isDirty()) {
+        const confirmed = await ask(
+          'You have unsaved changes. Do you want to discard them?',
+          { title: 'Unsaved Changes', kind: 'warning' }
+        );
+        if (!confirmed) return;
+      }
+
+      const platform = IDE_PLATFORMS.find(p => p.id === platformId);
+      if (!platform) {
+        toast.error(`Platform "${platformId}" not found`);
+        return;
+      }
+
+      const currentOs = await invoke<string>('get_current_os');
+      const settingsPath = platform.settingsPaths[currentOs as keyof typeof platform.settingsPaths];
+      if (!settingsPath) {
+        toast.error(`No settings path for ${platform.name} on ${currentOs}`);
+        return;
+      }
+
+      // Get the extension config to find the prefix
+      const extConfig = platform.extensions?.find(e => e.extensionId === extensionId);
+      const prefix = extConfig?.jsonPathPrefix || 'amp';
+
+      setActiveToolId(`ide-${platformId}`);
+      setActiveConfigFileId(`${platformId}-${settingPath || 'all'}`);
+      setLoading(true);
+      setError(null);
+
+      try {
+        let content: string;
+        if (settingPath) {
+          // Specific setting path
+          content = await invoke<string>('read_json_path', {
+            path: settingsPath,
+            jsonPath: settingPath,
+          });
+          setCurrentJsonPath(settingPath);
+          setCurrentJsonPrefix(null);
+        } else {
+          // All settings - use prefix filter
+          content = await invoke<string>('read_json_prefix', {
+            path: settingsPath,
+            prefix: prefix,
+          });
+          setCurrentJsonPath(null);
+          setCurrentJsonPrefix(prefix);
+        }
+        setEditorContent(content);
+        setOriginalContent(content);
+        setCurrentFilePath(settingsPath);
+        setCurrentFormat('json');
+      } catch {
+        const defaultContent = '{}';
+        setEditorContent(defaultContent);
+        setOriginalContent(defaultContent);
+        setCurrentFilePath(settingsPath);
+        setCurrentFormat('json');
+        if (settingPath) {
+          setCurrentJsonPath(settingPath);
+          setCurrentJsonPrefix(null);
+          setError(`Setting not found. It will be created when you save.`);
+        } else {
+          setCurrentJsonPath(null);
+          setCurrentJsonPrefix(prefix);
+          setError(`No ${prefix}.* settings found. Add settings and save to create.`);
+        }
+      } finally {
+        setLoading(false);
+      }
+    },
+    [
+      isDirty,
+      setActiveToolId,
+      setActiveConfigFileId,
+      setLoading,
+      setError,
+      setEditorContent,
+      setOriginalContent,
+      setCurrentFilePath,
+      setCurrentFormat,
+      setCurrentJsonPath,
+      setCurrentJsonPrefix,
+    ]
+  );
+
   const handleSave = useCallback(async () => {
     if (!currentFilePath) return;
 
@@ -184,6 +276,16 @@ function App() {
         await invoke('write_json_path', {
           path: currentFilePath,
           jsonPath: currentJsonPath,
+          content: editorContent,
+          backupSettings: {
+            enabled: backupSettings.enabled,
+            maxBackups: backupSettings.maxBackups,
+          },
+        });
+      } else if (currentJsonPrefix) {
+        await invoke('write_json_prefix', {
+          path: currentFilePath,
+          prefix: currentJsonPrefix,
           content: editorContent,
           backupSettings: {
             enabled: backupSettings.enabled,
@@ -206,7 +308,7 @@ function App() {
     } catch (err) {
       toast.error(`Failed to save: ${err instanceof Error ? err.message : String(err)}`);
     }
-  }, [currentFilePath, currentJsonPath, editorContent, setOriginalContent, markAsInternalWrite, setError]);
+  }, [currentFilePath, currentJsonPath, currentJsonPrefix, editorContent, setOriginalContent, markAsInternalWrite, setError]);
 
   const handleFormat = useCallback(() => {
     try {
@@ -340,6 +442,7 @@ function App() {
           onDeleteCustomTool={handleDeleteCustomTool}
           onAddCustomToolConfigFile={handleAddCustomToolConfigFile}
           onEditCustomToolConfigFile={handleEditCustomToolConfigFile}
+          onIdeExtensionConfigSelect={handleIdeExtensionConfigSelect}
         />
         <ConfigEditor
           onSave={handleSave}

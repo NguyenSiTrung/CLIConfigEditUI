@@ -73,6 +73,18 @@ pub fn get_tools() -> Vec<CliTool> {
 }
 
 #[tauri::command]
+pub fn get_current_os() -> String {
+    #[cfg(target_os = "linux")]
+    return "linux".to_string();
+    #[cfg(target_os = "macos")]
+    return "macos".to_string();
+    #[cfg(target_os = "windows")]
+    return "windows".to_string();
+    #[cfg(not(any(target_os = "linux", target_os = "macos", target_os = "windows")))]
+    return "unknown".to_string();
+}
+
+#[tauri::command]
 pub fn read_file(path: String) -> Result<String, CommandError> {
     let expanded = expand_path(&path)
         .ok_or_else(|| CommandError::PathResolution(path.clone()))?;
@@ -331,6 +343,36 @@ pub fn read_json_path(path: String, json_path: String) -> Result<String, Command
 }
 
 #[tauri::command]
+pub fn read_json_prefix(path: String, prefix: String) -> Result<String, CommandError> {
+    let expanded = expand_path(&path)
+        .ok_or_else(|| CommandError::PathResolution(path.clone()))?;
+
+    if !expanded.exists() {
+        return Err(CommandError::ConfigNotFound(
+            expanded.to_string_lossy().to_string(),
+        ));
+    }
+
+    let content = fs::read_to_string(&expanded)?;
+    let root: serde_json::Value = serde_json::from_str(&content)
+        .map_err(|e| CommandError::JsonParse(e.to_string()))?;
+
+    // Extract all keys that start with the prefix
+    let mut result = serde_json::Map::new();
+    
+    if let serde_json::Value::Object(map) = &root {
+        for (key, value) in map {
+            if key.starts_with(&prefix) || key == &prefix {
+                result.insert(key.clone(), value.clone());
+            }
+        }
+    }
+
+    serde_json::to_string_pretty(&serde_json::Value::Object(result))
+        .map_err(|e| CommandError::JsonParse(e.to_string()))
+}
+
+#[tauri::command]
 pub fn write_json_path(
     path: String,
     json_path: String,
@@ -361,6 +403,71 @@ pub fn write_json_path(
     // Set the value at the specified path
     set_json_value(&mut root, &json_path, new_value)
         .ok_or_else(|| CommandError::JsonPathNotFound(json_path.clone()))?;
+
+    // Serialize the updated root
+    let final_content = serde_json::to_string_pretty(&root)
+        .map_err(|e| CommandError::JsonParse(e.to_string()))?;
+
+    // Create backup if enabled and file exists
+    let settings = backup_settings.unwrap_or(BackupSettings { enabled: true, max_backups: 1 });
+    if settings.enabled && expanded.exists() && settings.max_backups > 0 {
+        create_backup(&expanded, settings.max_backups)?;
+    }
+
+    // Write atomically via temp file
+    let temp_path = expanded.with_extension("tmp");
+    fs::write(&temp_path, &final_content)?;
+    fs::rename(&temp_path, &expanded)?;
+
+    Ok(())
+}
+
+#[tauri::command]
+pub fn write_json_prefix(
+    path: String,
+    prefix: String,
+    content: String,
+    backup_settings: Option<BackupSettings>,
+) -> Result<(), CommandError> {
+    let expanded = expand_path(&path)
+        .ok_or_else(|| CommandError::PathResolution(path.clone()))?;
+
+    // Create parent directories if needed
+    if let Some(parent) = expanded.parent() {
+        fs::create_dir_all(parent)?;
+    }
+
+    // Parse the new content (should be an object with prefix keys)
+    let new_values: serde_json::Value = serde_json::from_str(&content)
+        .map_err(|e| CommandError::JsonParse(e.to_string()))?;
+
+    // Read existing file or create empty object
+    let mut root: serde_json::Value = if expanded.exists() {
+        let existing = fs::read_to_string(&expanded)?;
+        serde_json::from_str(&existing)
+            .map_err(|e| CommandError::JsonParse(e.to_string()))?
+    } else {
+        serde_json::json!({})
+    };
+
+    // Remove all existing keys with the prefix
+    if let serde_json::Value::Object(ref mut map) = root {
+        let keys_to_remove: Vec<String> = map
+            .keys()
+            .filter(|k| k.starts_with(&prefix) || *k == &prefix)
+            .cloned()
+            .collect();
+        for key in keys_to_remove {
+            map.remove(&key);
+        }
+
+        // Add the new values
+        if let serde_json::Value::Object(new_map) = new_values {
+            for (key, value) in new_map {
+                map.insert(key, value);
+            }
+        }
+    }
 
     // Serialize the updated root
     let final_content = serde_json::to_string_pretty(&root)
