@@ -88,33 +88,18 @@ export function Sidebar({
 
       <div className="flex-1 overflow-y-auto px-2 pb-4 scrollbar-thin">
         {/* CLI Tools Section */}
-        <div className="mb-2">
-          <div className="px-2 py-1.5 flex items-center justify-between text-xs font-semibold 
-                         dark:text-gray-400 text-slate-500 uppercase tracking-wider">
-            <span>CLI Tools</span>
-            <span className="px-1.5 py-0.5 text-[10px] bg-blue-500/15 text-blue-600 dark:text-blue-400 rounded-md font-medium">
-              {tools.length}
-            </span>
-          </div>
-
-          <ul className="mt-1 space-y-0.5">
-            {tools.map((tool) => (
-              <ToolItem
-                key={tool.id}
-                tool={tool}
-                isExpanded={expandedTools.has(tool.id)}
-                onToggle={() => toggleToolExpanded(tool.id)}
-                configFiles={getToolConfigFiles(tool.id)}
-                activeToolId={activeToolId}
-                activeConfigFileId={activeConfigFileId}
-                onConfigFileSelect={onConfigFileSelect}
-                onAddConfigFile={onAddConfigFile}
-                onEditConfigFile={onEditConfigFile}
-                onDeleteConfigFile={onDeleteConfigFile}
-              />
-            ))}
-          </ul>
-        </div>
+        <CliToolsSection
+          tools={tools}
+          activeToolId={activeToolId}
+          activeConfigFileId={activeConfigFileId}
+          expandedTools={expandedTools}
+          onToggleExpanded={toggleToolExpanded}
+          getToolConfigFiles={getToolConfigFiles}
+          onConfigFileSelect={onConfigFileSelect}
+          onAddConfigFile={onAddConfigFile}
+          onEditConfigFile={onEditConfigFile}
+          onDeleteConfigFile={onDeleteConfigFile}
+        />
 
         {/* IDE Extensions Section */}
         <IdeExtensionsSection
@@ -532,6 +517,77 @@ function CustomToolSection({
               <span>Add custom tool</span>
             </button>
           </li>
+        </ul>
+      )}
+    </div>
+  );
+}
+
+// CLI Tools Section
+interface CliToolsSectionProps {
+  tools: CliTool[];
+  activeToolId: string | null;
+  activeConfigFileId: string | null;
+  expandedTools: Set<string>;
+  onToggleExpanded: (toolId: string) => void;
+  getToolConfigFiles: (toolId: string) => ConfigFile[];
+  onConfigFileSelect: (toolId: string, configFile: ConfigFile) => void;
+  onAddConfigFile: (tool: CliTool) => void;
+  onEditConfigFile: (tool: CliTool, configFile: ConfigFile) => void;
+  onDeleteConfigFile: (toolId: string, configFileId: string) => void;
+}
+
+function CliToolsSection({
+  tools,
+  activeToolId,
+  activeConfigFileId,
+  expandedTools,
+  onToggleExpanded,
+  getToolConfigFiles,
+  onConfigFileSelect,
+  onAddConfigFile,
+  onEditConfigFile,
+  onDeleteConfigFile,
+}: CliToolsSectionProps) {
+  const [isExpanded, setIsExpanded] = useState(true);
+
+  return (
+    <div className="mb-2">
+      <button
+        onClick={() => setIsExpanded(!isExpanded)}
+        className="w-full px-2 py-1.5 flex items-center justify-between text-xs font-semibold 
+                   dark:text-gray-400 text-slate-500 uppercase tracking-wider dark:hover:text-gray-300 hover:text-slate-700 transition-colors"
+      >
+        <span className="flex items-center gap-1.5">
+          {isExpanded ? (
+            <ChevronDown className="w-3 h-3" />
+          ) : (
+            <ChevronRight className="w-3 h-3" />
+          )}
+          CLI Tools
+        </span>
+        <span className="px-1.5 py-0.5 text-[10px] bg-blue-500/15 text-blue-600 dark:text-blue-400 rounded-md font-medium">
+          {tools.length}
+        </span>
+      </button>
+
+      {isExpanded && (
+        <ul className="mt-1 space-y-0.5">
+          {tools.map((tool) => (
+            <ToolItem
+              key={tool.id}
+              tool={tool}
+              isExpanded={expandedTools.has(tool.id)}
+              onToggle={() => onToggleExpanded(tool.id)}
+              configFiles={getToolConfigFiles(tool.id)}
+              activeToolId={activeToolId}
+              activeConfigFileId={activeConfigFileId}
+              onConfigFileSelect={onConfigFileSelect}
+              onAddConfigFile={onAddConfigFile}
+              onEditConfigFile={onEditConfigFile}
+              onDeleteConfigFile={onDeleteConfigFile}
+            />
+          ))}
         </ul>
       )}
     </div>
