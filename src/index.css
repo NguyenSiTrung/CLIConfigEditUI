@@ -12,13 +12,13 @@
   -moz-osx-font-smoothing: grayscale;
 
   /* Light theme defaults */
-  color: #0f172a;
-  background-color: #f8fafc;
+  color: #334155; /* slate-700 */
+  background-color: #f8fafc; /* slate-50 */
 }
 
 .dark {
-  color: #efefef;
-  background-color: #0a0a0a;
+  color: #e2e8f0; /* slate-200 */
+  background-color: #020617; /* slate-950 - deeper dark */
 }
 
 * {
@@ -32,9 +32,10 @@ html, body, #root {
   overflow: hidden;
 }
 
-/* Custom scrollbar - Light theme */
+/* Premium Scrollbar */
 .scrollbar-thin::-webkit-scrollbar {
-  width: 6px;
+  width: 5px;
+  height: 5px;
 }
 
 .scrollbar-thin::-webkit-scrollbar-track {
@@ -42,68 +43,75 @@ html, body, #root {
 }
 
 .scrollbar-thin::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
-  border-radius: 3px;
+  background: rgba(148, 163, 184, 0.3);
+  border-radius: 10px;
 }
 
 .scrollbar-thin::-webkit-scrollbar-thumb:hover {
-  background: #94a3b8;
+  background: rgba(148, 163, 184, 0.5);
 }
 
-/* Custom scrollbar - Dark theme */
 .dark .scrollbar-thin::-webkit-scrollbar-thumb {
-  background: #333;
+  background: rgba(255, 255, 255, 0.1);
 }
 
 .dark .scrollbar-thin::-webkit-scrollbar-thumb:hover {
-  background: #444;
+  background: rgba(255, 255, 255, 0.2);
 }
 
-/* Animation utilities */
-.animate-in {
-  animation-fill-mode: both;
+/* Animations */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(5px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
-.fade-in {
-  animation: fade-in 0.2s ease-out;
+.animate-fade-in {
+  animation: fadeIn 0.3s ease-out forwards;
 }
 
-.zoom-in-95 {
-  animation: zoom-in-95 0.2s ease-out;
-}
-
-@keyframes fade-in {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-
-@keyframes zoom-in-95 {
-  from { 
-    opacity: 0; 
-    transform: scale(0.95); 
+/* Glassmorphism Utilities */
+@layer utilities {
+  .glass {
+    @apply bg-white/70 backdrop-blur-md border border-white/20 shadow-sm;
   }
-  to { 
-    opacity: 1; 
-    transform: scale(1); 
+  
+  .dark .glass {
+    @apply bg-slate-900/40 backdrop-blur-md border border-white/5;
+  }
+  
+  .glass-panel {
+    @apply bg-white/50 backdrop-blur-xl border border-white/20;
+  }
+  
+  .dark .glass-panel {
+    @apply bg-slate-900/60 backdrop-blur-xl border border-white/5;
+  }
+
+  .text-glow {
+    text-shadow: 0 0 10px rgba(59, 130, 246, 0.5);
   }
 }
 
-/* Focus ring utility */
+/* Focus Ring */
 .focus-ring {
-  @apply focus:outline-none focus:ring-2 focus:ring-blue-500/50;
+  @apply focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500/50 transition-all duration-200;
 }
 
 /* Button transitions */
 button {
-  transition: all 0.15s ease;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+button:active {
+  transform: scale(0.98);
 }
 
 /* Selection colors */
 ::selection {
-  background-color: rgba(59, 130, 246, 0.3);
+  background-color: rgba(99, 102, 241, 0.3); /* indigo-500 */
 }
 
-/* Custom titlebar for frameless window */
+/* Custom titlebar */
 .titlebar {
   -webkit-app-region: drag;
 }
@@ -114,34 +122,13 @@ button {
   -webkit-app-region: no-drag;
 }
 
-/* Monaco editor adjustments - light theme */
+/* Monaco editor adjustments */
 .monaco-editor,
 .monaco-editor-background,
 .monaco-editor .margin {
-  background-color: #ffffff !important;
+  background-color: transparent !important;
 }
 
-.dark .monaco-editor,
-.dark .monaco-editor-background,
-.dark .monaco-editor .margin {
-  background-color: #1a1a1a !important;
-}
-
-/* Light theme subtle patterns and enhancements */
-@layer utilities {
-  .light-gradient-header {
-    background: linear-gradient(to right, #f8fafc, #f1f5f9);
-  }
-  
-  .light-gradient-sidebar {
-    background: linear-gradient(to bottom, #f8fafc, #f1f5f9);
-  }
-  
-  .light-card-shadow {
-    box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.05), 0 1px 2px -1px rgb(0 0 0 / 0.05);
-  }
-  
-  .light-elevated-shadow {
-    box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.05), 0 2px 4px -2px rgb(0 0 0 / 0.05);
-  }
+.dark .monaco-editor-background {
+  background-color: #020617 !important; /* Match slate-950 */
 }

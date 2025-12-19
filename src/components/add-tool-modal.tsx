@@ -54,15 +54,15 @@ export function AddToolModal({ isOpen, onClose, onAdd }: AddToolModalProps) {
 
   return (
     <div
-      className="fixed inset-0 dark:bg-black/60 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center z-50 p-4"
+      className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center z-50 p-4"
       onClick={handleBackdropClick}
     >
-      <div className="dark:bg-gray-800 bg-white rounded-xl shadow-2xl w-full max-w-md border dark:border-gray-700/50 border-slate-200 animate-in fade-in zoom-in-95 duration-200">
-        <div className="flex items-center justify-between px-6 py-4 border-b dark:border-gray-700/50 border-slate-200">
-          <h2 className="text-lg font-semibold dark:text-white text-slate-800">Add Custom Tool</h2>
+      <div className="glass-panel rounded-xl shadow-2xl w-full max-w-md animate-in fade-in zoom-in-95 duration-200">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200/60 dark:border-white/5">
+          <h2 className="text-lg font-semibold dark:text-slate-200 text-slate-800">Add Custom Tool</h2>
           <button
             onClick={onClose}
-            className="p-1.5 rounded-lg dark:text-gray-400 text-slate-400 dark:hover:text-white hover:text-slate-700 dark:hover:bg-gray-700/50 hover:bg-slate-100 transition-colors"
+            className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-white/5 transition-colors"
           >
             <X className="w-5 h-5" />
           </button>
@@ -71,24 +71,24 @@ export function AddToolModal({ isOpen, onClose, onAdd }: AddToolModalProps) {
         <form onSubmit={handleSubmit} className="p-6 space-y-5">
           <div className="flex gap-4 items-start">
             <div>
-              <label className="block text-sm font-medium dark:text-gray-300 text-slate-700 mb-2">
+              <label className="block text-sm font-medium dark:text-slate-300 text-slate-700 mb-2">
                 Icon
               </label>
               <IconPicker value={icon} onChange={setIcon} />
             </div>
 
             <div className="flex-1">
-              <label className="block text-sm font-medium dark:text-gray-300 text-slate-700 mb-2">
-                Tool Name <span className="text-red-500">*</span>
+              <label className="block text-sm font-medium dark:text-slate-300 text-slate-700 mb-2">
+                Tool Name <span className="text-rose-500">*</span>
               </label>
               <input
                 type="text"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="My Custom CLI"
-                className="w-full px-4 py-2.5 dark:bg-gray-900/50 bg-slate-50 dark:text-white text-slate-800 rounded-lg text-sm
-                           dark:placeholder-gray-500 placeholder-slate-400 border dark:border-gray-700/50 border-slate-200
-                           focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500
+                className="w-full px-4 py-2.5 bg-slate-50 dark:bg-black/20 text-slate-900 dark:text-slate-100 rounded-lg text-sm
+                           placeholder-slate-400 dark:placeholder-slate-600 border border-slate-200 dark:border-white/10
+                           focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500
                            transition-all"
                 required
                 autoFocus
@@ -97,8 +97,8 @@ export function AddToolModal({ isOpen, onClose, onAdd }: AddToolModalProps) {
           </div>
 
           <div>
-            <label className="block text-sm font-medium dark:text-gray-300 text-slate-700 mb-2">
-              Config File Path <span className="text-red-500">*</span>
+            <label className="block text-sm font-medium dark:text-slate-300 text-slate-700 mb-2">
+              Config File Path <span className="text-rose-500">*</span>
             </label>
             <div className="relative">
               <input
@@ -106,9 +106,9 @@ export function AddToolModal({ isOpen, onClose, onAdd }: AddToolModalProps) {
                 value={configPath}
                 onChange={(e) => setConfigPath(e.target.value)}
                 placeholder="~/.mycli/config.json"
-                className="w-full px-4 py-2.5 pr-12 dark:bg-gray-900/50 bg-slate-50 dark:text-white text-slate-800 rounded-lg text-sm
-                           dark:placeholder-gray-500 placeholder-slate-400 border dark:border-gray-700/50 border-slate-200 font-mono
-                           focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500
+                className="w-full px-4 py-2.5 pr-12 bg-slate-50 dark:bg-black/20 text-slate-900 dark:text-slate-100 rounded-lg text-sm
+                           placeholder-slate-400 dark:placeholder-slate-600 border border-slate-200 dark:border-white/10 font-mono
+                           focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500
                            transition-all"
                 required
               />
@@ -130,20 +130,20 @@ export function AddToolModal({ isOpen, onClose, onAdd }: AddToolModalProps) {
                   }
                 }}
                 className="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 rounded-md 
-                           dark:text-gray-400 text-slate-400 dark:hover:text-white hover:text-slate-700 dark:hover:bg-gray-700/50 hover:bg-slate-200 transition-colors"
+                           text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-200 dark:hover:bg-white/10 transition-colors"
                 title="Browse files"
               >
                 <FolderOpen className="w-4 h-4" />
               </button>
             </div>
-            <p className="mt-1.5 text-xs dark:text-gray-500 text-slate-400">
+            <p className="mt-1.5 text-xs text-slate-500 dark:text-slate-400">
               Use ~ for home directory, or provide absolute path
             </p>
           </div>
 
           <div>
-            <label className="block text-sm font-medium dark:text-gray-300 text-slate-700 mb-2">
-              Config Format <span className="text-red-500">*</span>
+            <label className="block text-sm font-medium dark:text-slate-300 text-slate-700 mb-2">
+              Config Format <span className="text-rose-500">*</span>
             </label>
             <div className="grid grid-cols-4 gap-2">
               {FORMAT_OPTIONS.map((option) => (
@@ -154,9 +154,9 @@ export function AddToolModal({ isOpen, onClose, onAdd }: AddToolModalProps) {
                   className={`px-3 py-2.5 rounded-lg text-sm font-medium flex flex-col items-center gap-1.5
                              border transition-all
                              ${configFormat === option.value
-                               ? 'bg-blue-600 border-blue-500 text-white shadow-md'
-                               : 'dark:bg-gray-900/50 bg-slate-50 dark:border-gray-700/50 border-slate-200 dark:text-gray-400 text-slate-500 dark:hover:text-white hover:text-slate-700 dark:hover:border-gray-600 hover:border-slate-300 hover:bg-slate-100'
-                             }`}
+                      ? 'bg-indigo-600 border-indigo-500 text-white shadow-lg shadow-indigo-500/20'
+                      : 'bg-slate-50 dark:bg-black/20 border-slate-200 dark:border-white/5 text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:border-slate-300 dark:hover:border-white/20 hover:bg-slate-100'
+                    }`}
                 >
                   {option.icon}
                   <span>{option.label}</span>
@@ -166,7 +166,7 @@ export function AddToolModal({ isOpen, onClose, onAdd }: AddToolModalProps) {
           </div>
 
           <div>
-            <label className="block text-sm font-medium dark:text-gray-300 text-slate-700 mb-2">
+            <label className="block text-sm font-medium dark:text-slate-300 text-slate-700 mb-2">
               Description
             </label>
             <input
@@ -174,9 +174,9 @@ export function AddToolModal({ isOpen, onClose, onAdd }: AddToolModalProps) {
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               placeholder="Optional description"
-              className="w-full px-4 py-2.5 dark:bg-gray-900/50 bg-slate-50 dark:text-white text-slate-800 rounded-lg text-sm
-                         dark:placeholder-gray-500 placeholder-slate-400 border dark:border-gray-700/50 border-slate-200
-                         focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500
+              className="w-full px-4 py-2.5 bg-slate-50 dark:bg-black/20 text-slate-900 dark:text-slate-100 rounded-lg text-sm
+                         placeholder-slate-400 dark:placeholder-slate-600 border border-slate-200 dark:border-white/10
+                         focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500
                          transition-all"
             />
           </div>
@@ -185,15 +185,15 @@ export function AddToolModal({ isOpen, onClose, onAdd }: AddToolModalProps) {
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 text-sm font-medium dark:text-gray-400 text-slate-500 dark:hover:text-white hover:text-slate-800 
-                         rounded-lg dark:hover:bg-gray-700/50 hover:bg-slate-100 transition-colors"
+              className="px-4 py-2 text-sm font-medium text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200
+                         rounded-lg hover:bg-slate-100 dark:hover:bg-white/5 transition-colors"
             >
               Cancel
             </button>
             <button
               type="submit"
-              className="px-5 py-2 text-sm font-medium bg-blue-600 hover:bg-blue-500 
-                         text-white rounded-lg transition-colors shadow-lg shadow-blue-500/20"
+              className="px-6 py-2 text-sm font-medium bg-indigo-600 hover:bg-indigo-500 
+                         text-white rounded-lg transition-all shadow-lg shadow-indigo-500/25 hover:shadow-indigo-500/40"
             >
               Add Tool
             </button>

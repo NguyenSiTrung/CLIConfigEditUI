@@ -34,66 +34,82 @@ export function Header({ onSettingsClick }: HeaderProps) {
   };
 
   return (
-    <header 
-      className="titlebar h-10 dark:bg-gradient-to-r dark:from-[#1a1a2e] dark:via-[#16213e] dark:to-[#1a1a2e] bg-gradient-to-r from-slate-100 via-slate-50 to-blue-50/50 border-b dark:border-gray-700/30 border-slate-200/60 flex items-center justify-between select-none"
+    <header
+      className="titlebar h-12 flex items-center justify-between select-none
+                 bg-slate-50 dark:bg-[#020617]
+                 border-b border-slate-200/60 dark:border-white/5
+                 backdrop-blur-md z-50 relative"
       onMouseDown={handleStartDrag}
     >
+      {/* Absolute gradient line at top */}
+      <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-indigo-500/50 to-transparent opacity-50"></div>
+
       {/* Left side - App branding */}
-      <div className="titlebar flex items-center gap-2.5 pl-3 flex-1">
-        <div className="relative group pointer-events-none">
-          <div className="absolute -inset-0.5 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg blur opacity-40 group-hover:opacity-60 transition-opacity"></div>
-          <div className="relative flex items-center justify-center w-7 h-7 rounded-lg bg-gradient-to-br from-blue-500 via-indigo-500 to-purple-600 shadow-md">
-            <Terminal className="w-3.5 h-3.5 text-white" />
+      <div className="flex items-center gap-3 pl-4 flex-1">
+        <div className="relative group">
+          <div className="absolute inset-0 bg-indigo-500 blur opacity-20 dark:opacity-40 group-hover:opacity-60 transition-opacity duration-500"></div>
+          <div className="relative flex items-center justify-center w-8 h-8 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 shadow-lg shadow-indigo-500/20 ring-1 ring-white/10">
+            <Terminal className="w-4 h-4 text-white" />
           </div>
         </div>
-        <div className="flex items-center gap-1.5 pointer-events-none">
-          <h1 className="text-xs font-semibold dark:text-gray-200 text-slate-700 tracking-tight">CLI Config Editor</h1>
-          <Sparkles className="w-2.5 h-2.5 text-amber-500 dark:text-amber-400" />
+        <div className="flex flex-col justify-center">
+          <h1 className="text-sm font-bold dark:text-slate-200 text-slate-800 tracking-tight leading-none mb-0.5">CLI Config Editor</h1>
+          <div className="flex items-center gap-1.5 opacity-60">
+            <span className="text-[10px] font-medium dark:text-slate-400 text-slate-500 uppercase tracking-widest">v1.2.0</span>
+            <Sparkles className="w-2.5 h-2.5 text-amber-500" />
+          </div>
         </div>
       </div>
 
       {/* Right side - Actions and window controls */}
-      <div className="flex items-center h-full">
+      <div className="flex items-center h-full pr-2 gap-2">
         {/* App actions */}
-        <div className="flex items-center gap-0.5 pr-2 mr-2 border-r dark:border-gray-700/50 border-slate-200/80">
+        <div className="flex items-center gap-1 p-1 rounded-lg bg-slate-200/50 dark:bg-white/5 border border-slate-200/60 dark:border-white/5 mr-2">
           <button
             onClick={toggleTheme}
-            className="p-1.5 rounded-md dark:text-gray-400 text-slate-500 dark:hover:text-white hover:text-slate-800 dark:hover:bg-white/10 hover:bg-slate-200/60 transition-all duration-150"
+            className="p-1.5 rounded-md text-slate-500 dark:text-slate-400 
+                       hover:text-slate-800 dark:hover:text-slate-200 
+                       hover:bg-white dark:hover:bg-white/10 
+                       transition-all duration-200"
             title={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
           >
-            {theme === 'dark' ? <Moon className="w-3.5 h-3.5" /> : <Sun className="w-3.5 h-3.5" />}
+            {theme === 'dark' ? <Moon className="w-4 h-4" /> : <Sun className="w-4 h-4" />}
           </button>
+          <div className="w-[1px] h-4 bg-slate-300 dark:bg-white/10 mx-0.5"></div>
           <button
             onClick={onSettingsClick}
-            className="p-1.5 rounded-md dark:text-gray-400 text-slate-500 dark:hover:text-white hover:text-slate-800 dark:hover:bg-white/10 hover:bg-slate-200/60 transition-all duration-150"
+            className="p-1.5 rounded-md text-slate-500 dark:text-slate-400 
+                       hover:text-slate-800 dark:hover:text-slate-200 
+                       hover:bg-white dark:hover:bg-white/10 
+                       transition-all duration-200"
             title="Settings"
           >
-            <Settings className="w-3.5 h-3.5" />
+            <Settings className="w-4 h-4" />
           </button>
         </div>
 
         {/* Window controls */}
-        <div className="flex items-center h-full">
+        <div className="flex items-center gap-1 h-full pl-2 border-l border-slate-200 dark:border-white/5">
           <button
             onClick={handleMinimize}
-            className="h-full px-3 dark:text-gray-400 text-slate-500 dark:hover:text-white hover:text-slate-800 dark:hover:bg-white/10 hover:bg-slate-200/60 transition-colors duration-150"
+            className="p-2 rounded-lg text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-200/50 dark:hover:bg-white/10 transition-colors"
             title="Minimize"
           >
-            <Minus className="w-3.5 h-3.5" />
+            <Minus className="w-4 h-4" />
           </button>
           <button
             onClick={handleMaximize}
-            className="h-full px-3 dark:text-gray-400 text-slate-500 dark:hover:text-white hover:text-slate-800 dark:hover:bg-white/10 hover:bg-slate-200/60 transition-colors duration-150"
+            className="p-2 rounded-lg text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-200/50 dark:hover:bg-white/10 transition-colors"
             title="Maximize"
           >
-            <Square className="w-3 h-3" />
+            <Square className="w-3.5 h-3.5" />
           </button>
           <button
             onClick={handleClose}
-            className="h-full px-3 dark:text-gray-400 text-slate-500 hover:text-white hover:bg-red-500 dark:hover:bg-red-500 transition-colors duration-150"
+            className="p-2 rounded-lg text-slate-400 hover:text-white hover:bg-red-500 transition-colors"
             title="Close"
           >
-            <X className="w-3.5 h-3.5" />
+            <X className="w-4 h-4" />
           </button>
         </div>
       </div>

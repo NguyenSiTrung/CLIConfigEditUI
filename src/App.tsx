@@ -99,9 +99,9 @@ function App() {
     try {
       let content: string;
       if (currentJsonPath) {
-        content = await invoke<string>('read_json_path', { 
-          path: currentFilePath, 
-          jsonPath: currentJsonPath 
+        content = await invoke<string>('read_json_path', {
+          path: currentFilePath,
+          jsonPath: currentJsonPath
         });
       } else {
         content = await invoke<string>('read_file', { path: currentFilePath });
@@ -137,9 +137,9 @@ function App() {
       try {
         let content: string;
         if (configFile.jsonPath) {
-          content = await invoke<string>('read_json_path', { 
-            path: configFile.path, 
-            jsonPath: configFile.jsonPath 
+          content = await invoke<string>('read_json_path', {
+            path: configFile.path,
+            jsonPath: configFile.jsonPath
           });
         } else {
           content = await invoke<string>('read_file', { path: configFile.path });
@@ -269,7 +269,7 @@ function App() {
     if (!currentFilePath) return;
 
     const { backupSettings } = useAppStore.getState();
-    
+
     try {
       markAsInternalWrite();
       if (currentJsonPath) {
@@ -368,10 +368,10 @@ function App() {
   const handleSaveNewConfigFile = useCallback(
     (configFile: { label: string; path: string; format: ConfigFormat; icon?: string }) => {
       if (!addConfigFileTool) return;
-      
+
       addConfigFile(addConfigFileTool.id, configFile);
       toast.success(`Added "${configFile.label}" to ${addConfigFileTool.name}`);
-      
+
       // Auto-expand the tool
       const { expandedTools } = useAppStore.getState();
       if (!expandedTools.has(addConfigFileTool.id)) {
@@ -388,10 +388,10 @@ function App() {
   const handleSaveEditedConfigFile = useCallback(
     (updates: Partial<ConfigFile>) => {
       if (!editingConfigFile) return;
-      
+
       updateConfigFile(editingConfigFile.tool.id, editingConfigFile.configFile.id, updates);
       toast.success('Config file updated');
-      
+
       // Update current file path if this is the active config
       if (activeConfigFileId === editingConfigFile.configFile.id && updates.path) {
         setCurrentFilePath(updates.path);
@@ -406,7 +406,7 @@ function App() {
   const handleDeleteConfigFile = useCallback(
     (toolId: string, configFileId: string) => {
       removeConfigFile(toolId, configFileId);
-      
+
       if (activeToolId === toolId && activeConfigFileId === configFileId) {
         setActiveToolId(null);
         setActiveConfigFileId(null);
@@ -414,7 +414,7 @@ function App() {
         setOriginalContent('');
         setCurrentFilePath(null);
       }
-      
+
       toast.success('Config file removed');
     },
     [removeConfigFile, activeToolId, activeConfigFileId, setActiveToolId, setActiveConfigFileId, setEditorContent, setOriginalContent, setCurrentFilePath]
@@ -429,7 +429,7 @@ function App() {
   }, []);
 
   return (
-    <div className="h-full flex flex-col dark:bg-gray-900 bg-slate-100">
+    <div className="h-full flex flex-col dark:bg-[#020617] bg-slate-50 overflow-hidden text-slate-900 dark:text-slate-100 font-sans selection:bg-indigo-500/30">
       <Header onSettingsClick={() => setIsSettingsOpen(true)} />
       <div className="flex-1 flex min-h-0">
         <Sidebar
