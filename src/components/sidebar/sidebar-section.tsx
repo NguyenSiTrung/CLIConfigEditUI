@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, type ReactNode } from 'react';
+import { memo, useState, useRef, useMemo, type ReactNode } from 'react';
 import { ChevronDown } from 'lucide-react';
 import { ACCENT_COLORS, type AccentColor } from '@/constants/tool-icons';
 
@@ -14,7 +14,7 @@ interface SidebarSectionProps {
   icon?: ReactNode;
 }
 
-export function SidebarSection({
+export const SidebarSection = memo(function SidebarSection({
   title,
   count,
   accent = 'indigo',
@@ -27,7 +27,6 @@ export function SidebarSection({
 }: SidebarSectionProps) {
   const [internalExpanded, setInternalExpanded] = useState(defaultExpanded);
   const contentRef = useRef<HTMLDivElement>(null);
-  const [contentHeight, setContentHeight] = useState<number | undefined>(undefined);
   
   const isExpanded = controlledExpanded ?? internalExpanded;
   const colors = ACCENT_COLORS[accent];
@@ -40,13 +39,10 @@ export function SidebarSection({
     }
   };
 
-  useEffect(() => {
-    if (contentRef.current) {
-      setContentHeight(isExpanded ? contentRef.current.scrollHeight : 0);
-    }
-  }, [isExpanded, children]);
-
-  const listId = `section-${title.toLowerCase().replace(/\s+/g, '-')}`;
+  const listId = useMemo(
+    () => `section-${title.toLowerCase().replace(/\s+/g, '-')}`,
+    [title]
+  );
 
   return (
     <div className="mb-2">
@@ -92,16 +88,15 @@ export function SidebarSection({
       <div
         ref={contentRef}
         id={listId}
-        className="overflow-hidden transition-all duration-200 ease-out"
-        style={{ 
-          maxHeight: isExpanded ? contentHeight : 0,
-          opacity: isExpanded ? 1 : 0,
-        }}
+        className={`grid transition-[grid-template-rows,opacity] duration-200 ease-out
+                   ${isExpanded ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'}`}
       >
-        <div className="mt-1 pt-1">
-          {children}
+        <div className="overflow-hidden">
+          <div className="mt-1 pt-1">
+            {children}
+          </div>
         </div>
       </div>
     </div>
   );
-}
+});

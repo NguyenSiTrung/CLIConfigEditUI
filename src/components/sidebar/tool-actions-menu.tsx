@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { memo, useState, useEffect, useRef, useCallback } from 'react';
 import { MoreVertical, Pencil, Trash2, Copy, FolderPlus } from 'lucide-react';
 import { ask } from '@tauri-apps/plugin-dialog';
 
@@ -12,7 +12,7 @@ interface ToolActionsMenuProps {
   size?: 'sm' | 'md';
 }
 
-export function ToolActionsMenu({
+export const ToolActionsMenu = memo(function ToolActionsMenu({
   itemName,
   confirmBeforeDelete = true,
   onEdit,
@@ -50,7 +50,7 @@ export function ToolActionsMenu({
     };
   }, [isOpen]);
 
-  const handleDelete = async () => {
+  const handleDelete = useCallback(async () => {
     setIsOpen(false);
     
     if (confirmBeforeDelete) {
@@ -62,7 +62,7 @@ export function ToolActionsMenu({
     }
     
     onDelete?.();
-  };
+  }, [confirmBeforeDelete, itemName, onDelete]);
 
   const iconSize = size === 'sm' ? 'w-3.5 h-3.5' : 'w-4 h-4';
   const buttonPadding = size === 'sm' ? 'p-1' : 'p-1.5';
@@ -182,4 +182,4 @@ export function ToolActionsMenu({
       )}
     </div>
   );
-}
+});

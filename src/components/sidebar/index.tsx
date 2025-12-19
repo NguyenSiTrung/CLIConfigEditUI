@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, useCallback } from 'react';
+import { useEffect, useRef, useState, useCallback, useMemo } from 'react';
 import { PanelLeftClose, PanelLeft } from 'lucide-react';
 import { useAppStore } from '@/stores/app-store';
 import { CliTool, ConfigFile, CustomTool } from '@/types';
@@ -6,6 +6,7 @@ import { SidebarSearchBar } from './sidebar-search-bar';
 import { CliToolsSection } from './cli-tools-section';
 import { CustomToolsSection } from './custom-tools-section';
 import { IdeExtensionsSection } from './ide-extensions-section';
+import { CLI_TOOLS } from '@/utils/cli-tools';
 
 interface SidebarProps {
   onConfigFileSelect: (toolId: string, configFile: ConfigFile) => void;
@@ -35,26 +36,38 @@ export function Sidebar({
   onEditCustomToolConfigFile,
   onIdeExtensionConfigSelect,
 }: SidebarProps) {
-  const {
-    activeToolId,
-    activeConfigFileId,
-    searchQuery,
-    setSearchQuery,
-    getFilteredTools,
-    getAllTools,
-    customTools,
-    expandedTools,
-    toggleToolExpanded,
-    getToolConfigFiles,
-    behaviorSettings,
-    sidebarCollapsed,
-    setSidebarCollapsed,
-    sidebarWidth,
-    setSidebarWidth,
-  } = useAppStore();
+  const activeToolId = useAppStore((state) => state.activeToolId);
+  const activeConfigFileId = useAppStore((state) => state.activeConfigFileId);
+  const searchQuery = useAppStore((state) => state.searchQuery);
+  const setSearchQuery = useAppStore((state) => state.setSearchQuery);
+  const customTools = useAppStore((state) => state.customTools);
+  const expandedTools = useAppStore((state) => state.expandedTools);
+  const toggleToolExpanded = useAppStore((state) => state.toggleToolExpanded);
+  const toolConfigs = useAppStore((state) => state.toolConfigs);
+  const behaviorSettings = useAppStore((state) => state.behaviorSettings);
+  const sidebarCollapsed = useAppStore((state) => state.sidebarCollapsed);
+  const setSidebarCollapsed = useAppStore((state) => state.setSidebarCollapsed);
+  const sidebarWidth = useAppStore((state) => state.sidebarWidth);
+  const setSidebarWidth = useAppStore((state) => state.setSidebarWidth);
 
-  const { tools, custom } = getFilteredTools();
-  const allTools = getAllTools();
+  const tools = useMemo(() => {
+    const query = searchQuery.toLowerCase();
+    return CLI_TOOLS.filter((t) => t.name.toLowerCase().includes(query));
+  }, [searchQuery]);
+
+  const custom = useMemo(() => {
+    const query = searchQuery.toLowerCase();
+    return customTools.filter((t) => t.name.toLowerCase().includes(query));
+  }, [customTools, searchQuery]);
+
+  const getToolConfigFiles = useCallback(
+    (toolId: string): ConfigFile[] => {
+      const toolConfig = toolConfigs.find((tc) => tc.toolId === toolId);
+      return toolConfig?.configFiles || [];
+    },
+    [toolConfigs]
+  );
+
   const hasSearch = searchQuery.trim().length > 0;
   const hasMatches = tools.length + custom.length > 0;
   const previousExpandDefault = useRef(false);
@@ -66,14 +79,14 @@ export function Sidebar({
     const justEnabled = behaviorSettings.expandToolsByDefault && !previousExpandDefault.current;
     previousExpandDefault.current = behaviorSettings.expandToolsByDefault;
     if (!justEnabled) return;
-    const toolIds = [...allTools, ...customTools].map((tool) => tool.id);
+    const toolIds = [...CLI_TOOLS, ...customTools].map((tool) => tool.id);
     if (toolIds.length === 0) return;
     toolIds.forEach((toolId) => {
       if (!expandedTools.has(toolId)) {
         toggleToolExpanded(toolId);
       }
     });
-  }, [allTools, behaviorSettings.expandToolsByDefault, customTools, expandedTools, toggleToolExpanded]);
+  }, [behaviorSettings.expandToolsByDefault, customTools, expandedTools, toggleToolExpanded]);
 
   const handleMouseDown = useCallback((e: React.MouseEvent) => {
     e.preventDefault();
@@ -135,8 +148,7 @@ export function Sidebar({
       className="flex flex-col h-full border-r border-slate-200/60 dark:border-slate-800/60 
                 bg-gradient-to-b from-slate-50/90 to-slate-100/50 
                 dark:from-slate-900/90 dark:to-slate-900/60 
-                backdrop-blur-xl relative
-                transition-all duration-200 ease-out"
+                backdrop-blur-xl relative"
       style={{ width: `${sidebarWidth}px`, minWidth: `${MIN_WIDTH}px`, maxWidth: `${MAX_WIDTH}px` }}
     >
       {/* Header with search and collapse button */}
@@ -152,7 +164,7 @@ export function Sidebar({
           onClick={() => setSidebarCollapsed(true)}
           className="mt-4 p-2 rounded-xl text-slate-400 hover:text-slate-600 dark:text-slate-500 dark:hover:text-slate-300
                     hover:bg-white dark:hover:bg-slate-800 
-                    transition-all duration-200 active:scale-95
+                    transition-colors duration-200 active:scale-95
                     focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500/40"
           aria-label="Collapse sidebar"
           title="Collapse sidebar"

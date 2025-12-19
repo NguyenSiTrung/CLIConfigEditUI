@@ -1,3 +1,4 @@
+import { memo, useCallback } from 'react';
 import { Plus, FolderOpen } from 'lucide-react';
 import { CliTool, ConfigFile } from '@/types';
 import { TOOL_ICONS, DEFAULT_TOOL_ICON, ACCENT_COLORS } from '@/constants/tool-icons';
@@ -19,7 +20,7 @@ interface CliToolsSectionProps {
   onDeleteConfigFile: (toolId: string, configFileId: string) => void;
 }
 
-export function CliToolsSection({
+export const CliToolsSection = memo(function CliToolsSection({
   tools,
   hasSearch,
   activeToolId,
@@ -33,6 +34,11 @@ export function CliToolsSection({
   onDeleteConfigFile,
 }: CliToolsSectionProps) {
   const colors = ACCENT_COLORS.indigo;
+
+  const handleToggleExpanded = useCallback(
+    (toolId: string) => onToggleExpanded(toolId),
+    [onToggleExpanded]
+  );
 
   return (
     <SidebarSection
@@ -68,7 +74,7 @@ export function CliToolsSection({
                 isActive={isActive && !isChildActive}
                 isChildActive={isChildActive}
                 accent="indigo"
-                onToggle={() => onToggleExpanded(tool.id)}
+                onToggle={() => handleToggleExpanded(tool.id)}
                 badge={
                   configFiles.length > 0 ? (
                     <span 
@@ -120,4 +126,4 @@ export function CliToolsSection({
       )}
     </SidebarSection>
   );
-}
+});

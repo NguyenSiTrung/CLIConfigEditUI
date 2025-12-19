@@ -1,4 +1,4 @@
-import { useCallback, useRef, useEffect } from 'react';
+import { memo, useCallback, useRef, useEffect } from 'react';
 import { Search, X } from 'lucide-react';
 
 interface SidebarSearchBarProps {
@@ -7,7 +7,7 @@ interface SidebarSearchBarProps {
   placeholder?: string;
 }
 
-export function SidebarSearchBar({
+export const SidebarSearchBar = memo(function SidebarSearchBar({
   value,
   onChange,
   placeholder = 'Search tools...',
@@ -86,4 +86,4 @@ export function SidebarSearchBar({
       </div>
     </div>
   );
-}
+});

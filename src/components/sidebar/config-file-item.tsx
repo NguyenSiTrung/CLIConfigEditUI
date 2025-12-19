@@ -89,7 +89,7 @@ export const ConfigFileItem = memo(function ConfigFileItem({
         type="button"
         onClick={onSelect}
         className={`w-full px-2.5 py-2 pr-8 text-left flex items-center gap-2.5 text-sm rounded-xl
-                   transition-all duration-200 relative overflow-hidden
+                   transition-[background-color,color,box-shadow] duration-200 relative overflow-hidden
                    focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500/40 
                    focus-visible:ring-offset-1 focus-visible:ring-offset-slate-50 dark:focus-visible:ring-offset-slate-900
                    ${isActive
@@ -139,10 +139,11 @@ export const ConfigFileItem = memo(function ConfigFileItem({
         className={`absolute right-1.5 top-1/2 -translate-y-1/2 p-1.5 rounded-lg transition-all duration-150
                    ${menuOpen
             ? 'opacity-100 bg-slate-200 dark:bg-slate-700'
-            : 'opacity-0 pointer-events-none group-hover/config:opacity-100 group-hover/config:pointer-events-auto group-focus-within/config:opacity-100 group-focus-within/config:pointer-events-auto'}
+            : 'opacity-0 group-hover/config:opacity-100 group-focus-within/config:opacity-100'}
                    hover:bg-slate-200 dark:hover:bg-slate-700 
                    focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500/40
                    active:scale-95`}
+        style={{ visibility: menuOpen ? 'visible' : undefined }}
         aria-label="Open config menu"
         aria-haspopup="menu"
         aria-expanded={menuOpen}

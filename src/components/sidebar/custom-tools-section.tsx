@@ -1,3 +1,4 @@
+import { memo, useCallback } from 'react';
 import { Plus, Sparkles } from 'lucide-react';
 import { CustomTool, ConfigFile } from '@/types';
 import { ACCENT_COLORS } from '@/constants/tool-icons';
@@ -24,7 +25,7 @@ interface CustomToolsSectionProps {
   onDeleteTool: (toolId: string) => void;
 }
 
-export function CustomToolsSection({
+export const CustomToolsSection = memo(function CustomToolsSection({
   tools,
   hasSearch,
   activeToolId,
@@ -42,6 +43,11 @@ export function CustomToolsSection({
 }: CustomToolsSectionProps) {
   const colors = ACCENT_COLORS.violet;
   const confirmBeforeDelete = useAppStore((state) => state.behaviorSettings.confirmBeforeDelete);
+
+  const handleToggleExpanded = useCallback(
+    (toolId: string) => onToggleExpanded(toolId),
+    [onToggleExpanded]
+  );
 
   return (
     <SidebarSection
@@ -97,7 +103,7 @@ export function CustomToolsSection({
                 isActive={isActive && !isChildActive}
                 isChildActive={isChildActive}
                 accent="violet"
-                onToggle={() => onToggleExpanded(tool.id)}
+                onToggle={() => handleToggleExpanded(tool.id)}
                 badge={
                   configFiles.length > 0 ? (
                     <span 
@@ -180,4 +186,4 @@ export function CustomToolsSection({
       )}
     </SidebarSection>
   );
-}
+});
