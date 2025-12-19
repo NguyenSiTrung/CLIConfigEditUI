@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, memo } from 'react';
 import { ask } from '@tauri-apps/plugin-dialog';
 import { invoke } from '@tauri-apps/api/core';
 import { useAppStore } from '@/stores/app-store';
@@ -225,7 +225,7 @@ interface ConfigFileItemProps {
   onDelete: () => void;
 }
 
-function ConfigFileItem({ configFile, isActive, onSelect, onEdit, onDelete }: ConfigFileItemProps) {
+const ConfigFileItem = memo(function ConfigFileItem({ configFile, isActive, onSelect, onEdit, onDelete }: ConfigFileItemProps) {
   const [menuOpen, setMenuOpen] = useState(false);
 
   return (
@@ -248,8 +248,8 @@ function ConfigFileItem({ configFile, isActive, onSelect, onEdit, onDelete }: Co
             e.stopPropagation();
             setMenuOpen(!menuOpen);
           }}
-          className={`p-1 rounded opacity-0 group-hover/config:opacity-100 transition-opacity
-                     ${menuOpen ? 'opacity-100 bg-slate-200 dark:bg-slate-700' : ''}
+          className={`p-1 rounded transition-opacity flex-shrink-0
+                     ${menuOpen ? 'opacity-100 bg-slate-200 dark:bg-slate-700' : 'opacity-0 group-hover/config:opacity-100'}
                      hover:bg-slate-200 dark:hover:bg-slate-700`}
         >
           <MoreVertical className="w-3 h-3" />
@@ -296,7 +296,7 @@ function ConfigFileItem({ configFile, isActive, onSelect, onEdit, onDelete }: Co
       )}
     </div>
   );
-}
+});
 
 interface CustomToolItemProps {
   tool: CustomTool;
@@ -364,8 +364,8 @@ function CustomToolItem({
               e.stopPropagation();
               setMenuOpen(!menuOpen);
             }}
-            className={`p-1 rounded opacity-0 group-hover/custom:opacity-100 transition-opacity
-                       ${menuOpen ? 'opacity-100 bg-slate-200 dark:bg-slate-700' : ''}
+            className={`p-1 rounded transition-opacity flex-shrink-0
+                       ${menuOpen ? 'opacity-100 bg-slate-200 dark:bg-slate-700' : 'opacity-0 group-hover/custom:opacity-100'}
                        hover:bg-slate-200 dark:hover:bg-slate-700`}
           >
             <MoreVertical className="w-3 h-3" />
