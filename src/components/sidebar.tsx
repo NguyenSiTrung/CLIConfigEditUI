@@ -294,9 +294,25 @@ interface ConfigFileItemProps {
   onDelete: () => void;
 }
 
+// Format badge configuration for clean visual indicators
+const FORMAT_BADGES: Record<string, { label: string; color: string; bg: string }> = {
+  json: { label: 'JSON', color: 'text-amber-600 dark:text-amber-400', bg: 'bg-amber-100/80 dark:bg-amber-500/15' },
+  yaml: { label: 'YAML', color: 'text-emerald-600 dark:text-emerald-400', bg: 'bg-emerald-100/80 dark:bg-emerald-500/15' },
+  toml: { label: 'TOML', color: 'text-orange-600 dark:text-orange-400', bg: 'bg-orange-100/80 dark:bg-orange-500/15' },
+  ini: { label: 'INI', color: 'text-sky-600 dark:text-sky-400', bg: 'bg-sky-100/80 dark:bg-sky-500/15' },
+  md: { label: 'MD', color: 'text-purple-600 dark:text-purple-400', bg: 'bg-purple-100/80 dark:bg-purple-500/15' },
+};
+
 const ConfigFileItem = memo(function ConfigFileItem({ configFile, isActive, onSelect, onEdit, onDelete }: ConfigFileItemProps) {
   const [menuOpen, setMenuOpen] = useState(false);
+  const [showTooltip, setShowTooltip] = useState(false);
+  const tooltipTimeoutRef = useRef<number | null>(null);
   const confirmBeforeDelete = useAppStore((state) => state.behaviorSettings.confirmBeforeDelete);
+
+  const formatBadge = FORMAT_BADGES[configFile.format] || FORMAT_BADGES.json;
+
+  // Build tooltip content
+  const tooltipContent = configFile.path + (configFile.jsonPath ? ` → ${configFile.jsonPath}` : '');
 
   useEffect(() => {
     if (!menuOpen) return;
@@ -309,8 +325,34 @@ const ConfigFileItem = memo(function ConfigFileItem({ configFile, isActive, onSe
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [menuOpen]);
 
+  // Cleanup tooltip timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (tooltipTimeoutRef.current) {
+        clearTimeout(tooltipTimeoutRef.current);
+      }
+    };
+  }, []);
+
+  const handleMouseEnter = () => {
+    tooltipTimeoutRef.current = window.setTimeout(() => {
+      setShowTooltip(true);
+    }, 500); // 500ms delay before showing tooltip
+  };
+
+  const handleMouseLeave = () => {
+    if (tooltipTimeoutRef.current) {
+      clearTimeout(tooltipTimeoutRef.current);
+    }
+    setShowTooltip(false);
+  };
+
   return (
-    <div className="relative group/config">
+    <div
+      className="relative group/config"
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+    >
       <button
         type="button"
         onClick={onSelect}
@@ -323,9 +365,24 @@ const ConfigFileItem = memo(function ConfigFileItem({ configFile, isActive, onSe
           }`}
       >
         {isActive && <div className="absolute left-0 top-1/2 -translate-y-1/2 h-4 w-0.5 bg-indigo-500 rounded-full" />}
-        <span className="text-base opacity-75">{configFile.icon || '📄'}</span>
-        <span className="truncate font-medium flex-1 pl-1" title={configFile.label}>{configFile.label}</span>
+        {/* Format badge instead of emoji icon */}
+        <span className={`flex-shrink-0 px-1 py-0.5 text-[9px] font-semibold rounded ${formatBadge.color} ${formatBadge.bg}`}>
+          {formatBadge.label}
+        </span>
+        <span className="truncate font-medium flex-1" title={configFile.label}>{configFile.label}</span>
       </button>
+
+      {/* Tooltip with path and description */}
+      {showTooltip && !menuOpen && (
+        <div className="absolute left-full top-1/2 -translate-y-1/2 ml-2 z-30 pointer-events-none animate-in fade-in duration-150">
+          <div className="bg-slate-900 dark:bg-slate-800 text-white text-xs rounded-lg px-3 py-2 shadow-xl max-w-[280px] border border-slate-700/50">
+            <div className="font-medium text-slate-100 mb-1">{configFile.label}</div>
+            <div className="text-slate-400 text-[10px] font-mono break-all">{tooltipContent}</div>
+          </div>
+          {/* Tooltip arrow */}
+          <div className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-1 w-2 h-2 bg-slate-900 dark:bg-slate-800 rotate-45 border-l border-b border-slate-700/50" />
+        </div>
+      )}
       <button
         type="button"
         onClick={(e) => {
@@ -482,8 +539,8 @@ function CustomToolItem({
           }}
           className={`absolute right-1 top-1/2 -translate-y-1/2 p-1 rounded transition-opacity
                      ${menuOpen
-            ? 'opacity-100 bg-slate-200 dark:bg-slate-700'
-            : 'opacity-0 pointer-events-none group-hover/custom:opacity-100 group-hover/custom:pointer-events-auto group-focus-within/custom:opacity-100 group-focus-within/custom:pointer-events-auto'}
+              ? 'opacity-100 bg-slate-200 dark:bg-slate-700'
+              : 'opacity-0 pointer-events-none group-hover/custom:opacity-100 group-hover/custom:pointer-events-auto group-focus-within/custom:opacity-100 group-focus-within/custom:pointer-events-auto'}
                      hover:bg-slate-200 dark:hover:bg-slate-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500/40`}
           aria-label="Open custom tool menu"
           aria-haspopup="menu"
