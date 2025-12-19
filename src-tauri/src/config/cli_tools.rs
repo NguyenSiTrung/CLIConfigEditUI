@@ -32,6 +32,193 @@ pub struct CliTool {
     pub suggested_configs: Option<Vec<SuggestedConfig>>,
 }
 
+// IDE Extension setting definition
+#[allow(dead_code)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct ExtensionSetting {
+    pub label: String,
+    pub json_path: String,
+    pub icon: Option<String>,
+    pub description: Option<String>,
+}
+
+// IDE Extension definition (reusable across IDEs)
+#[allow(dead_code)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct IdeExtension {
+    pub id: String,
+    pub name: String,
+    pub icon: Option<String>,
+    pub docs_url: Option<String>,
+    pub description: Option<String>,
+    pub settings_prefix: String,
+    pub suggested_settings: Option<Vec<ExtensionSetting>>,
+}
+
+// Extension configuration within an IDE
+#[allow(dead_code)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct IdeExtensionConfig {
+    pub extension_id: String,
+    pub label: String,
+    pub json_path_prefix: String,
+    pub icon: Option<String>,
+    pub description: Option<String>,
+}
+
+// Platform-specific settings paths
+#[allow(dead_code)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct SettingsPaths {
+    pub linux: String,
+    pub macos: String,
+    pub windows: String,
+}
+
+// IDE Platform definition
+#[allow(dead_code)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct IdePlatform {
+    pub id: String,
+    pub name: String,
+    pub icon: Option<String>,
+    pub docs_url: Option<String>,
+    pub description: Option<String>,
+    pub settings_paths: SettingsPaths,
+    pub extensions: Option<Vec<IdeExtensionConfig>>,
+}
+
+// Get IDE Extensions
+#[allow(dead_code)]
+pub fn get_ide_extensions() -> Vec<IdeExtension> {
+    vec![
+        IdeExtension {
+            id: "amp-extension".to_string(),
+            name: "Amp".to_string(),
+            icon: Some("⚡".to_string()),
+            docs_url: Some("https://ampcode.com/manual".to_string()),
+            description: Some("Sourcegraph's AI coding agent extension".to_string()),
+            settings_prefix: "amp".to_string(),
+            suggested_settings: Some(vec![
+                ExtensionSetting {
+                    label: "MCP Servers".to_string(),
+                    json_path: "mcpServers".to_string(),
+                    icon: Some("🔌".to_string()),
+                    description: Some("MCP server configuration".to_string()),
+                },
+                ExtensionSetting {
+                    label: "Permissions".to_string(),
+                    json_path: "permissions".to_string(),
+                    icon: Some("🔒".to_string()),
+                    description: Some("Tool permissions configuration".to_string()),
+                },
+                ExtensionSetting {
+                    label: "MCP Permissions".to_string(),
+                    json_path: "mcpPermissions".to_string(),
+                    icon: Some("🛡️".to_string()),
+                    description: Some("MCP server permissions".to_string()),
+                },
+            ]),
+        },
+    ]
+}
+
+// Get IDE Platforms
+#[allow(dead_code)]
+pub fn get_ide_platforms() -> Vec<IdePlatform> {
+    vec![
+        IdePlatform {
+            id: "vscode".to_string(),
+            name: "VS Code".to_string(),
+            icon: Some("💻".to_string()),
+            docs_url: Some("https://code.visualstudio.com/docs/configure/settings".to_string()),
+            description: Some("Visual Studio Code".to_string()),
+            settings_paths: SettingsPaths {
+                linux: "~/.config/Code/User/settings.json".to_string(),
+                macos: "~/Library/Application Support/Code/User/settings.json".to_string(),
+                windows: "%APPDATA%/Code/User/settings.json".to_string(),
+            },
+            extensions: Some(vec![
+                IdeExtensionConfig {
+                    extension_id: "amp-extension".to_string(),
+                    label: "Amp Extension".to_string(),
+                    json_path_prefix: "amp".to_string(),
+                    icon: Some("⚡".to_string()),
+                    description: Some("Amp AI coding agent settings".to_string()),
+                },
+            ]),
+        },
+        IdePlatform {
+            id: "cursor".to_string(),
+            name: "Cursor".to_string(),
+            icon: Some("▢".to_string()),
+            docs_url: Some("https://cursor.com/docs".to_string()),
+            description: Some("AI-first code editor (VS Code fork)".to_string()),
+            settings_paths: SettingsPaths {
+                linux: "~/.config/Cursor/User/settings.json".to_string(),
+                macos: "~/Library/Application Support/Cursor/User/settings.json".to_string(),
+                windows: "%APPDATA%/Cursor/User/settings.json".to_string(),
+            },
+            extensions: Some(vec![
+                IdeExtensionConfig {
+                    extension_id: "amp-extension".to_string(),
+                    label: "Amp Extension".to_string(),
+                    json_path_prefix: "amp".to_string(),
+                    icon: Some("⚡".to_string()),
+                    description: Some("Amp AI coding agent settings".to_string()),
+                },
+            ]),
+        },
+        IdePlatform {
+            id: "windsurf".to_string(),
+            name: "Windsurf".to_string(),
+            icon: Some("🏄".to_string()),
+            docs_url: Some("https://docs.windsurf.com/".to_string()),
+            description: Some("AI-native IDE by Codeium".to_string()),
+            settings_paths: SettingsPaths {
+                linux: "~/.config/Windsurf/User/settings.json".to_string(),
+                macos: "~/Library/Application Support/Windsurf/User/settings.json".to_string(),
+                windows: "%APPDATA%/Windsurf/User/settings.json".to_string(),
+            },
+            extensions: Some(vec![
+                IdeExtensionConfig {
+                    extension_id: "amp-extension".to_string(),
+                    label: "Amp Extension".to_string(),
+                    json_path_prefix: "amp".to_string(),
+                    icon: Some("⚡".to_string()),
+                    description: Some("Amp AI coding agent settings".to_string()),
+                },
+            ]),
+        },
+        IdePlatform {
+            id: "antigravity".to_string(),
+            name: "Antigravity".to_string(),
+            icon: Some("🚀".to_string()),
+            docs_url: Some("https://antigravity.google/".to_string()),
+            description: Some("Google's agent-first development platform".to_string()),
+            settings_paths: SettingsPaths {
+                linux: "~/.config/Antigravity/User/settings.json".to_string(),
+                macos: "~/Library/Application Support/Antigravity/User/settings.json".to_string(),
+                windows: "%APPDATA%/Antigravity/User/settings.json".to_string(),
+            },
+            extensions: Some(vec![
+                IdeExtensionConfig {
+                    extension_id: "amp-extension".to_string(),
+                    label: "Amp Extension".to_string(),
+                    json_path_prefix: "amp".to_string(),
+                    icon: Some("⚡".to_string()),
+                    description: Some("Amp AI coding agent settings".to_string()),
+                },
+            ]),
+        },
+    ]
+}
+
 pub fn get_cli_tools() -> Vec<CliTool> {
     vec![
         CliTool {

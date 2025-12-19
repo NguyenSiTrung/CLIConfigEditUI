@@ -1,4 +1,124 @@
-import { CliTool } from '@/types';
+import { CliTool, IdeExtension, IdePlatform } from '@/types';
+
+// IDE Extensions that can be installed across multiple IDEs
+export const IDE_EXTENSIONS: IdeExtension[] = [
+  {
+    id: 'amp-extension',
+    name: 'Amp',
+    icon: '⚡',
+    docsUrl: 'https://ampcode.com/manual',
+    description: "Sourcegraph's AI coding agent extension",
+    settingsPrefix: 'amp',
+    suggestedSettings: [
+      {
+        label: 'MCP Servers',
+        jsonPath: 'mcpServers',
+        icon: '🔌',
+        description: 'MCP server configuration',
+      },
+      {
+        label: 'Permissions',
+        jsonPath: 'permissions',
+        icon: '🔒',
+        description: 'Tool permissions configuration',
+      },
+      {
+        label: 'MCP Permissions',
+        jsonPath: 'mcpPermissions',
+        icon: '🛡️',
+        description: 'MCP server permissions',
+      },
+    ],
+  },
+];
+
+// IDE Platforms with extension support
+export const IDE_PLATFORMS: IdePlatform[] = [
+  {
+    id: 'vscode',
+    name: 'VS Code',
+    icon: '💻',
+    docsUrl: 'https://code.visualstudio.com/docs/configure/settings',
+    description: 'Visual Studio Code',
+    settingsPaths: {
+      linux: '~/.config/Code/User/settings.json',
+      macos: '~/Library/Application Support/Code/User/settings.json',
+      windows: '%APPDATA%/Code/User/settings.json',
+    },
+    extensions: [
+      {
+        extensionId: 'amp-extension',
+        label: 'Amp Extension',
+        jsonPathPrefix: 'amp',
+        icon: '⚡',
+        description: 'Amp AI coding agent settings',
+      },
+    ],
+  },
+  {
+    id: 'cursor',
+    name: 'Cursor',
+    icon: '▢',
+    docsUrl: 'https://cursor.com/docs',
+    description: 'AI-first code editor (VS Code fork)',
+    settingsPaths: {
+      linux: '~/.config/Cursor/User/settings.json',
+      macos: '~/Library/Application Support/Cursor/User/settings.json',
+      windows: '%APPDATA%/Cursor/User/settings.json',
+    },
+    extensions: [
+      {
+        extensionId: 'amp-extension',
+        label: 'Amp Extension',
+        jsonPathPrefix: 'amp',
+        icon: '⚡',
+        description: 'Amp AI coding agent settings',
+      },
+    ],
+  },
+  {
+    id: 'windsurf',
+    name: 'Windsurf',
+    icon: '🏄',
+    docsUrl: 'https://docs.windsurf.com/',
+    description: 'AI-native IDE by Codeium',
+    settingsPaths: {
+      linux: '~/.config/Windsurf/User/settings.json',
+      macos: '~/Library/Application Support/Windsurf/User/settings.json',
+      windows: '%APPDATA%/Windsurf/User/settings.json',
+    },
+    extensions: [
+      {
+        extensionId: 'amp-extension',
+        label: 'Amp Extension',
+        jsonPathPrefix: 'amp',
+        icon: '⚡',
+        description: 'Amp AI coding agent settings',
+      },
+    ],
+  },
+  {
+    id: 'antigravity',
+    name: 'Antigravity',
+    icon: '🚀',
+    docsUrl: 'https://antigravity.google/',
+    description: 'Google\'s agent-first development platform',
+    settingsPaths: {
+      linux: '~/.config/Antigravity/User/settings.json',
+      macos: '~/Library/Application Support/Antigravity/User/settings.json',
+      windows: '%APPDATA%/Antigravity/User/settings.json',
+    },
+    extensions: [
+      {
+        extensionId: 'amp-extension',
+        label: 'Amp Extension',
+        jsonPathPrefix: 'amp',
+        icon: '⚡',
+        description: 'Amp AI coding agent settings',
+      },
+    ],
+  },
+];
 
 export const CLI_TOOLS: CliTool[] = [
   {

@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { ask } from '@tauri-apps/plugin-dialog';
 import { useAppStore } from '@/stores/app-store';
 import { CliTool, ConfigFile, CustomTool } from '@/types';
+import { IDE_PLATFORMS, IDE_EXTENSIONS } from '@/utils/cli-tools';
 import {
   Search,
   ChevronDown,
@@ -16,6 +17,8 @@ import {
   MoreVertical,
   Sparkles,
   Box,
+  Monitor,
+  Puzzle,
 } from 'lucide-react';
 
 const TOOL_ICONS: Record<string, React.ReactNode> = {
@@ -37,6 +40,7 @@ interface SidebarProps {
   onDeleteCustomTool: (toolId: string) => void;
   onAddCustomToolConfigFile: (tool: CustomTool) => void;
   onEditCustomToolConfigFile: (tool: CustomTool, configFile: ConfigFile) => void;
+  onIdeExtensionConfigSelect?: (platformId: string, extensionId: string, settingPath: string) => void;
 }
 
 export function Sidebar({
@@ -49,6 +53,7 @@ export function Sidebar({
   onDeleteCustomTool,
   onAddCustomToolConfigFile,
   onEditCustomToolConfigFile,
+  onIdeExtensionConfigSelect,
 }: SidebarProps) {
   const {
     activeToolId,
@@ -110,6 +115,11 @@ export function Sidebar({
             ))}
           </ul>
         </div>
+
+        {/* IDE Extensions Section */}
+        <IdeExtensionsSection
+          onExtensionConfigSelect={onIdeExtensionConfigSelect}
+        />
 
         {/* Custom Tools Section */}
         <CustomToolSection
@@ -522,6 +532,163 @@ function CustomToolSection({
               <span>Add custom tool</span>
             </button>
           </li>
+        </ul>
+      )}
+    </div>
+  );
+}
+
+// IDE Extensions Section
+interface IdeExtensionsSectionProps {
+  onExtensionConfigSelect?: (platformId: string, extensionId: string, settingPath: string) => void;
+}
+
+function IdeExtensionsSection({ onExtensionConfigSelect }: IdeExtensionsSectionProps) {
+  const [isExpanded, setIsExpanded] = useState(true);
+  const [expandedPlatforms, setExpandedPlatforms] = useState<Set<string>>(new Set());
+  const [expandedExtensions, setExpandedExtensions] = useState<Set<string>>(new Set());
+
+  const togglePlatform = (platformId: string) => {
+    setExpandedPlatforms(prev => {
+      const next = new Set(prev);
+      if (next.has(platformId)) {
+        next.delete(platformId);
+      } else {
+        next.add(platformId);
+      }
+      return next;
+    });
+  };
+
+  const toggleExtension = (key: string) => {
+    setExpandedExtensions(prev => {
+      const next = new Set(prev);
+      if (next.has(key)) {
+        next.delete(key);
+      } else {
+        next.add(key);
+      }
+      return next;
+    });
+  };
+
+  const getPlatformIcon = (platformId: string) => {
+    switch (platformId) {
+      case 'vscode':
+        return <Monitor className="w-4 h-4 text-blue-500" />;
+      case 'cursor':
+        return <Box className="w-4 h-4 text-purple-500" />;
+      case 'windsurf':
+        return <span className="w-4 h-4 flex items-center justify-center">🏄</span>;
+      case 'antigravity':
+        return <span className="w-4 h-4 flex items-center justify-center">🚀</span>;
+      default:
+        return <Monitor className="w-4 h-4" />;
+    }
+  };
+
+  return (
+    <div className="mb-2">
+      <button
+        onClick={() => setIsExpanded(!isExpanded)}
+        className="w-full px-2 py-1.5 flex items-center justify-between text-xs font-semibold 
+                   dark:text-gray-400 text-slate-500 uppercase tracking-wider dark:hover:text-gray-300 hover:text-slate-700 transition-colors"
+      >
+        <span className="flex items-center gap-1.5">
+          {isExpanded ? (
+            <ChevronDown className="w-3 h-3" />
+          ) : (
+            <ChevronRight className="w-3 h-3" />
+          )}
+          IDE Extensions
+        </span>
+        <span className="px-1.5 py-0.5 text-[10px] bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 rounded-md font-medium">
+          {IDE_PLATFORMS.length}
+        </span>
+      </button>
+
+      {isExpanded && (
+        <ul className="mt-1 space-y-0.5">
+          {IDE_PLATFORMS.map((platform) => (
+            <li key={platform.id}>
+              <button
+                onClick={() => togglePlatform(platform.id)}
+                className="w-full px-2 py-2 text-left flex items-center gap-2 text-sm rounded-lg
+                           transition-all duration-150 group
+                           dark:text-gray-300 text-slate-700 dark:hover:bg-gray-800/50 hover:bg-white hover:shadow-sm"
+              >
+                <span className={`flex-shrink-0 transition-transform duration-200 ${expandedPlatforms.has(platform.id) ? 'rotate-0' : '-rotate-90'}`}>
+                  <ChevronDown className="w-3 h-3 dark:text-gray-500 text-slate-400" />
+                </span>
+                <span className="flex-shrink-0">
+                  {getPlatformIcon(platform.id)}
+                </span>
+                <span className="truncate font-medium flex-1">{platform.name}</span>
+                {platform.extensions && platform.extensions.length > 0 && (
+                  <span className="px-1.5 py-0.5 text-[10px] bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 rounded-md">
+                    {platform.extensions.length}
+                  </span>
+                )}
+              </button>
+
+              {expandedPlatforms.has(platform.id) && platform.extensions && (
+                <ul className="ml-5 mt-1 space-y-0.5 border-l dark:border-gray-700/50 border-slate-200 pl-2">
+                  {platform.extensions.map((extConfig) => {
+                    const extension = IDE_EXTENSIONS.find(e => e.id === extConfig.extensionId);
+                    const extKey = `${platform.id}-${extConfig.extensionId}`;
+                    
+                    return (
+                      <li key={extConfig.extensionId}>
+                        <button
+                          onClick={() => toggleExtension(extKey)}
+                          className="w-full px-2 py-1.5 text-left flex items-center gap-2 text-sm rounded-md
+                                     transition-all duration-150
+                                     dark:text-gray-400 text-slate-600 dark:hover:bg-gray-800/50 hover:bg-white hover:shadow-sm"
+                        >
+                          <span className={`flex-shrink-0 transition-transform duration-200 ${expandedExtensions.has(extKey) ? 'rotate-0' : '-rotate-90'}`}>
+                            <ChevronDown className="w-3 h-3 dark:text-gray-500 text-slate-400" />
+                          </span>
+                          <Puzzle className="w-3 h-3 text-amber-500" />
+                          <span className="truncate font-medium flex-1">{extConfig.label}</span>
+                          {extension?.suggestedSettings && (
+                            <span className="px-1.5 py-0.5 text-[10px] bg-amber-500/15 text-amber-600 dark:text-amber-400 rounded-md">
+                              {extension.suggestedSettings.length}
+                            </span>
+                          )}
+                        </button>
+
+                        {expandedExtensions.has(extKey) && extension?.suggestedSettings && (
+                          <ul className="ml-5 mt-1 space-y-0.5 border-l dark:border-gray-700/50 border-slate-200 pl-2">
+                            {extension.suggestedSettings.map((setting) => (
+                              <li key={setting.jsonPath}>
+                                <button
+                                  onClick={() => onExtensionConfigSelect?.(
+                                    platform.id,
+                                    extConfig.extensionId,
+                                    `${extension.settingsPrefix}.${setting.jsonPath}`
+                                  )}
+                                  className="w-full px-2 py-1.5 text-left flex items-center gap-2 text-xs rounded-md
+                                             transition-all duration-150
+                                             dark:text-gray-500 text-slate-500 dark:hover:bg-gray-800/50 hover:bg-white hover:shadow-sm
+                                             hover:text-blue-500 dark:hover:text-blue-400"
+                                >
+                                  <span className="text-sm">{setting.icon || '⚙️'}</span>
+                                  <span className="truncate flex-1">{setting.label}</span>
+                                  <span className="text-[10px] dark:text-gray-600 text-slate-400 font-mono">
+                                    {extension.settingsPrefix}.{setting.jsonPath}
+                                  </span>
+                                </button>
+                              </li>
+                            ))}
+                          </ul>
+                        )}
+                      </li>
+                    );
+                  })}
+                </ul>
+              )}
+            </li>
+          ))}
         </ul>
       )}
     </div>

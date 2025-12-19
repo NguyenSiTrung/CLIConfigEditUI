@@ -66,3 +66,50 @@ export interface ConfigContent {
   format: ConfigFormat;
   lastModified?: number;
 }
+
+// IDE Platform definitions (VS Code, Cursor, Windsurf, etc.)
+export interface IdePlatform {
+  id: string;
+  name: string;
+  icon?: string;
+  docsUrl?: string;
+  description?: string;
+  // Platform-specific settings.json paths
+  settingsPaths: {
+    linux: string;
+    macos: string;
+    windows: string;
+  };
+  // Extensions that can be installed in this IDE
+  extensions?: IdeExtensionConfig[];
+}
+
+// Extension configuration within an IDE
+export interface IdeExtensionConfig {
+  extensionId: string;        // Reference to IdeExtension.id
+  label: string;              // Display label for this config
+  jsonPathPrefix: string;     // e.g., "amp" for amp.* settings
+  icon?: string;
+  description?: string;
+}
+
+// IDE Extension definition (reusable across IDEs)
+export interface IdeExtension {
+  id: string;
+  name: string;
+  icon?: string;
+  docsUrl?: string;
+  description?: string;
+  // The settings prefix used in IDE settings.json (e.g., "amp" for amp.*)
+  settingsPrefix: string;
+  // Suggested sub-paths within the extension's settings
+  suggestedSettings?: ExtensionSetting[];
+}
+
+// Individual setting within an extension
+export interface ExtensionSetting {
+  label: string;
+  jsonPath: string;           // Relative to extension prefix (e.g., "mcpServers" -> amp.mcpServers)
+  icon?: string;
+  description?: string;
+}
