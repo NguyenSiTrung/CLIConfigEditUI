@@ -45,6 +45,7 @@ interface AppState {
   searchQuery: string;
   expandedTools: Set<string>;
   sidebarCollapsed: boolean;
+  sidebarWidth: number;
   isLoading: boolean;
   error: string | null;
   theme: 'dark' | 'light';
@@ -65,6 +66,7 @@ interface AppState {
   setCurrentJsonPrefix: (prefix: string | null) => void;
   setSearchQuery: (query: string) => void;
   setSidebarCollapsed: (collapsed: boolean) => void;
+  setSidebarWidth: (width: number) => void;
   setLoading: (loading: boolean) => void;
   setError: (error: string | null) => void;
   toggleTheme: () => void;
@@ -111,6 +113,7 @@ export const useAppStore = create<AppState>()(
       searchQuery: '',
       expandedTools: new Set<string>(),
       sidebarCollapsed: false,
+      sidebarWidth: 288,
       isLoading: false,
       error: null,
       theme: 'dark',
@@ -146,6 +149,7 @@ export const useAppStore = create<AppState>()(
       setCurrentJsonPrefix: (prefix) => set({ currentJsonPrefix: prefix }),
       setSearchQuery: (query) => set({ searchQuery: query }),
       setSidebarCollapsed: (collapsed) => set({ sidebarCollapsed: collapsed }),
+      setSidebarWidth: (width) => set({ sidebarWidth: width }),
       setLoading: (loading) => set({ isLoading: loading }),
       setError: (error) => set({ error }),
       toggleTheme: () =>
@@ -310,6 +314,7 @@ export const useAppStore = create<AppState>()(
         toolConfigs: state.toolConfigs,
         customTools: state.customTools,
         sidebarCollapsed: state.sidebarCollapsed,
+        sidebarWidth: state.sidebarWidth,
         theme: state.theme,
         expandedTools: Array.from(state.expandedTools),
         editorSettings: state.editorSettings,

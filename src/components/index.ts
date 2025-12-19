@@ -1,5 +1,5 @@
 export { Header } from './header';
-export { Sidebar } from './sidebar';
+export { Sidebar } from './sidebar/index';
 export { ConfigEditor } from './config-editor';
 export { AddToolModal } from './add-tool-modal';
 export { EditToolModal } from './edit-tool-modal';
