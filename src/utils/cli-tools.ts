@@ -307,4 +307,28 @@ export const CLI_TOOLS: CliTool[] = [
       },
     ],
   },
+  {
+    id: 'droid',
+    name: 'Factory Droid CLI',
+    icon: '🤖',
+    docsUrl: 'https://docs.factory.ai/cli/configuration/settings',
+    description: 'AI coding agent for terminal',
+    suggestedConfigs: [
+      {
+        label: 'Settings',
+        path: '~/.factory/settings.json',
+        format: 'json',
+        icon: '⚙️',
+        description: 'Droid CLI settings and preferences',
+      },
+      {
+        label: 'MCP Servers',
+        path: '~/.factory/mcp.json',
+        format: 'json',
+        icon: '🔌',
+        description: 'MCP (Model Context Protocol) servers',
+        jsonPath: 'mcpServers',
+      },
+    ],
+  },
 ];
