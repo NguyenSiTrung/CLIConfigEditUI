@@ -120,9 +120,12 @@ export function Sidebar({
 
   if (sidebarCollapsed) {
     return (
-      <aside className="w-14 flex flex-col h-full border-r border-slate-200/60 dark:border-slate-800/60 
+      <aside 
+        className="flex flex-col h-full border-r border-slate-200/60 dark:border-slate-800/60 
                        bg-slate-50/80 dark:bg-slate-900/80 backdrop-blur-xl
-                       transition-all duration-300 ease-out">
+                       transition-all duration-300 ease-out flex-shrink-0"
+        style={{ width: '56px', minWidth: '56px' }}
+      >
         <div className="p-2 flex justify-center">
           <button
             type="button"
@@ -148,7 +151,7 @@ export function Sidebar({
       className="flex flex-col h-full border-r border-slate-200/60 dark:border-slate-800/60 
                 bg-gradient-to-b from-slate-50/90 to-slate-100/50 
                 dark:from-slate-900/90 dark:to-slate-900/60 
-                backdrop-blur-xl relative"
+                backdrop-blur-xl relative flex-shrink-0"
       style={{ width: `${sidebarWidth}px`, minWidth: `${MIN_WIDTH}px`, maxWidth: `${MAX_WIDTH}px` }}
     >
       {/* Header with search and collapse button */}
