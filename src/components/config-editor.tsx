@@ -61,6 +61,7 @@ export function ConfigEditor({
     error,
     theme,
     editorSettings,
+    sidebarCollapsed,
   } = useAppStore();
 
   const [showBackupModal, setShowBackupModal] = useState(false);
@@ -82,6 +83,15 @@ export function ConfigEditor({
   useEffect(() => {
     checkBackups();
   }, [checkBackups]);
+
+  // Trigger resize when sidebar collapses/expands to fix Monaco layout
+  useEffect(() => {
+    // Small delay to let the CSS transition complete
+    const timer = setTimeout(() => {
+      window.dispatchEvent(new Event('resize'));
+    }, 350);
+    return () => clearTimeout(timer);
+  }, [sidebarCollapsed]);
 
   const handleBackupRestored = useCallback(() => {
     onReloadFile?.();
@@ -107,7 +117,7 @@ export function ConfigEditor({
 
   if (isLoading) {
     return (
-      <div className="flex-1 flex items-center justify-center bg-white dark:bg-[#020617]">
+      <div className="flex-1 flex items-center justify-center min-w-0 bg-white dark:bg-[#020617]">
         <div className="flex flex-col items-center gap-4">
           <div className="relative">
             <div className="absolute inset-0 bg-blue-500/20 rounded-full blur-xl animate-pulse"></div>
@@ -121,7 +131,7 @@ export function ConfigEditor({
 
   if (error) {
     return (
-      <div className="flex-1 flex items-center justify-center bg-white dark:bg-[#020617]">
+      <div className="flex-1 flex items-center justify-center min-w-0 bg-white dark:bg-[#020617]">
         <div className="text-center max-w-md p-8 glass-panel rounded-2xl shadow-xl">
           <div className="w-16 h-16 mx-auto mb-6 rounded-full bg-red-100 dark:bg-red-500/10 flex items-center justify-center">
             <AlertCircle className="w-8 h-8 text-red-500 dark:text-red-400" />
@@ -143,7 +153,7 @@ export function ConfigEditor({
   const formatInfo = FORMAT_LABELS[currentFormat];
 
   return (
-    <div className="flex-1 flex flex-col h-full bg-white dark:bg-[#020617] relative" onKeyDown={handleKeyDown}>
+    <div className="flex-1 flex flex-col h-full min-w-0 bg-white dark:bg-[#020617] relative" onKeyDown={handleKeyDown}>
       {/* Absolute positioning background glow */}
       <div className="absolute top-0 left-0 right-0 h-32 bg-gradient-to-b from-blue-500/5 to-transparent pointer-events-none"></div>
 
@@ -172,7 +182,7 @@ export function ConfigEditor({
 
       {/* Editor Toolbar */}
       <div className="flex items-center justify-between px-5 py-3 border-b border-slate-200/60 dark:border-white/5 z-10 backdrop-blur-sm bg-white/50 dark:bg-[#020617]/50">
-        <div className="flex items-center gap-4 min-w-0">
+        <div className="flex items-center gap-4 min-w-0 flex-1 overflow-hidden">
           <div className="flex items-center gap-3">
             <div className={`flex items-center justify-center w-8 h-8 rounded-lg ${formatInfo.bg}`}>
               <FileCode className={`w-4 h-4 ${formatInfo.color}`} />
@@ -193,7 +203,7 @@ export function ConfigEditor({
           )}
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 flex-shrink-0">
           {hasBackups && (
             <button
               onClick={() => setShowBackupModal(true)}

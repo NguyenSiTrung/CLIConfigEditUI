@@ -6,7 +6,7 @@ interface WelcomeScreenProps {
 
 export function WelcomeScreen({ onAddCustomTool }: WelcomeScreenProps) {
   return (
-    <div className="flex-1 flex flex-col items-center justify-center bg-white dark:bg-[#020617] relative overflow-hidden">
+    <div className="flex-1 flex flex-col items-center justify-center min-w-0 bg-white dark:bg-[#020617] relative overflow-hidden">
       {/* Background decoration */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute -top-[20%] -right-[10%] w-[500px] h-[500px] rounded-full bg-indigo-500/10 blur-[100px]"></div>
