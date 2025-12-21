@@ -1,6 +1,7 @@
-import { memo, useState, useRef, useEffect } from 'react';
+import { memo, useState, useRef, useEffect, useCallback } from 'react';
 import { MoreVertical, Pencil, Trash2 } from 'lucide-react';
 import { ask } from '@tauri-apps/plugin-dialog';
+import { createPortal } from 'react-dom';
 import { ConfigFile } from '@/types';
 import { useAppStore } from '@/stores/app-store';
 
@@ -29,22 +30,61 @@ export const ConfigFileItem = memo(function ConfigFileItem({
 }: ConfigFileItemProps) {
   const [menuOpen, setMenuOpen] = useState(false);
   const [showTooltip, setShowTooltip] = useState(false);
+  const [menuPosition, setMenuPosition] = useState({ top: 0, left: 0 });
   const tooltipTimeoutRef = useRef<number | null>(null);
+  const menuButtonRef = useRef<HTMLButtonElement>(null);
+  const menuRef = useRef<HTMLDivElement>(null);
   const confirmBeforeDelete = useAppStore((state) => state.behaviorSettings.confirmBeforeDelete);
 
   const formatBadge = FORMAT_BADGES[configFile.format] || FORMAT_BADGES.json;
   const tooltipContent = configFile.path + (configFile.jsonPath ? ` → ${configFile.jsonPath}` : '');
 
+  const updateMenuPosition = useCallback(() => {
+    if (menuButtonRef.current) {
+      const rect = menuButtonRef.current.getBoundingClientRect();
+      setMenuPosition({
+        top: rect.bottom + 4,
+        left: rect.right - 130,
+      });
+    }
+  }, []);
+
   useEffect(() => {
     if (!menuOpen) return;
+    
+    updateMenuPosition();
+    
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
         setMenuOpen(false);
       }
     };
+    
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        menuRef.current &&
+        !menuRef.current.contains(event.target as Node) &&
+        menuButtonRef.current &&
+        !menuButtonRef.current.contains(event.target as Node)
+      ) {
+        setMenuOpen(false);
+      }
+    };
+    
+    const handleScroll = () => {
+      setMenuOpen(false);
+    };
+    
     window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [menuOpen]);
+    document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener('scroll', handleScroll, true);
+    
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('scroll', handleScroll, true);
+    };
+  }, [menuOpen, updateMenuPosition]);
 
   useEffect(() => {
     return () => {
@@ -131,6 +171,7 @@ export const ConfigFileItem = memo(function ConfigFileItem({
       )}
 
       <button
+        ref={menuButtonRef}
         type="button"
         onClick={(e) => {
           e.stopPropagation();
@@ -151,23 +192,23 @@ export const ConfigFileItem = memo(function ConfigFileItem({
         <MoreVertical className="w-3.5 h-3.5" />
       </button>
 
-      {menuOpen && (
-        <>
-          <div className="fixed inset-0 z-10" onClick={() => setMenuOpen(false)} />
-          <div 
-            className="absolute right-0 top-full mt-1 z-20 
-                      bg-white/95 dark:bg-slate-800/95 backdrop-blur-xl
-                      rounded-xl shadow-xl py-1.5 min-w-[130px]
-                      border border-slate-200/80 dark:border-slate-700/50
-                      animate-in fade-in zoom-in-95 slide-in-from-top-2 duration-150" 
-            role="menu"
-          >
-            <button
-              type="button"
-              onClick={() => {
-                onEdit();
-                setMenuOpen(false);
-              }}
+      {menuOpen && createPortal(
+        <div
+          ref={menuRef}
+          className="fixed z-50 
+                    bg-white/95 dark:bg-slate-800/95 backdrop-blur-xl
+                    rounded-xl shadow-xl py-1.5 min-w-[130px]
+                    border border-slate-200/80 dark:border-slate-700/50
+                    animate-in fade-in zoom-in-95 slide-in-from-top-2 duration-150"
+          style={{ top: menuPosition.top, left: menuPosition.left }}
+          role="menu"
+        >
+          <button
+            type="button"
+            onClick={() => {
+              onEdit();
+              setMenuOpen(false);
+            }}
               className="w-full px-3 py-2 text-left text-sm flex items-center gap-2.5 rounded-lg mx-1
                         text-slate-700 dark:text-slate-200 
                         hover:bg-indigo-50 dark:hover:bg-indigo-500/10 
@@ -194,8 +235,8 @@ export const ConfigFileItem = memo(function ConfigFileItem({
               <Trash2 className="w-3.5 h-3.5" />
               Delete
             </button>
-          </div>
-        </>
+          </div>,
+        document.body
       )}
     </div>
   );

@@ -1,6 +1,7 @@
 import { memo, useState, useEffect, useRef, useCallback } from 'react';
 import { MoreVertical, Pencil, Trash2, Copy, FolderPlus } from 'lucide-react';
 import { ask } from '@tauri-apps/plugin-dialog';
+import { createPortal } from 'react-dom';
 
 interface ToolActionsMenuProps {
   itemName: string;
@@ -22,11 +23,24 @@ export const ToolActionsMenu = memo(function ToolActionsMenu({
   size = 'sm',
 }: ToolActionsMenuProps) {
   const [isOpen, setIsOpen] = useState(false);
+  const [menuPosition, setMenuPosition] = useState({ top: 0, left: 0 });
   const menuRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
 
+  const updateMenuPosition = useCallback(() => {
+    if (buttonRef.current) {
+      const rect = buttonRef.current.getBoundingClientRect();
+      setMenuPosition({
+        top: rect.bottom + 4,
+        left: rect.right - 140,
+      });
+    }
+  }, []);
+
   useEffect(() => {
     if (!isOpen) return;
+
+    updateMenuPosition();
 
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
@@ -36,19 +50,30 @@ export const ToolActionsMenu = memo(function ToolActionsMenu({
     };
 
     const handleClickOutside = (event: MouseEvent) => {
-      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+      if (
+        menuRef.current &&
+        !menuRef.current.contains(event.target as Node) &&
+        buttonRef.current &&
+        !buttonRef.current.contains(event.target as Node)
+      ) {
         setIsOpen(false);
       }
     };
 
+    const handleScroll = () => {
+      setIsOpen(false);
+    };
+
     window.addEventListener('keydown', handleKeyDown);
     document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener('scroll', handleScroll, true);
     
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
       document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('scroll', handleScroll, true);
     };
-  }, [isOpen]);
+  }, [isOpen, updateMenuPosition]);
 
   const handleDelete = useCallback(async () => {
     setIsOpen(false);
@@ -69,7 +94,7 @@ export const ToolActionsMenu = memo(function ToolActionsMenu({
   const menuPadding = size === 'sm' ? 'py-1' : 'py-1.5';
 
   return (
-    <div ref={menuRef} className="relative">
+    <div className="relative">
       <button
         ref={buttonRef}
         type="button"
@@ -89,96 +114,93 @@ export const ToolActionsMenu = memo(function ToolActionsMenu({
         <MoreVertical className={iconSize} />
       </button>
 
-      {isOpen && (
-        <>
-          <div 
-            className="fixed inset-0 z-10" 
-            onClick={() => setIsOpen(false)} 
-          />
-          <div 
-            className={`absolute right-0 top-full mt-1 z-20 
-                       bg-white/95 dark:bg-slate-800/95 backdrop-blur-xl
-                       rounded-xl shadow-xl ${menuPadding} min-w-[140px]
-                       border border-slate-200/80 dark:border-slate-700/50
-                       animate-in fade-in zoom-in-95 slide-in-from-top-2 duration-150`}
-            role="menu"
-          >
-            {onAddConfig && (
+      {isOpen && createPortal(
+        <div
+          ref={menuRef}
+          className={`fixed z-50 
+                     bg-white/95 dark:bg-slate-800/95 backdrop-blur-xl
+                     rounded-xl shadow-xl ${menuPadding} min-w-[140px]
+                     border border-slate-200/80 dark:border-slate-700/50
+                     animate-in fade-in zoom-in-95 slide-in-from-top-2 duration-150`}
+          style={{ top: menuPosition.top, left: menuPosition.left }}
+          role="menu"
+        >
+          {onAddConfig && (
+            <button
+              type="button"
+              onClick={() => {
+                onAddConfig();
+                setIsOpen(false);
+              }}
+              className="w-full px-3 py-2 text-left text-sm flex items-center gap-2.5 rounded-lg
+                        text-slate-700 dark:text-slate-200 
+                        hover:bg-indigo-50 dark:hover:bg-indigo-500/10 
+                        hover:text-indigo-600 dark:hover:text-indigo-400
+                        transition-colors duration-150"
+              role="menuitem"
+            >
+              <FolderPlus className={iconSize} />
+              Add Config
+            </button>
+          )}
+          
+          {onEdit && (
+            <button
+              type="button"
+              onClick={() => {
+                onEdit();
+                setIsOpen(false);
+              }}
+              className="w-full px-3 py-2 text-left text-sm flex items-center gap-2.5 rounded-lg
+                        text-slate-700 dark:text-slate-200 
+                        hover:bg-indigo-50 dark:hover:bg-indigo-500/10 
+                        hover:text-indigo-600 dark:hover:text-indigo-400
+                        transition-colors duration-150"
+              role="menuitem"
+            >
+              <Pencil className={iconSize} />
+              Edit
+            </button>
+          )}
+          
+          {onDuplicate && (
+            <button
+              type="button"
+              onClick={() => {
+                onDuplicate();
+                setIsOpen(false);
+              }}
+              className="w-full px-3 py-2 text-left text-sm flex items-center gap-2.5 rounded-lg
+                        text-slate-700 dark:text-slate-200 
+                        hover:bg-slate-100 dark:hover:bg-slate-700/50 
+                        transition-colors duration-150"
+              role="menuitem"
+            >
+              <Copy className={iconSize} />
+              Duplicate
+            </button>
+          )}
+          
+          {onDelete && (
+            <>
+              <div className="my-1 mx-2 border-t border-slate-200/80 dark:border-slate-700/50" />
               <button
                 type="button"
-                onClick={() => {
-                  onAddConfig();
-                  setIsOpen(false);
-                }}
+                onClick={handleDelete}
                 className="w-full px-3 py-2 text-left text-sm flex items-center gap-2.5 rounded-lg
-                          text-slate-700 dark:text-slate-200 
-                          hover:bg-indigo-50 dark:hover:bg-indigo-500/10 
-                          hover:text-indigo-600 dark:hover:text-indigo-400
+                          text-rose-500 dark:text-rose-400
+                          hover:bg-rose-50 dark:hover:bg-rose-900/20 
+                          hover:text-rose-600 dark:hover:text-rose-300
                           transition-colors duration-150"
                 role="menuitem"
               >
-                <FolderPlus className={iconSize} />
-                Add Config
+                <Trash2 className={iconSize} />
+                Delete
               </button>
-            )}
-            
-            {onEdit && (
-              <button
-                type="button"
-                onClick={() => {
-                  onEdit();
-                  setIsOpen(false);
-                }}
-                className="w-full px-3 py-2 text-left text-sm flex items-center gap-2.5 rounded-lg
-                          text-slate-700 dark:text-slate-200 
-                          hover:bg-indigo-50 dark:hover:bg-indigo-500/10 
-                          hover:text-indigo-600 dark:hover:text-indigo-400
-                          transition-colors duration-150"
-                role="menuitem"
-              >
-                <Pencil className={iconSize} />
-                Edit
-              </button>
-            )}
-            
-            {onDuplicate && (
-              <button
-                type="button"
-                onClick={() => {
-                  onDuplicate();
-                  setIsOpen(false);
-                }}
-                className="w-full px-3 py-2 text-left text-sm flex items-center gap-2.5 rounded-lg
-                          text-slate-700 dark:text-slate-200 
-                          hover:bg-slate-100 dark:hover:bg-slate-700/50 
-                          transition-colors duration-150"
-                role="menuitem"
-              >
-                <Copy className={iconSize} />
-                Duplicate
-              </button>
-            )}
-            
-            {onDelete && (
-              <>
-                <div className="my-1 mx-2 border-t border-slate-200/80 dark:border-slate-700/50" />
-                <button
-                  type="button"
-                  onClick={handleDelete}
-                  className="w-full px-3 py-2 text-left text-sm flex items-center gap-2.5 rounded-lg
-                            text-rose-500 dark:text-rose-400
-                            hover:bg-rose-50 dark:hover:bg-rose-900/20 
-                            hover:text-rose-600 dark:hover:text-rose-300
-                            transition-colors duration-150"
-                  role="menuitem"
-                >
-                  <Trash2 className={iconSize} />
-                  Delete
-                </button>
-              </>
-            )}
-          </div>
-        </>
+            </>
+          )}
+        </div>,
+        document.body
       )}
     </div>
   );

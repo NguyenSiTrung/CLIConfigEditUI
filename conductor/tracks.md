@@ -25,6 +25,9 @@ This file lists all development tracks (features, bugs, improvements) for CLI Co
 
 ## Archived Tracks
 
+### [x] dropdown-menu-bugs_20251221 - Config File Dropdown Menu UI Bugs
+*Archived: 2025-12-21 | [conductor/archive/dropdown-menu-bugs_20251221/](conductor/archive/dropdown-menu-bugs_20251221/)*
+
 ### [x] copilot-cli-predefine_20251221 - Update GitHub Copilot CLI predefined configuration
 *Archived: 2025-12-21 | [conductor/archive/copilot-cli-predefine_20251221/](conductor/archive/copilot-cli-predefine_20251221/)*
 
