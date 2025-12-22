@@ -30,11 +30,11 @@ When restoring from `.bak`, step 1 overwrites the `.bak` file with current conte
 
 ## Phase 3: Testing and Verification
 
-- [ ] Task 3.1: Manual testing
-  - [ ] Sub-task 3.1.1: Create a config file and make changes (generate backup)
-  - [ ] Sub-task 3.1.2: Open History, select backup, click Restore
-  - [ ] Sub-task 3.1.3: Verify config file now has backup content
-  - [ ] Sub-task 3.1.4: Verify backup file is unchanged
+- [x] Task 3.1: Manual testing ✓
+  - [x] Sub-task 3.1.1: Create a config file and make changes (generate backup)
+  - [x] Sub-task 3.1.2: Open History, select backup, click Restore
+  - [x] Sub-task 3.1.3: Verify config file now has backup content
+  - [x] Sub-task 3.1.4: Verify backup file is unchanged
 
 - [x] Task 3.2: Code quality checks
   - [x] Sub-task 3.2.1: Run `pnpm typecheck` ✓

@@ -33,10 +33,10 @@ The "Restore this backup" feature in the History panel has reversed logic - it o
 
 ## Acceptance Criteria
 
-- [ ] Clicking "Restore this backup" writes backup content to current config path
-- [ ] Backup file remains intact after restore
-- [ ] Editor reflects the restored content immediately
-- [ ] Success toast confirms restore operation
+- [x] Clicking "Restore this backup" writes backup content to current config path
+- [x] Backup file remains intact after restore
+- [x] Editor reflects the restored content immediately
+- [x] Success toast confirms restore operation
 
 ## Out of Scope
 

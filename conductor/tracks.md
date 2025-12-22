@@ -13,7 +13,7 @@ This file lists all development tracks (features, bugs, improvements) for CLI Co
 
 ## Active Tracks
 
-### [~] backup-restore-fix_20251222 - Fix Backup Restore Logic (Reversed File Operations)
+### [x] backup-restore-fix_20251222 - Fix Backup Restore Logic (Reversed File Operations)
 *Priority: 🔴 Critical | Link: [./conductor/tracks/backup-restore-fix_20251222/](./conductor/tracks/backup-restore-fix_20251222/)*
 
 ---
