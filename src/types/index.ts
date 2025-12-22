@@ -138,3 +138,99 @@ export interface VersionMetadata {
   source: VersionSource;
   isDefault: boolean;
 }
+
+// ============================================
+// MCP Settings Sync Types
+// ============================================
+
+// MCP Server configuration
+export interface McpServer {
+  name: string;
+  command: string;
+  args?: string[];
+  env?: Record<string, string>;
+  disabled?: boolean;
+  url?: string;
+  target?: string;
+  extra?: Record<string, unknown>;
+}
+
+// Source mode for MCP servers
+export type McpSourceMode = 'claude' | 'app-managed';
+
+// MCP configuration stored in app
+export interface McpConfig {
+  sourceMode: McpSourceMode;
+  servers: McpServer[];
+  enabledTools: string[]; // Tool IDs that are enabled for sync
+}
+
+// Tool format type for MCP config
+export type McpToolFormat = 'standard' | 'copilot' | 'opencode';
+
+// MCP tool information with format details
+export interface McpToolInfo {
+  toolId: string;
+  configPath: string;
+  jsonPath: string;
+  format: McpToolFormat;
+  name: string;
+}
+
+// Sync status for a tool
+export type McpSyncStatus = 'synced' | 'out-of-sync' | 'conflicts' | 'not-installed' | 'no-mcp';
+
+// MCP status for a tool
+export interface McpToolStatus {
+  toolId: string;
+  name: string;
+  installed: boolean;
+  configPath: string;
+  syncStatus: McpSyncStatus;
+  serverCount: number;
+  enabled: boolean;
+}
+
+// Conflict between source and target servers
+export interface McpServerConflict {
+  serverName: string;
+  sourceServer: McpServer;
+  targetServer: McpServer;
+  toolId: string;
+}
+
+// Merge result showing what would change
+export interface McpMergeResult {
+  toolId: string;
+  added: McpServer[];     // Servers to add
+  kept: McpServer[];      // Servers already present
+  conflicts: McpServerConflict[];
+}
+
+// Preview of sync changes for a tool
+export interface McpSyncPreview {
+  toolId: string;
+  toolName: string;
+  mergeResult: McpMergeResult;
+  hasChanges: boolean;
+}
+
+// Conflict resolution choice
+export type McpConflictResolution = 'use-source' | 'use-target' | 'use-custom';
+
+// Result of sync operation
+export interface McpSyncResult {
+  toolId: string;
+  success: boolean;
+  message: string;
+  serversWritten: number;
+}
+
+// Full config content preview
+export interface McpConfigPreview {
+  toolId: string;
+  toolName: string;
+  configPath: string;
+  currentContent: string;
+  previewContent: string;
+}

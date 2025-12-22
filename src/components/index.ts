@@ -1,4 +1,5 @@
 export { Header } from './header';
+export type { AppView } from './header';
 export { Sidebar } from './sidebar/index';
 export { ConfigEditor } from './config-editor';
 export { AddToolModal } from './add-tool-modal';
@@ -14,3 +15,4 @@ export { VersionsTab } from './versions-tab';
 export { VersionListItem } from './version-list-item';
 export { SaveVersionDialog } from './save-version-dialog';
 export { VersionDiffView } from './version-diff-view';
+export { McpSettingsPanel } from './mcp';

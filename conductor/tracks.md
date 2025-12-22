@@ -13,7 +13,11 @@ This file lists all development tracks (features, bugs, improvements) for CLI Co
 
 ## Active Tracks
 
-*No active tracks.*
+---
+
+## [~] Track: MCP Settings Sync
+*Link: [./conductor/tracks/mcp-sync_20251222/](./conductor/tracks/mcp-sync_20251222/)*
+*Priority: 🔴 Critical*
 
 ---
 

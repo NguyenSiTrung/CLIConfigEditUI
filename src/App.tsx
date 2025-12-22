@@ -10,7 +10,9 @@ import {
   SettingsModal,
   ToastContainer,
   toast,
+  McpSettingsPanel,
 } from '@/components';
+import type { AppView } from '@/components';
 import { useAppStore } from '@/stores/app-store';
 import { useFileWatcher } from '@/hooks';
 import { invoke } from '@tauri-apps/api/core';
@@ -42,6 +44,7 @@ function App() {
   const [addConfigFileTool, setAddConfigFileTool] = useState<CliTool | CustomTool | null>(null);
   const [editingConfigFile, setEditingConfigFile] = useState<{ tool: CliTool | CustomTool; configFile: ConfigFile } | null>(null);
   const [externalChangeDetected, setExternalChangeDetected] = useState(false);
+  const [currentView, setCurrentView] = useState<AppView>('editor');
 
   const {
     setActiveToolId,
@@ -430,29 +433,39 @@ function App() {
 
   return (
     <div className="h-full flex flex-col dark:bg-[#020617] bg-slate-50 overflow-hidden text-slate-900 dark:text-slate-100 font-sans selection:bg-indigo-500/30">
-      <Header onSettingsClick={() => setIsSettingsOpen(true)} />
-      <div className="flex-1 flex min-h-0">
-        <Sidebar
-          onConfigFileSelect={handleConfigFileSelect}
-          onAddConfigFile={handleAddConfigFile}
-          onEditConfigFile={handleEditConfigFile}
-          onDeleteConfigFile={handleDeleteConfigFile}
-          onAddCustomTool={() => setIsAddToolModalOpen(true)}
-          onEditCustomTool={handleEditCustomTool}
-          onDeleteCustomTool={handleDeleteCustomTool}
-          onAddCustomToolConfigFile={handleAddCustomToolConfigFile}
-          onEditCustomToolConfigFile={handleEditCustomToolConfigFile}
-          onIdeExtensionConfigSelect={handleIdeExtensionConfigSelect}
-        />
-        <ConfigEditor
-          onSave={handleSave}
-          onFormat={handleFormat}
-          onAddCustomTool={() => setIsAddToolModalOpen(true)}
-          externalChangeDetected={externalChangeDetected}
-          onReloadFile={handleReloadFile}
-          onDismissExternalChange={handleDismissExternalChange}
-        />
-      </div>
+      <Header 
+        onSettingsClick={() => setIsSettingsOpen(true)}
+        currentView={currentView}
+        onViewChange={setCurrentView}
+      />
+      {currentView === 'editor' ? (
+        <div className="flex-1 flex min-h-0">
+          <Sidebar
+            onConfigFileSelect={handleConfigFileSelect}
+            onAddConfigFile={handleAddConfigFile}
+            onEditConfigFile={handleEditConfigFile}
+            onDeleteConfigFile={handleDeleteConfigFile}
+            onAddCustomTool={() => setIsAddToolModalOpen(true)}
+            onEditCustomTool={handleEditCustomTool}
+            onDeleteCustomTool={handleDeleteCustomTool}
+            onAddCustomToolConfigFile={handleAddCustomToolConfigFile}
+            onEditCustomToolConfigFile={handleEditCustomToolConfigFile}
+            onIdeExtensionConfigSelect={handleIdeExtensionConfigSelect}
+          />
+          <ConfigEditor
+            onSave={handleSave}
+            onFormat={handleFormat}
+            onAddCustomTool={() => setIsAddToolModalOpen(true)}
+            externalChangeDetected={externalChangeDetected}
+            onReloadFile={handleReloadFile}
+            onDismissExternalChange={handleDismissExternalChange}
+          />
+        </div>
+      ) : (
+        <div className="flex-1 min-h-0">
+          <McpSettingsPanel />
+        </div>
+      )}
       <AddToolModal
         isOpen={isAddToolModalOpen}
         onClose={() => setIsAddToolModalOpen(false)}

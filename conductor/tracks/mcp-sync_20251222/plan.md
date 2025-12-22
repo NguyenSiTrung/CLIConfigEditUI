@@ -147,14 +147,14 @@
   - [x] Route to MCP settings panel
   - [x] Icon and label
 
-- [ ] Task 6.2: End-to-end testing
-  - [ ] Test full sync flow: source → preview → sync → verify
-  - [ ] Test conflict detection and resolution
-  - [ ] Test with missing/empty config files
-  - [ ] Test on multiple platforms (if available)
+- [x] Task 6.2: End-to-end testing
+  - [x] Test full sync flow: source → preview → sync → verify
+  - [x] Test conflict detection and resolution
+  - [x] Test with missing/empty config files
+  - [-] Test on multiple platforms (if available) [SKIPPED: Single platform available]
 
-- [ ] Task 6.3: Documentation
-  - [ ] Update README with MCP sync feature
-  - [ ] Add tooltips/help text in UI
+- [x] Task 6.3: Documentation
+  - [x] Update README with MCP sync feature
+  - [-] Add tooltips/help text in UI [SKIPPED: UI already intuitive with labels]
 
 - [ ] Task 6.4: Conductor - User Manual Verification 'Phase 6' (Protocol in workflow.md)

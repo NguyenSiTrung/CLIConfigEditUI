@@ -37,6 +37,7 @@ CLI Config Editor provides a unified interface to:
 - ✅ Toast notifications
 - ✅ Persistent settings (theme, custom tools)
 - ✅ **Config file versioning** - Save, compare, and switch between config snapshots
+- ✅ **MCP Settings Sync** - Sync MCP server configurations across all AI coding tools
 
 ## Supported Platforms
 
@@ -182,6 +183,39 @@ Save and manage multiple versions of each configuration file:
 4. Select versions to compare or click **Edit/Apply** to use them
 
 Versions are stored in the app's data directory and persist across sessions.
+
+## MCP Settings Sync
+
+Manage and synchronize MCP (Model Context Protocol) server configurations across all your AI coding tools with automatic format conversion.
+
+| Feature | Description |
+|---------|-------------|
+| **Source Modes** | Import from Claude (`~/.claude.json`) or maintain app-managed list |
+| **Multi-tool Sync** | Sync to Claude, Gemini CLI, Amp, GitHub Copilot CLI, OpenCode, Factory Droid, Qwen Code |
+| **Format Conversion** | Automatic conversion between Standard, Copilot, and OpenCode formats |
+| **Preview Changes** | See exactly what will change before applying |
+| **Conflict Resolution** | Resolve conflicts when source and target have different configs for the same server |
+| **Backups** | Automatic backup before any modification |
+
+### Supported Tools
+
+| Tool | Config Path | Format |
+|------|-------------|--------|
+| Claude Code | `~/.claude.json` | Standard |
+| Gemini CLI | `~/.gemini/settings.json` | Standard |
+| Amp | `~/.config/amp/settings.json` | Standard (dotted keys) |
+| GitHub Copilot CLI | `~/.copilot/mcp-config.json` | Custom (`servers` key) |
+| OpenCode | `~/.config/opencode/opencode.json` | Custom (`mcp` structure) |
+| Factory Droid CLI | `~/.factory/mcp.json` | Standard |
+| Qwen Code | `~/.qwen/settings.json` | Standard |
+
+### How to Use
+
+1. Click **MCP Sync** in the header to switch to MCP settings view
+2. Choose source: **Claude Import** or **App-Managed**
+3. View tool sync status (green = synced, yellow = out-of-sync)
+4. Click **Sync** on individual tools or **Sync All** for batch sync
+5. Review preview and resolve any conflicts before applying
 
 ## Contributing
 

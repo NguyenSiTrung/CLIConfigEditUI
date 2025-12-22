@@ -1,15 +1,19 @@
-import { Settings, Moon, Sun, Terminal, Sparkles, Minus, Square, X } from 'lucide-react';
+import { Settings, Moon, Sun, Terminal, Sparkles, Minus, Square, X, Server } from 'lucide-react';
 import { useAppStore } from '@/stores/app-store';
 import { useEffect } from 'react';
 import { getCurrentWindow } from '@tauri-apps/api/window';
 
+export type AppView = 'editor' | 'mcp';
+
 interface HeaderProps {
   onSettingsClick?: () => void;
+  currentView?: AppView;
+  onViewChange?: (view: AppView) => void;
 }
 
 const appWindow = getCurrentWindow();
 
-export function Header({ onSettingsClick }: HeaderProps) {
+export function Header({ onSettingsClick, currentView = 'editor', onViewChange }: HeaderProps) {
   const { theme, toggleTheme } = useAppStore();
 
   useEffect(() => {
@@ -45,7 +49,7 @@ export function Header({ onSettingsClick }: HeaderProps) {
       <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-indigo-500/50 to-transparent opacity-50"></div>
 
       {/* Left side - App branding */}
-      <div className="flex items-center gap-3 pl-4 flex-1">
+      <div className="flex items-center gap-3 pl-4">
         <div className="relative group">
           <div className="absolute inset-0 bg-indigo-500 blur opacity-20 dark:opacity-40 group-hover:opacity-60 transition-opacity duration-500"></div>
           <div className="relative flex items-center justify-center w-8 h-8 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 shadow-lg shadow-indigo-500/20 ring-1 ring-white/10">
@@ -59,6 +63,32 @@ export function Header({ onSettingsClick }: HeaderProps) {
             <Sparkles className="w-2.5 h-2.5 text-amber-500" />
           </div>
         </div>
+      </div>
+
+      {/* Center - View tabs */}
+      <div className="flex-1 flex items-center justify-center gap-1">
+        <button
+          onClick={() => onViewChange?.('editor')}
+          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
+            currentView === 'editor'
+              ? 'bg-indigo-100 dark:bg-indigo-500/20 text-indigo-700 dark:text-indigo-300'
+              : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-white/5'
+          }`}
+        >
+          <Terminal className="w-3.5 h-3.5" />
+          Configs
+        </button>
+        <button
+          onClick={() => onViewChange?.('mcp')}
+          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
+            currentView === 'mcp'
+              ? 'bg-indigo-100 dark:bg-indigo-500/20 text-indigo-700 dark:text-indigo-300'
+              : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-white/5'
+          }`}
+        >
+          <Server className="w-3.5 h-3.5" />
+          MCP Sync
+        </button>
       </div>
 
       {/* Right side - Actions and window controls */}
