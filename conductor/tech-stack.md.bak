@@ -1,7 +1,5 @@
 # Tech Stack
 
-> **Last Refreshed:** 2025-12-22 - Context synced with codebase
-
 ## Overview
 
 CLI Config Editor is a Tauri v2 desktop application with a Rust backend and React TypeScript frontend.
@@ -51,7 +49,6 @@ interface AppState {
 | serde_json | 1.x | JSON parsing |
 | thiserror | 1.x | Error handling |
 | dirs | 5.x | Cross-platform directory resolution |
-| uuid | 1.x | UUID generation (for versioning) |
 
 ### Tauri Plugins
 
@@ -102,17 +99,14 @@ cd src-tauri && cargo test     # Rust tests
 ```
 src/                    # Frontend (TypeScript + React)
 ├── components/         # UI components
-├── constants/          # App constants and CLI tool definitions
-├── hooks/              # Custom React hooks
 ├── stores/             # Zustand stores
 ├── types/              # TypeScript types
-└── utils/              # Utilities
+└── utils/              # Utilities and CLI tool definitions
 
 src-tauri/              # Backend (Rust)
 ├── src/
 │   ├── commands/       # Tauri IPC commands
 │   ├── config/         # CLI tool definitions
-│   ├── versions/       # Config versioning module
 │   └── lib.rs          # App entry point
 ├── capabilities/       # Tauri v2 permissions
 └── Cargo.toml

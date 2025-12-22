@@ -1,0 +1,20 @@
+{
+  "last_refresh": "2025-12-22T00:00:00Z",
+  "scope": "all",
+  "changes_applied": [
+    {
+      "file": "tech-stack.md",
+      "changes": [
+        "Added uuid crate to Backend dependencies",
+        "Updated project structure: added constants/, hooks/, versions/ directories"
+      ]
+    },
+    {
+      "file": "product.md",
+      "changes": [
+        "Added Config versioning as completed MVP feature"
+      ]
+    }
+  ],
+  "next_refresh_hint": "2025-12-24T00:00:00Z"
+}

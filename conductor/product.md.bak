@@ -1,7 +1,5 @@
 # Product: CLI Config Editor
 
-> **Last Refreshed:** 2025-12-22 - Context synced with codebase
-
 ## Vision
 
 A unified desktop application that simplifies managing configuration files for AI coding CLI tools across all major operating systems.
@@ -45,7 +43,6 @@ CLI Config Editor provides a single, intuitive interface to:
 | Dark/Light themes | User preference for UI theme | ✅ |
 | Keyboard shortcuts | Ctrl+S to save, etc. | ✅ |
 | Backup system | Auto-backup before overwriting | ✅ |
-| Config versioning | Save/restore named versions of configs | ✅ |
 
 ## Future Roadmap
 
