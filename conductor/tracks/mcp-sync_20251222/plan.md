@@ -78,7 +78,7 @@
   - [x] `sync_mcp_to_all` - sync to all enabled tools
   - [x] `resolve_mcp_conflict` - resolve a conflict
 
-- [ ] Task 3.5: Conductor - User Manual Verification 'Phase 3' (Protocol in workflow.md)
+- [x] Task 3.5: Conductor - User Manual Verification 'Phase 3' (Protocol in workflow.md)
 
 ## Phase 4: Frontend - MCP Settings UI
 
@@ -104,7 +104,7 @@
   - [x] Toggle between Claude import / App-managed
   - [x] Show source status (e.g., "5 servers from ~/.claude.json")
 
-- [ ] Task 4.5: Conductor - User Manual Verification 'Phase 4' (Protocol in workflow.md)
+- [x] Task 4.5: Conductor - User Manual Verification 'Phase 4' (Protocol in workflow.md)
 
 ## Phase 5: Frontend - Sync UI & Tool Status
 
@@ -138,7 +138,7 @@
   - [x] "Sync All" button with preview option
   - [x] Toast notifications for results
 
-- [ ] Task 5.5: Conductor - User Manual Verification 'Phase 5' (Protocol in workflow.md)
+- [x] Task 5.5: Conductor - User Manual Verification 'Phase 5' (Protocol in workflow.md)
 
 ## Phase 6: Integration & Polish
 
@@ -157,4 +157,4 @@
   - [x] Update README with MCP sync feature
   - [-] Add tooltips/help text in UI [SKIPPED: UI already intuitive with labels]
 
-- [ ] Task 6.4: Conductor - User Manual Verification 'Phase 6' (Protocol in workflow.md)
+- [x] Task 6.4: Conductor - User Manual Verification 'Phase 6' (Protocol in workflow.md)
