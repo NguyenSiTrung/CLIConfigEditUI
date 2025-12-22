@@ -1,0 +1,11 @@
+{
+  "track_id": "mcp-sync_20251222",
+  "type": "feature",
+  "status": "new",
+  "priority": "critical",
+  "depends_on": [],
+  "estimated_hours": null,
+  "created_at": "2025-12-22T12:00:00Z",
+  "updated_at": "2025-12-22T12:00:00Z",
+  "description": "MCP Settings Sync - Sync MCP server configurations across all AI coding tools with format conversion and conflict resolution"
+}
