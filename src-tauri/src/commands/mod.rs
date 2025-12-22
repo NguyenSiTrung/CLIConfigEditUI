@@ -280,13 +280,15 @@ pub fn restore_backup(original_path: String, backup_path: String, create_backup:
         return Err(CommandError::ConfigNotFound(backup_path));
     }
     
+    // Read backup content FIRST (before creating pre-restore backup which might overwrite it)
+    let content = fs::read_to_string(&backup)?;
+    
     // Optionally create a backup of current file before restoring
     if create_backup && original.exists() {
         create_backup_fn(&original, 1)?;
     }
     
-    // Read backup content and write to original
-    let content = fs::read_to_string(&backup)?;
+    // Write the backup content to original
     fs::write(&original, content)?;
     
     Ok(())

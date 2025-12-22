@@ -70,12 +70,8 @@ export const useVersionsStore = create<VersionsState>((set, get) => ({
   },
 
   loadVersion: async (configId, versionId) => {
-    try {
-      const version = await invoke<ConfigVersion>('load_version', { configId, versionId });
-      return version;
-    } catch (error) {
-      throw error;
-    }
+    const version = await invoke<ConfigVersion>('load_version', { configId, versionId });
+    return version;
   },
 
   deleteVersion: async (configId, versionId) => {
