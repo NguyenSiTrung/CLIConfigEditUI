@@ -486,5 +486,46 @@ pub fn get_cli_tools() -> Vec<CliTool> {
                 },
             ]),
         },
+        CliTool {
+            id: "qwen-code".to_string(),
+            name: "Qwen Code".to_string(),
+            icon: Some("🐦".to_string()),
+            docs_url: Some("https://qwenlm.github.io/qwen-code-docs/en/users/overview".to_string()),
+            description: Some("Alibaba's AI coding agent CLI".to_string()),
+            suggested_configs: Some(vec![
+                SuggestedConfig {
+                    label: "Settings (User)".to_string(),
+                    path: "~/.qwen/settings.json".to_string(),
+                    format: ConfigFormat::Json,
+                    icon: Some("⚙️".to_string()),
+                    description: Some("Main user configuration".to_string()),
+                    json_path: None,
+                },
+                SuggestedConfig {
+                    label: "Settings (Project)".to_string(),
+                    path: ".qwen/settings.json".to_string(),
+                    format: ConfigFormat::Json,
+                    icon: Some("📁".to_string()),
+                    description: Some("Project-level configuration".to_string()),
+                    json_path: None,
+                },
+                SuggestedConfig {
+                    label: "MCP Servers".to_string(),
+                    path: "~/.qwen/settings.json".to_string(),
+                    format: ConfigFormat::Json,
+                    icon: Some("🔌".to_string()),
+                    description: Some("MCP server configuration".to_string()),
+                    json_path: Some("mcpServers".to_string()),
+                },
+                SuggestedConfig {
+                    label: "Memory".to_string(),
+                    path: "~/.qwen/QWEN.md".to_string(),
+                    format: ConfigFormat::Md,
+                    icon: Some("📝".to_string()),
+                    description: Some("Global context/memory file".to_string()),
+                    json_path: None,
+                },
+            ]),
+        },
     ]
 }

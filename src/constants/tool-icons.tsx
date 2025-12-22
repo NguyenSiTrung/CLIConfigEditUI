@@ -16,6 +16,8 @@ export const TOOL_ICONS: Record<string, React.ReactNode> = {
   'gh-copilot': <Github className="w-4 h-4" />,
   'cursor': <Box className="w-4 h-4" />,
   'opencode': <span className="w-4 h-4 flex items-center justify-center text-sm">⌬</span>,
+  'droid': <Bot className="w-4 h-4" />,
+  'qwen-code': <span className="w-4 h-4 flex items-center justify-center">🐦</span>,
 };
 
 export const PLATFORM_ICONS: Record<string, React.ReactNode> = {

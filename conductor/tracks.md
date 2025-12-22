@@ -13,7 +13,8 @@ This file lists all development tracks (features, bugs, improvements) for CLI Co
 
 ## Active Tracks
 
-*No active tracks.*
+### [x] qwen-code-cli_20251222 - Add Qwen Code CLI Predefined Configuration
+*Link: [./conductor/tracks/qwen-code-cli_20251222/](./conductor/tracks/qwen-code-cli_20251222/)*
 
 ---
 

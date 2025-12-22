@@ -339,4 +339,42 @@ export const CLI_TOOLS: CliTool[] = [
       },
     ],
   },
+  {
+    id: 'qwen-code',
+    name: 'Qwen Code',
+    icon: '🐦',
+    docsUrl: 'https://qwenlm.github.io/qwen-code-docs/en/users/overview',
+    description: "Alibaba's AI coding agent CLI",
+    suggestedConfigs: [
+      {
+        label: 'Settings (User)',
+        path: '~/.qwen/settings.json',
+        format: 'json',
+        icon: '⚙️',
+        description: 'Main user configuration',
+      },
+      {
+        label: 'Settings (Project)',
+        path: '.qwen/settings.json',
+        format: 'json',
+        icon: '📁',
+        description: 'Project-level configuration',
+      },
+      {
+        label: 'MCP Servers',
+        path: '~/.qwen/settings.json',
+        format: 'json',
+        icon: '🔌',
+        description: 'MCP server configuration',
+        jsonPath: 'mcpServers',
+      },
+      {
+        label: 'Memory',
+        path: '~/.qwen/QWEN.md',
+        format: 'md',
+        icon: '📝',
+        description: 'Global context/memory file',
+      },
+    ],
+  },
 ];
