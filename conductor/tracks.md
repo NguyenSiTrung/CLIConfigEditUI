@@ -25,6 +25,9 @@ This file lists all development tracks (features, bugs, improvements) for CLI Co
 
 ## Archived Tracks
 
+### [x] config-versioning_20251222 - Config File Versioning
+*Archived: 2025-12-22 | [conductor/archive/config-versioning_20251222/](conductor/archive/config-versioning_20251222/)*
+
 ### [x] dropdown-menu-bugs_20251221 - Config File Dropdown Menu UI Bugs
 *Archived: 2025-12-21 | [conductor/archive/dropdown-menu-bugs_20251221/](conductor/archive/dropdown-menu-bugs_20251221/)*
 

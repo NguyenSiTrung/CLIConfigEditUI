@@ -1,7 +1,0 @@
-{
-  "track_id": "sidebar-buttons-obscured_20251221",
-  "type": "bug",
-  "status": "new",
-  "created_at": "2025-12-21T00:00:00Z",
-  "description": "Format and Save buttons are obscured when sidebar is collapsed and expanded while viewing a file"
-}

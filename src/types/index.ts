@@ -113,3 +113,28 @@ export interface ExtensionSetting {
   icon?: string;
   description?: string;
 }
+
+// Config Version - represents a saved version of a config file
+export type VersionSource = 'manual' | 'auto';
+
+export interface ConfigVersion {
+  id: string;                 // Unique version ID (UUID)
+  configId: string;           // Reference to ConfigFile.id
+  name: string;               // User-defined label (e.g., "Work Setup")
+  content: string;            // Full config content
+  description?: string;       // Optional notes about the version
+  timestamp: number;          // Unix timestamp when created/modified
+  source: VersionSource;      // Whether manually or auto-saved
+  isDefault: boolean;         // If true, this version is the default for the config
+}
+
+// Version metadata for list display (excludes content for performance)
+export interface VersionMetadata {
+  id: string;
+  configId: string;
+  name: string;
+  description?: string;
+  timestamp: number;
+  source: VersionSource;
+  isDefault: boolean;
+}

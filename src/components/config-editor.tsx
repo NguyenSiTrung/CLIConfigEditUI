@@ -1,8 +1,10 @@
 import Editor from '@monaco-editor/react';
 import { useAppStore } from '@/stores/app-store';
+import { useVersionsStore } from '@/stores/versions-store';
 import { ConfigFormat } from '@/types';
 import { WelcomeScreen } from './welcome-screen';
 import { BackupModal } from './backup-modal';
+import { VersionsTab } from './versions-tab';
 import { useState, useEffect, useCallback } from 'react';
 import { invoke } from '@tauri-apps/api/core';
 import {
@@ -15,6 +17,7 @@ import {
   History,
   FileCode,
   CheckCircle2,
+  Layers,
 } from 'lucide-react';
 
 const FORMAT_TO_LANGUAGE: Record<ConfigFormat, string> = {
@@ -42,6 +45,8 @@ interface ConfigEditorProps {
   onDismissExternalChange?: () => void;
 }
 
+type EditorTab = 'editor' | 'versions';
+
 export function ConfigEditor({
   onSave,
   onFormat,
@@ -53,9 +58,11 @@ export function ConfigEditor({
   const {
     editorContent,
     setEditorContent,
+    setOriginalContent,
     currentFormat,
     currentFilePath,
     activeToolId,
+    activeConfigFileId,
     isDirty,
     isLoading,
     error,
@@ -63,9 +70,17 @@ export function ConfigEditor({
     editorSettings,
     sidebarCollapsed,
   } = useAppStore();
+  
+  const { setCurrentConfigId } = useVersionsStore();
 
   const [showBackupModal, setShowBackupModal] = useState(false);
   const [hasBackups, setHasBackups] = useState(false);
+  const [activeTab, setActiveTab] = useState<EditorTab>('editor');
+
+  // Sync versions store with current config file
+  useEffect(() => {
+    setCurrentConfigId(activeConfigFileId);
+  }, [activeConfigFileId, setCurrentConfigId]);
 
   const checkBackups = useCallback(async () => {
     if (!currentFilePath) {
@@ -110,6 +125,12 @@ export function ConfigEditor({
       onSave();
     }
   };
+
+  const handleApplyVersion = useCallback((content: string) => {
+    setEditorContent(content);
+    setOriginalContent(content);
+    setActiveTab('editor');
+  }, [setEditorContent, setOriginalContent]);
 
   if (!activeToolId) {
     return <WelcomeScreen onAddCustomTool={onAddCustomTool} />;
@@ -204,7 +225,33 @@ export function ConfigEditor({
         </div>
 
         <div className="flex items-center gap-2 flex-shrink-0">
-          {hasBackups && (
+          {/* Tab Toggle */}
+          <div className="flex items-center bg-slate-100 dark:bg-slate-800 rounded-lg p-0.5 mr-2">
+            <button
+              onClick={() => setActiveTab('editor')}
+              className={`px-3 py-1.5 text-xs font-medium rounded-md transition-all flex items-center gap-1.5
+                ${activeTab === 'editor' 
+                  ? 'bg-white dark:bg-slate-700 text-slate-700 dark:text-slate-200 shadow-sm' 
+                  : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300'
+                }`}
+            >
+              <FileCode className="w-3.5 h-3.5" />
+              Editor
+            </button>
+            <button
+              onClick={() => setActiveTab('versions')}
+              className={`px-3 py-1.5 text-xs font-medium rounded-md transition-all flex items-center gap-1.5
+                ${activeTab === 'versions' 
+                  ? 'bg-white dark:bg-slate-700 text-slate-700 dark:text-slate-200 shadow-sm' 
+                  : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300'
+                }`}
+            >
+              <Layers className="w-3.5 h-3.5" />
+              Versions
+            </button>
+          </div>
+
+          {hasBackups && activeTab === 'editor' && (
             <button
               onClick={() => setShowBackupModal(true)}
               className="px-3 py-1.5 text-xs font-medium flex items-center gap-2 
@@ -217,79 +264,89 @@ export function ConfigEditor({
             </button>
           )}
 
-          <button
-            onClick={onFormat}
-            className="px-3 py-1.5 text-xs font-medium flex items-center gap-2 
-                       bg-white dark:bg-white/5 hover:bg-slate-50 dark:hover:bg-white/10 
-                       text-slate-600 dark:text-slate-300 rounded-lg 
-                       border border-slate-200 dark:border-white/10 transition-all shadow-sm group"
-          >
-            <AlignLeft className="w-3.5 h-3.5 group-hover:text-indigo-500 transition-colors" />
-            Format
-          </button>
+          {activeTab === 'editor' && (
+            <>
+              <button
+                onClick={onFormat}
+                className="px-3 py-1.5 text-xs font-medium flex items-center gap-2 
+                           bg-white dark:bg-white/5 hover:bg-slate-50 dark:hover:bg-white/10 
+                           text-slate-600 dark:text-slate-300 rounded-lg 
+                           border border-slate-200 dark:border-white/10 transition-all shadow-sm group"
+              >
+                <AlignLeft className="w-3.5 h-3.5 group-hover:text-indigo-500 transition-colors" />
+                Format
+              </button>
 
-          <button
-            onClick={onSave}
-            disabled={!isDirty()}
-            className={`px-4 py-1.5 text-xs font-medium flex items-center gap-2 rounded-lg transition-all shadow-sm
-                       ${isDirty()
-                ? 'bg-indigo-600 hover:bg-indigo-500 text-white shadow-indigo-500/25 hover:shadow-indigo-500/40 hover:scale-105 active:scale-95'
-                : 'bg-slate-100 dark:bg-slate-800 text-slate-400 dark:text-slate-600 cursor-not-allowed border border-slate-200 dark:border-slate-700'}`}
-          >
-            {isDirty() ? <Save className="w-3.5 h-3.5" /> : <CheckCircle2 className="w-3.5 h-3.5" />}
-            Save
-          </button>
+              <button
+                onClick={onSave}
+                disabled={!isDirty()}
+                className={`px-4 py-1.5 text-xs font-medium flex items-center gap-2 rounded-lg transition-all shadow-sm
+                           ${isDirty()
+                    ? 'bg-indigo-600 hover:bg-indigo-500 text-white shadow-indigo-500/25 hover:shadow-indigo-500/40 hover:scale-105 active:scale-95'
+                    : 'bg-slate-100 dark:bg-slate-800 text-slate-400 dark:text-slate-600 cursor-not-allowed border border-slate-200 dark:border-slate-700'}`}
+              >
+                {isDirty() ? <Save className="w-3.5 h-3.5" /> : <CheckCircle2 className="w-3.5 h-3.5" />}
+                Save
+              </button>
+            </>
+          )}
         </div>
       </div>
 
-      <div className="flex-1 relative">
-        <Editor
-          height="100%"
-          language={FORMAT_TO_LANGUAGE[currentFormat]}
-          value={editorContent}
-          onChange={handleEditorChange}
-          theme={theme === 'dark' ? 'vs-dark' : 'light'}
-          options={{
-            minimap: { enabled: editorSettings.minimap },
-            fontSize: editorSettings.fontSize || 13,
-            fontFamily: editorSettings.fontFamily || "'JetBrains Mono', 'Fira Code', Consolas, monospace",
-            lineNumbers: editorSettings.lineNumbers,
-            scrollBeyondLastLine: false,
-            automaticLayout: true,
-            tabSize: editorSettings.tabSize,
-            wordWrap: editorSettings.wordWrap,
-            formatOnPaste: true,
-            padding: { top: 16, bottom: 16 },
-            smoothScrolling: true,
-            cursorBlinking: 'smooth',
-            cursorSmoothCaretAnimation: 'on',
-            renderLineHighlight: 'all',
-            lineHeight: 1.6,
-            bracketPairColorization: { enabled: true },
-          }}
-        />
-      </div>
+      {activeTab === 'editor' ? (
+        <>
+          <div className="flex-1 relative">
+            <Editor
+              height="100%"
+              language={FORMAT_TO_LANGUAGE[currentFormat]}
+              value={editorContent}
+              onChange={handleEditorChange}
+              theme={theme === 'dark' ? 'vs-dark' : 'light'}
+              options={{
+                minimap: { enabled: editorSettings.minimap },
+                fontSize: editorSettings.fontSize || 13,
+                fontFamily: editorSettings.fontFamily || "'JetBrains Mono', 'Fira Code', Consolas, monospace",
+                lineNumbers: editorSettings.lineNumbers,
+                scrollBeyondLastLine: false,
+                automaticLayout: true,
+                tabSize: editorSettings.tabSize,
+                wordWrap: editorSettings.wordWrap,
+                formatOnPaste: true,
+                padding: { top: 16, bottom: 16 },
+                smoothScrolling: true,
+                cursorBlinking: 'smooth',
+                cursorSmoothCaretAnimation: 'on',
+                renderLineHighlight: 'all',
+                lineHeight: 1.6,
+                bracketPairColorization: { enabled: true },
+              }}
+            />
+          </div>
 
-      <div className="px-5 py-2 text-[11px] font-medium text-slate-400 dark:text-slate-500 
-                      border-t border-slate-200 dark:border-white/5 bg-white dark:bg-[#020617]
-                      flex items-center justify-between select-none">
-        <div className="flex items-center gap-6">
-          <span className="flex items-center gap-1.5 hover:text-slate-600 dark:hover:text-slate-300 transition-colors cursor-help" title="Path">
-            <span className="w-1.5 h-1.5 rounded-full bg-slate-300 dark:bg-slate-700"></span>
-            {currentFilePath}
-          </span>
-        </div>
-        <div className="flex items-center gap-6">
-          <span className="flex items-center gap-1.5">
-            Ln {lineCount}
-          </span>
-          <span className="flex items-center gap-1.5">
-            {formatBytes(byteSize)}
-          </span>
-          <span className="uppercase opacity-70">UTF-8</span>
-          <span className="uppercase opacity-70">{currentFormat}</span>
-        </div>
-      </div>
+          <div className="px-5 py-2 text-[11px] font-medium text-slate-400 dark:text-slate-500 
+                          border-t border-slate-200 dark:border-white/5 bg-white dark:bg-[#020617]
+                          flex items-center justify-between select-none">
+            <div className="flex items-center gap-6">
+              <span className="flex items-center gap-1.5 hover:text-slate-600 dark:hover:text-slate-300 transition-colors cursor-help" title="Path">
+                <span className="w-1.5 h-1.5 rounded-full bg-slate-300 dark:bg-slate-700"></span>
+                {currentFilePath}
+              </span>
+            </div>
+            <div className="flex items-center gap-6">
+              <span className="flex items-center gap-1.5">
+                Ln {lineCount}
+              </span>
+              <span className="flex items-center gap-1.5">
+                {formatBytes(byteSize)}
+              </span>
+              <span className="uppercase opacity-70">UTF-8</span>
+              <span className="uppercase opacity-70">{currentFormat}</span>
+            </div>
+          </div>
+        </>
+      ) : (
+        <VersionsTab onApplyVersion={handleApplyVersion} />
+      )}
 
       <BackupModal
         isOpen={showBackupModal}

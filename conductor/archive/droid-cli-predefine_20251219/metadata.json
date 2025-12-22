@@ -1,9 +1,0 @@
-{
-  "id": "droid-cli-predefine_20251219",
-  "type": "feature",
-  "status": "completed",
-  "created_at": "2025-12-19",
-  "completed_at": "2025-12-19",
-  "title": "Add Factory Droid CLI predefined configuration",
-  "description": "Add predefined configuration support for Factory Droid CLI tool including settings.json and mcp.json"
-}

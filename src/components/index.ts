@@ -10,3 +10,7 @@ export { SettingsModal } from './settings-modal';
 export { WelcomeScreen } from './welcome-screen';
 export { BackupModal } from './backup-modal';
 export { ToastContainer, toast, useToastStore } from './toast';
+export { VersionsTab } from './versions-tab';
+export { VersionListItem } from './version-list-item';
+export { SaveVersionDialog } from './save-version-dialog';
+export { VersionDiffView } from './version-diff-view';

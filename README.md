@@ -36,6 +36,7 @@ CLI Config Editor provides a unified interface to:
 - ✅ Keyboard shortcuts (Ctrl+S to save)
 - ✅ Toast notifications
 - ✅ Persistent settings (theme, custom tools)
+- ✅ **Config file versioning** - Save, compare, and switch between config snapshots
 
 ## Supported Platforms
 
@@ -159,6 +160,28 @@ pnpm tauri build
 - [Design Document](./DESIGN.md) - Architecture and technical decisions
 - [Requirements](./REQUIREMENTS.md) - Detailed specifications
 - [CLI Configs Reference](./docs/CLI_CONFIGS.md) - Supported tools and paths
+
+## Config Versioning
+
+Save and manage multiple versions of each configuration file:
+
+| Feature | Description |
+|---------|-------------|
+| **Save Version** | Snapshot current or custom content with name and description |
+| **Apply Version** | Load a saved version into the editor |
+| **Compare Versions** | Side-by-side diff view using Monaco diff editor |
+| **Edit Version** | Modify version content directly without applying |
+| **Set Default** | Mark a version as the default for quick access |
+| **Duplicate/Rename** | Organize versions with copy and rename operations |
+
+### How to Use
+
+1. Open any config file in the editor
+2. Click the **Versions** tab in the toolbar
+3. Click **Save Version** to create a snapshot
+4. Select versions to compare or click **Edit/Apply** to use them
+
+Versions are stored in the app's data directory and persist across sessions.
 
 ## Contributing
 
