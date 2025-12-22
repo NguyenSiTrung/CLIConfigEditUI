@@ -13,8 +13,7 @@ This file lists all development tracks (features, bugs, improvements) for CLI Co
 
 ## Active Tracks
 
-### [x] qwen-code-cli_20251222 - Add Qwen Code CLI Predefined Configuration
-*Link: [./conductor/tracks/qwen-code-cli_20251222/](./conductor/tracks/qwen-code-cli_20251222/)*
+*No active tracks.*
 
 ---
 
@@ -25,6 +24,9 @@ This file lists all development tracks (features, bugs, improvements) for CLI Co
 ---
 
 ## Archived Tracks
+
+### [x] qwen-code-cli_20251222 - Add Qwen Code CLI Predefined Configuration
+*Archived: 2025-12-22 | [conductor/archive/qwen-code-cli_20251222/](conductor/archive/qwen-code-cli_20251222/)*
 
 ### [x] backup-restore-fix_20251222 - Fix Backup Restore Logic (Reversed File Operations)
 *Archived: 2025-12-22 | [conductor/archive/backup-restore-fix_20251222/](conductor/archive/backup-restore-fix_20251222/)*
