@@ -13,11 +13,7 @@ This file lists all development tracks (features, bugs, improvements) for CLI Co
 
 ## Active Tracks
 
----
-
-## [x] Track: MCP Settings Sync
-*Link: [./conductor/tracks/mcp-sync_20251222/](./conductor/tracks/mcp-sync_20251222/)*
-*Priority: 🔴 Critical*
+*No active tracks.*
 
 ---
 
@@ -28,6 +24,9 @@ This file lists all development tracks (features, bugs, improvements) for CLI Co
 ---
 
 ## Archived Tracks
+
+### [x] mcp-sync_20251222 - MCP Settings Sync
+*Archived: 2025-12-22 | [conductor/archive/mcp-sync_20251222/](conductor/archive/mcp-sync_20251222/)*
 
 ### [x] qwen-code-cli_20251222 - Add Qwen Code CLI Predefined Configuration
 *Archived: 2025-12-22 | [conductor/archive/qwen-code-cli_20251222/](conductor/archive/qwen-code-cli_20251222/)*
