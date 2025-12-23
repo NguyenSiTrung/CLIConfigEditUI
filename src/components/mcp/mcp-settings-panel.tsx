@@ -11,6 +11,7 @@ import { McpConflictResolutionModal } from './mcp-conflict-resolution-modal';
 import { McpConfigPreviewModal } from './mcp-config-preview-modal';
 import { McpImportPreviewModal } from './mcp-import-preview-modal';
 import { toast } from '@/components/toast';
+import { ConfirmDialog } from '@/components/ui';
 import { RefreshCw, Plus, AlertCircle, Upload } from 'lucide-react';
 
 export function McpSettingsPanel() {
@@ -55,6 +56,10 @@ export function McpSettingsPanel() {
   const [isImportPreviewOpen, setIsImportPreviewOpen] = useState(false);
   const [importResult, setImportResult] = useState<McpImportResult | null>(null);
 
+  // Delete confirmation dialog state
+  const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState(false);
+  const [pendingDeleteServerName, setPendingDeleteServerName] = useState<string | null>(null);
+
   useEffect(() => {
     loadConfig();
   }, [loadConfig]);
@@ -78,12 +83,20 @@ export function McpSettingsPanel() {
   };
 
   const handleDeleteServer = async (serverName: string) => {
-    if (!confirm(`Delete server "${serverName}"?`)) return;
+    setPendingDeleteServerName(serverName);
+    setIsDeleteConfirmOpen(true);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!pendingDeleteServerName) return;
     try {
-      await removeServer(serverName);
-      toast.success(`Deleted server "${serverName}"`);
+      await removeServer(pendingDeleteServerName);
+      toast.success(`Deleted server "${pendingDeleteServerName}"`);
     } catch (err) {
       toast.error(String(err));
+    } finally {
+      setIsDeleteConfirmOpen(false);
+      setPendingDeleteServerName(null);
     }
   };
 
@@ -423,6 +436,19 @@ export function McpSettingsPanel() {
           isLoading={isLoading}
         />
       )}
+
+      <ConfirmDialog
+        isOpen={isDeleteConfirmOpen}
+        title="Delete Server"
+        message="Are you sure you want to delete this server? This cannot be undone."
+        variant="danger"
+        confirmLabel="Delete"
+        onConfirm={handleConfirmDelete}
+        onClose={() => {
+          setIsDeleteConfirmOpen(false);
+          setPendingDeleteServerName(null);
+        }}
+      />
     </div>
   );
 }

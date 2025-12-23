@@ -94,21 +94,21 @@
 ## Phase 4: Interaction Improvements
 
 ### Task 4.1: Sidebar Resize Handle
-- [ ] Increase resize handle hit area to 6px in `sidebar/index.tsx`
-- [ ] Keep visual indicator narrow (1-2px)
-- [ ] Add cursor change on hover for better affordance
+- [x] Increase resize handle hit area to 6px in `sidebar/index.tsx`
+- [x] Keep visual indicator narrow (1-2px)
+- [x] Add cursor change on hover for better affordance
 
 ### Task 4.2: Keyboard Shortcuts Display
-- [ ] Update Save button to show shortcut (⌘S / Ctrl+S)
-- [ ] Update Format button to show shortcut
-- [ ] Create `useKeyboardShortcut` hook for registering shortcuts
+- [x] Update Save button to show shortcut (⌘S / Ctrl+S)
+- [x] Update Format button to show shortcut
+- [x] Create `useKeyboardShortcut` hook for registering shortcuts
 - [ ] Add Ctrl/Cmd+, shortcut for Settings
 - [ ] Add Ctrl/Cmd+B shortcut for sidebar toggle
 - [ ] Add Ctrl/Cmd+Shift+M shortcut for MCP panel
 
 ### Task 4.3: Replace Native Dialogs
-- [ ] Create `ConfirmDialog` component using shared Modal
-- [ ] Replace `confirm()` in MCP delete server flow
+- [x] Create `ConfirmDialog` component using shared Modal
+- [x] Replace `confirm()` in MCP delete server flow
 - [ ] Create custom unsaved-changes dialog component
 - [ ] Replace Tauri `ask()` with custom unsaved-changes dialog
 - [ ] Add "Save & switch / Discard / Cancel" options

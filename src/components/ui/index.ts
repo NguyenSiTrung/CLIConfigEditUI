@@ -4,3 +4,4 @@ export { Card, type CardProps } from './card';
 export { Input, type InputProps } from './input';
 export { Toggle, type ToggleProps } from './toggle';
 export { SectionHeader, type SectionHeaderProps } from './section-header';
+export { ConfirmDialog, type ConfirmDialogProps } from './confirm-dialog';

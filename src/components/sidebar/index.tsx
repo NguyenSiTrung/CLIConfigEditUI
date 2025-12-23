@@ -246,15 +246,23 @@ export function Sidebar({
         />
       </div>
 
-      {/* Resize handle */}
+      {/* Resize handle - wider hit area (6px) with narrow visual indicator */}
       <div
         onMouseDown={handleMouseDown}
-        className={`absolute right-0 top-0 bottom-0 w-1 cursor-col-resize 
-                   hover:bg-indigo-500/30 active:bg-indigo-500/50
-                   transition-colors duration-150
-                   ${isResizing ? 'bg-indigo-500/50' : 'bg-transparent'}`}
+        className={`absolute right-0 top-0 bottom-0 w-1.5 cursor-col-resize group
+                   transition-colors duration-150`}
         title="Drag to resize"
-      />
+        role="separator"
+        aria-orientation="vertical"
+        aria-label="Resize sidebar"
+      >
+        <div 
+          className={`absolute right-0 top-0 bottom-0 w-0.5 
+                     group-hover:bg-indigo-500/50 group-active:bg-indigo-500/70
+                     transition-colors duration-150
+                     ${isResizing ? 'bg-indigo-500/70' : 'bg-transparent'}`}
+        />
+      </div>
     </nav>
   );
 }
