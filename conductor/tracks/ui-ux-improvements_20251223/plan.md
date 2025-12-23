@@ -71,25 +71,25 @@
 ## Phase 3: Accessibility Improvements
 
 ### Task 3.1: Icon Button Accessibility
-- [ ] Add `aria-label` to theme toggle button in header
-- [ ] Add `aria-label` to window control buttons (minimize, maximize, close)
-- [ ] Add `aria-label` to sidebar collapse/expand buttons
-- [ ] Add `aria-label` to all MCP action buttons
-- [ ] Add `aria-label` to editor toolbar icon buttons
-- [ ] Apply `.focus-ring` class to all icon buttons
+- [x] Add `aria-label` to theme toggle button in header
+- [x] Add `aria-label` to window control buttons (minimize, maximize, close)
+- [x] Add `aria-label` to sidebar collapse/expand buttons
+- [x] Add `aria-label` to all MCP action buttons
+- [x] Add `aria-label` to editor toolbar icon buttons
+- [x] Apply `.focus-ring` class to all icon buttons
 
 ### Task 3.2: Keyboard Navigation
-- [ ] Implement Tab order in header toolbar
-- [ ] Implement Tab order in editor toolbar
-- [ ] Add arrow key navigation for tab toggles (Editor/Versions)
-- [ ] Add arrow key navigation for Settings tabs
-- [ ] Verify focus is restored after modal close
+- [x] Implement Tab order in header toolbar
+- [x] Implement Tab order in editor toolbar
+- [x] Add arrow key navigation for tab toggles (Editor/Versions)
+- [x] Add arrow key navigation for Settings tabs
+- [x] Verify focus is restored after modal close
 
 ### Task 3.3: Color Contrast Audit
-- [ ] Audit dark mode text contrast for slate-400/500 text
-- [ ] Adjust low-contrast text colors to meet WCAG AA
-- [ ] Test with contrast checker tool
-- [ ] Update status bar text colors for better contrast
+- [x] Audit dark mode text contrast for slate-400/500 text
+- [x] Adjust low-contrast text colors to meet WCAG AA
+- [x] Test with contrast checker tool
+- [x] Update status bar text colors for better contrast
 
 ## Phase 4: Interaction Improvements
 

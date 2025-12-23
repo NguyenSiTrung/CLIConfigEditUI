@@ -101,8 +101,10 @@ export function Header({ onSettingsClick, currentView = 'editor', onViewChange }
             className="p-1.5 rounded-md text-slate-500 dark:text-slate-400 
                        hover:text-slate-800 dark:hover:text-slate-200 
                        hover:bg-white dark:hover:bg-white/10 
-                       transition-all duration-200"
+                       transition-all duration-200
+                       focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500/40"
             title={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+            aria-label={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
           >
             {theme === 'dark' ? <Moon className="w-4 h-4" /> : <Sun className="w-4 h-4" />}
           </button>
@@ -112,8 +114,10 @@ export function Header({ onSettingsClick, currentView = 'editor', onViewChange }
             className="p-1.5 rounded-md text-slate-500 dark:text-slate-400 
                        hover:text-slate-800 dark:hover:text-slate-200 
                        hover:bg-white dark:hover:bg-white/10 
-                       transition-all duration-200"
+                       transition-all duration-200
+                       focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500/40"
             title="Settings"
+            aria-label="Settings"
           >
             <Settings className="w-4 h-4" />
           </button>
@@ -123,22 +127,28 @@ export function Header({ onSettingsClick, currentView = 'editor', onViewChange }
         <div className="flex items-center gap-1 h-full pl-2 border-l border-slate-200 dark:border-white/5">
           <button
             onClick={handleMinimize}
-            className="p-2 rounded-lg text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-200/50 dark:hover:bg-white/10 transition-colors"
+            className="p-2 rounded-lg text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-200/50 dark:hover:bg-white/10 transition-colors
+                       focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500/40"
             title="Minimize"
+            aria-label="Minimize window"
           >
             <Minus className="w-4 h-4" />
           </button>
           <button
             onClick={handleMaximize}
-            className="p-2 rounded-lg text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-200/50 dark:hover:bg-white/10 transition-colors"
+            className="p-2 rounded-lg text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-200/50 dark:hover:bg-white/10 transition-colors
+                       focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500/40"
             title="Maximize"
+            aria-label="Maximize window"
           >
             <Square className="w-3.5 h-3.5" />
           </button>
           <button
             onClick={handleClose}
-            className="p-2 rounded-lg text-slate-400 hover:text-white hover:bg-red-500 transition-colors"
+            className="p-2 rounded-lg text-slate-400 hover:text-white hover:bg-red-500 transition-colors
+                       focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500/40"
             title="Close"
+            aria-label="Close window"
           >
             <X className="w-4 h-4" />
           </button>

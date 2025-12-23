@@ -193,7 +193,9 @@ export function ConfigEditor({
             </button>
             <button
               onClick={onDismissExternalChange}
-              className="p-1 text-blue-500 dark:text-blue-400 hover:bg-blue-200 dark:hover:bg-blue-500/20 rounded-full transition-colors"
+              className="p-1 text-blue-500 dark:text-blue-400 hover:bg-blue-200 dark:hover:bg-blue-500/20 rounded-full transition-colors
+                         focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500/40"
+              aria-label="Dismiss external change notification"
             >
               <X className="w-4 h-4" />
             </button>
@@ -323,12 +325,12 @@ export function ConfigEditor({
             />
           </div>
 
-          <div className="px-5 py-2 text-[11px] font-medium text-slate-400 dark:text-slate-500 
+          <div className="px-5 py-2 text-[11px] font-medium text-slate-500 dark:text-slate-400 
                           border-t border-slate-200 dark:border-white/5 bg-white dark:bg-[#020617]
                           flex items-center justify-between select-none">
             <div className="flex items-center gap-6">
-              <span className="flex items-center gap-1.5 hover:text-slate-600 dark:hover:text-slate-300 transition-colors cursor-help" title="Path">
-                <span className="w-1.5 h-1.5 rounded-full bg-slate-300 dark:bg-slate-700"></span>
+              <span className="flex items-center gap-1.5 hover:text-slate-700 dark:hover:text-slate-200 transition-colors cursor-help" title="Path">
+                <span className="w-1.5 h-1.5 rounded-full bg-slate-400 dark:bg-slate-500"></span>
                 {currentFilePath}
               </span>
             </div>

@@ -117,7 +117,9 @@ export function McpServerEditor({ server, onSave, onCancel, isEdit = false }: Mc
               <button
                 type="button"
                 onClick={() => removeArg(index)}
-                className="p-2 text-slate-400 hover:text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-500/10 rounded-lg transition-colors"
+                className="p-2 text-slate-400 hover:text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-500/10 rounded-lg transition-colors
+                           focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500/40"
+                aria-label={`Remove argument ${index + 1}`}
               >
                 <Trash2 className="w-4 h-4" />
               </button>
@@ -163,7 +165,9 @@ export function McpServerEditor({ server, onSave, onCancel, isEdit = false }: Mc
               <button
                 type="button"
                 onClick={() => removeEnvPair(index)}
-                className="p-2 text-slate-400 hover:text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-500/10 rounded-lg transition-colors"
+                className="p-2 text-slate-400 hover:text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-500/10 rounded-lg transition-colors
+                           focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500/40"
+                aria-label={`Remove environment variable ${index + 1}`}
               >
                 <Trash2 className="w-4 h-4" />
               </button>
@@ -234,7 +238,9 @@ export function McpServerEditorModal({ isOpen, server, onSave, onClose }: McpSer
           </h2>
           <button
             onClick={onClose}
-            className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-white/5 transition-colors"
+            className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-white/5 transition-colors
+                       focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500/40"
+            aria-label="Close dialog"
           >
             <X className="w-5 h-5" />
           </button>

@@ -49,7 +49,9 @@ export function McpServerList({ servers, onEdit, onDelete, isEditable = true }: 
               <div className="flex items-center gap-3 flex-1 min-w-0">
                 <button
                   onClick={() => toggleExpand(server.name)}
-                  className="p-1 rounded text-slate-400 hover:text-slate-600 dark:hover:text-slate-300"
+                  className="p-1 rounded text-slate-400 hover:text-slate-600 dark:hover:text-slate-300
+                             focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500/40"
+                  aria-label={isExpanded ? `Collapse ${server.name} details` : `Expand ${server.name} details`}
                 >
                   {isExpanded ? (
                     <ChevronUp className="w-4 h-4" />
@@ -78,15 +80,19 @@ export function McpServerList({ servers, onEdit, onDelete, isEditable = true }: 
                 <div className="flex items-center gap-1">
                   <button
                     onClick={() => onEdit(server)}
-                    className="p-1.5 rounded-lg text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-500/10 transition-colors"
+                    className="p-1.5 rounded-lg text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-500/10 transition-colors
+                               focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500/40"
                     title="Edit server"
+                    aria-label={`Edit ${server.name} server`}
                   >
                     <Edit2 className="w-4 h-4" />
                   </button>
                   <button
                     onClick={() => onDelete(server.name)}
-                    className="p-1.5 rounded-lg text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-500/10 transition-colors"
+                    className="p-1.5 rounded-lg text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-500/10 transition-colors
+                               focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500/40"
                     title="Delete server"
+                    aria-label={`Delete ${server.name} server`}
                   >
                     <Trash2 className="w-4 h-4" />
                   </button>

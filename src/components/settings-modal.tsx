@@ -26,6 +26,31 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
 
   const [activeTab, setActiveTab] = useState<SettingsTab>('appearance');
 
+  const handleTabKeyDown = (e: React.KeyboardEvent, currentIndex: number) => {
+    const tabCount = tabs.length;
+    let newIndex = currentIndex;
+
+    if (e.key === 'ArrowRight') {
+      e.preventDefault();
+      newIndex = (currentIndex + 1) % tabCount;
+    } else if (e.key === 'ArrowLeft') {
+      e.preventDefault();
+      newIndex = (currentIndex - 1 + tabCount) % tabCount;
+    } else if (e.key === 'Home') {
+      e.preventDefault();
+      newIndex = 0;
+    } else if (e.key === 'End') {
+      e.preventDefault();
+      newIndex = tabCount - 1;
+    } else {
+      return;
+    }
+
+    setActiveTab(tabs[newIndex].id);
+    const tabButtons = document.querySelectorAll('[role="tab"]');
+    (tabButtons[newIndex] as HTMLElement)?.focus();
+  };
+
   const tabs: { id: SettingsTab; label: string; icon: React.ReactNode }[] = [
     { id: 'appearance', label: 'Appearance', icon: <Sun className="w-4 h-4" /> },
     { id: 'editor', label: 'Editor', icon: <Code className="w-4 h-4" /> },
@@ -58,15 +83,24 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
       size="lg"
       footer={footer}
     >
-      <div className="flex border-b dark:border-gray-700/50 border-slate-200 -mx-6 -mt-4 mb-6">
-        {tabs.map((tab) => (
+      <div 
+        className="flex border-b dark:border-gray-700/50 border-slate-200 -mx-6 -mt-4 mb-6"
+        role="tablist"
+        aria-label="Settings sections"
+      >
+        {tabs.map((tab, index) => (
           <button
             key={tab.id}
+            role="tab"
+            aria-selected={activeTab === tab.id}
+            aria-controls={`settings-panel-${tab.id}`}
+            tabIndex={activeTab === tab.id ? 0 : -1}
             onClick={() => setActiveTab(tab.id)}
+            onKeyDown={(e) => handleTabKeyDown(e, index)}
             className={`flex-1 px-4 py-3 text-sm font-medium flex items-center justify-center gap-2 transition-colors
                        ${activeTab === tab.id
                          ? 'dark:text-indigo-400 text-indigo-600 border-b-2 border-indigo-500 dark:bg-gray-700/30 bg-indigo-50/50'
-                         : 'dark:text-gray-400 text-slate-500 dark:hover:text-gray-200 hover:text-slate-700 hover:bg-slate-50 dark:hover:bg-gray-700/20'
+                         : 'dark:text-slate-300 text-slate-500 dark:hover:text-slate-100 hover:text-slate-700 hover:bg-slate-50 dark:hover:bg-gray-700/20'
                        }`}
           >
             {tab.icon}
@@ -75,7 +109,7 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
         ))}
       </div>
 
-      <div className="space-y-6">
+      <div className="space-y-6" role="tabpanel" id={`settings-panel-${activeTab}`} aria-labelledby={activeTab}>
         {activeTab === 'appearance' && (
           <div>
             <label className="block text-sm font-medium dark:text-gray-300 text-slate-700 mb-3">
