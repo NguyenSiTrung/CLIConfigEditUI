@@ -377,4 +377,20 @@ export const CLI_TOOLS: CliTool[] = [
       },
     ],
   },
+  {
+    id: 'auggie',
+    name: 'Augment Code CLI (Auggie)',
+    icon: '🅰️',
+    docsUrl: 'https://docs.augmentcode.com/',
+    description: "Augment Code's AI coding agent CLI",
+    suggestedConfigs: [
+      {
+        label: 'Settings',
+        path: '~/.augment/settings.json',
+        format: 'json',
+        icon: '⚙️',
+        description: 'Main configuration file',
+      },
+    ],
+  },
 ];

@@ -13,7 +13,8 @@ This file lists all development tracks (features, bugs, improvements) for CLI Co
 
 ## Active Tracks
 
-*No active tracks.*
+### [x] Track: Add Augment Code CLI (Auggie) Predefined Configuration
+*Priority: 🟠 High | Link: [./conductor/tracks/auggie-cli-predefine_20251223/](./conductor/tracks/auggie-cli-predefine_20251223/)*
 
 ---
 

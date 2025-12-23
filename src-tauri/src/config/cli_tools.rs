@@ -527,5 +527,22 @@ pub fn get_cli_tools() -> Vec<CliTool> {
                 },
             ]),
         },
+        CliTool {
+            id: "auggie".to_string(),
+            name: "Augment Code CLI (Auggie)".to_string(),
+            icon: Some("🅰️".to_string()),
+            docs_url: Some("https://docs.augmentcode.com/".to_string()),
+            description: Some("Augment Code's AI coding agent CLI".to_string()),
+            suggested_configs: Some(vec![
+                SuggestedConfig {
+                    label: "Settings".to_string(),
+                    path: "~/.augment/settings.json".to_string(),
+                    format: ConfigFormat::Json,
+                    icon: Some("⚙️".to_string()),
+                    description: Some("Main configuration file".to_string()),
+                    json_path: None,
+                },
+            ]),
+        },
     ]
 }

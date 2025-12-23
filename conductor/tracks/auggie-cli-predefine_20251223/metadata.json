@@ -1,0 +1,11 @@
+{
+  "track_id": "auggie-cli-predefine_20251223",
+  "type": "feature",
+  "status": "new",
+  "priority": "high",
+  "depends_on": [],
+  "estimated_hours": null,
+  "created_at": "2025-12-23T10:00:00Z",
+  "updated_at": "2025-12-23T10:00:00Z",
+  "description": "Add Augment Code CLI (Auggie) predefined configuration support"
+}
