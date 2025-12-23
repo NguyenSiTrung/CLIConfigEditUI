@@ -114,7 +114,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         {children}
         {!isLoading && rightIcon}
         {shortcut && (
-          <kbd className="ml-2 hidden sm:inline-flex items-center gap-0.5 px-1.5 py-0.5 text-[10px] font-mono text-current opacity-60 bg-black/10 dark:bg-white/10 rounded">
+          <kbd className="ml-2 hidden sm:inline-flex items-center gap-0.5 px-1.5 py-0.5 text-[11px] font-mono text-current opacity-60 bg-black/10 dark:bg-white/10 rounded">
             {shortcut}
           </kbd>
         )}

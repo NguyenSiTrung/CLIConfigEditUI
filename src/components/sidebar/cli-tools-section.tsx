@@ -78,7 +78,7 @@ export const CliToolsSection = memo(function CliToolsSection({
                 badge={
                   configFiles.length > 0 ? (
                     <span 
-                      className={`px-1.5 py-0.5 text-[10px] rounded-full font-medium
+                      className={`px-1.5 py-0.5 text-[11px] rounded-full font-medium
                                  transition-all duration-200
                                  ${isActive
                         ? `${colors.badge} ${colors.badgeText}`

@@ -45,28 +45,28 @@
 ## Phase 2: Visual Consistency & Typography
 
 ### Task 2.1: Fix Version String
-- [ ] Update `header.tsx` to use `APP_VERSION` constant
-- [ ] Update `settings-modal.tsx` to use `APP_VERSION` constant
-- [ ] Verify version displays consistently
+- [x] Update `header.tsx` to use `APP_VERSION` constant
+- [x] Update `settings-modal.tsx` to use `APP_VERSION` constant
+- [x] Verify version displays consistently
 
 ### Task 2.2: Normalize Typography
-- [ ] Audit all text sizes below 12px
-- [ ] Update status bar in `config-editor.tsx` to minimum 11px
-- [ ] Update version labels to use typography tokens
-- [ ] Fix header version label size
-- [ ] Ensure body text uses minimum 12px
+- [x] Audit all text sizes below 12px
+- [x] Update status bar in `config-editor.tsx` to minimum 11px
+- [x] Update version labels to use typography tokens
+- [x] Fix header version label size
+- [x] Ensure body text uses minimum 12px
 
 ### Task 2.3: Consolidate Visual Styles
-- [ ] Update `AddToolModal` to use Card component styles
-- [ ] Update `SettingsModal` panels to use Card component
-- [ ] Update MCP section panels to use Card component
-- [ ] Standardize accent color usage across components
-- [ ] Remove redundant glassmorphism effects
+- [x] Update `AddToolModal` to use Card component styles
+- [x] Update `SettingsModal` panels to use Card component
+- [x] Update MCP section panels to use Card component
+- [x] Standardize accent color usage across components
+- [x] Remove redundant glassmorphism effects
 
 ### Task 2.4: Consolidate Toast System
-- [ ] Remove local toast state from `mcp-settings-panel.tsx`
-- [ ] Update MCP panel to use global `toast.*` helpers
-- [ ] Verify toast styling is consistent across app
+- [x] Remove local toast state from `mcp-settings-panel.tsx`
+- [x] Update MCP panel to use global `toast.*` helpers
+- [x] Verify toast styling is consistent across app
 
 ## Phase 3: Accessibility Improvements
 

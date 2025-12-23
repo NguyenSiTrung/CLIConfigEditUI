@@ -71,7 +71,7 @@ export const SidebarSection = memo(function SidebarSection({
             <span>{title}</span>
           </span>
           <span 
-            className={`px-2 py-0.5 text-[10px] rounded-full font-medium
+            className={`px-2 py-0.5 text-[11px] rounded-full font-medium
                        ${colors.badge} ${colors.badgeText}
                        transition-colors duration-200`}
           >

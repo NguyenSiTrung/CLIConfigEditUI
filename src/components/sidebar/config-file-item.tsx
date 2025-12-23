@@ -143,7 +143,7 @@ export const ConfigFileItem = memo(function ConfigFileItem({
         )}
         
         <span 
-          className={`flex-shrink-0 px-1.5 py-0.5 text-[9px] font-bold tracking-wide rounded-md 
+          className={`flex-shrink-0 px-1.5 py-0.5 text-[11px] font-bold tracking-wide rounded-md 
                      ${formatBadge.color} ${formatBadge.bg}
                      transition-transform duration-200 group-hover/config:scale-105`}
         >
@@ -161,7 +161,7 @@ export const ConfigFileItem = memo(function ConfigFileItem({
           <div className="bg-slate-900 dark:bg-slate-800 text-white text-xs rounded-xl px-3 py-2.5 
                          shadow-xl max-w-[300px] border border-slate-700/50">
             <div className="font-semibold text-slate-100 mb-1">{configFile.label}</div>
-            <div className="text-slate-400 text-[10px] font-mono break-all leading-relaxed">
+            <div className="text-slate-400 text-[11px] font-mono break-all leading-relaxed">
               {tooltipContent}
             </div>
           </div>

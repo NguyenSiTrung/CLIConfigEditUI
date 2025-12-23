@@ -168,12 +168,12 @@ export function AddConfigFileModal({ isOpen, tool, onClose, onAdd }: AddConfigFi
                   </div>
                   <div className="flex items-center gap-2">
                     {suggestion.exists && (
-                      <span className="flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium bg-emerald-100 dark:bg-emerald-500/15 text-emerald-600 dark:text-emerald-400">
+                      <span className="flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-medium bg-emerald-100 dark:bg-emerald-500/15 text-emerald-600 dark:text-emerald-400">
                         <Check className="w-3 h-3" />
                         Exists
                       </span>
                     )}
-                    <span className={`text-[10px] px-2 py-0.5 rounded-md uppercase font-bold tracking-wider ${FORMAT_OPTIONS.find(f => f.value === suggestion.format)?.color || 'bg-slate-200 dark:bg-gray-700 text-slate-500 dark:text-gray-400'
+                    <span className={`text-[11px] px-2 py-0.5 rounded-md uppercase font-bold tracking-wider ${FORMAT_OPTIONS.find(f => f.value === suggestion.format)?.color || 'bg-slate-200 dark:bg-gray-700 text-slate-500 dark:text-gray-400'
                       }`}>
                       {suggestion.format}
                     </span>

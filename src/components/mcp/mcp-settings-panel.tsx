@@ -10,7 +10,8 @@ import { McpSyncPreviewModal } from './mcp-sync-preview-modal';
 import { McpConflictResolutionModal } from './mcp-conflict-resolution-modal';
 import { McpConfigPreviewModal } from './mcp-config-preview-modal';
 import { McpImportPreviewModal } from './mcp-import-preview-modal';
-import { RefreshCw, Plus, AlertCircle, CheckCircle, Upload } from 'lucide-react';
+import { toast } from '@/components/toast';
+import { RefreshCw, Plus, AlertCircle, Upload } from 'lucide-react';
 
 export function McpSettingsPanel() {
   const {
@@ -49,7 +50,6 @@ export function McpSettingsPanel() {
   const [isConfigPreviewOpen, setIsConfigPreviewOpen] = useState(false);
   const [configPreview, setConfigPreview] = useState<McpConfigPreview | null>(null);
   const [isLoadingConfigPreview, setIsLoadingConfigPreview] = useState(false);
-  const [toast, setToast] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
   
   // Import modal state
   const [isImportPreviewOpen, setIsImportPreviewOpen] = useState(false);
@@ -59,28 +59,21 @@ export function McpSettingsPanel() {
     loadConfig();
   }, [loadConfig]);
 
-  useEffect(() => {
-    if (toast) {
-      const timer = setTimeout(() => setToast(null), 3000);
-      return () => clearTimeout(timer);
-    }
-  }, [toast]);
-
   const handleAddServer = async (server: McpServer) => {
     try {
       await addServer(server);
-      setToast({ type: 'success', message: `Added server "${server.name}"` });
+      toast.success(`Added server "${server.name}"`);
     } catch (err) {
-      setToast({ type: 'error', message: String(err) });
+      toast.error(String(err));
     }
   };
 
   const handleUpdateServer = async (originalName: string, server: McpServer) => {
     try {
       await updateServer(originalName, server);
-      setToast({ type: 'success', message: `Updated server "${server.name}"` });
+      toast.success(`Updated server "${server.name}"`);
     } catch (err) {
-      setToast({ type: 'error', message: String(err) });
+      toast.error(String(err));
     }
   };
 
@@ -88,9 +81,9 @@ export function McpSettingsPanel() {
     if (!confirm(`Delete server "${serverName}"?`)) return;
     try {
       await removeServer(serverName);
-      setToast({ type: 'success', message: `Deleted server "${serverName}"` });
+      toast.success(`Deleted server "${serverName}"`);
     } catch (err) {
-      setToast({ type: 'error', message: String(err) });
+      toast.error(String(err));
     }
   };
 
@@ -109,14 +102,14 @@ export function McpSettingsPanel() {
       const result = await importFromFile(selectedPath);
       
       if (result.servers.length === 0) {
-        setToast({ type: 'error', message: 'No MCP servers found in the selected file' });
+        toast.error('No MCP servers found in the selected file');
         return;
       }
 
       setImportResult(result);
       setIsImportPreviewOpen(true);
     } catch (err) {
-      setToast({ type: 'error', message: String(err) });
+      toast.error(String(err));
     }
   };
 
@@ -129,12 +122,9 @@ export function McpSettingsPanel() {
       await executeImport(selectedServers, mode, overwriteMap);
       setIsImportPreviewOpen(false);
       setImportResult(null);
-      setToast({ 
-        type: 'success', 
-        message: `Imported ${selectedServers.length} server${selectedServers.length !== 1 ? 's' : ''} successfully` 
-      });
+      toast.success(`Imported ${selectedServers.length} server${selectedServers.length !== 1 ? 's' : ''} successfully`);
     } catch (err) {
-      setToast({ type: 'error', message: String(err) });
+      toast.error(String(err));
     }
   };
 
@@ -144,10 +134,10 @@ export function McpSettingsPanel() {
       if (previews.some((p) => p.hasChanges)) {
         setIsSyncPreviewOpen(true);
       } else {
-        setToast({ type: 'success', message: 'All tools are already in sync!' });
+        toast.success('All tools are already in sync!');
       }
     } catch (err) {
-      setToast({ type: 'error', message: String(err) });
+      toast.error(String(err));
     }
   };
 
@@ -156,9 +146,9 @@ export function McpSettingsPanel() {
       const results = await syncToAll();
       setIsSyncPreviewOpen(false);
       const successCount = results.filter((r) => r.success).length;
-      setToast({ type: 'success', message: `Synced to ${successCount} tool(s)` });
+      toast.success(`Synced to ${successCount} tool(s)`);
     } catch (err) {
-      setToast({ type: 'error', message: String(err) });
+      toast.error(String(err));
     }
   };
 
@@ -167,7 +157,7 @@ export function McpSettingsPanel() {
       const preview = await previewSync(toolId);
       
       if (!preview.hasChanges) {
-        setToast({ type: 'success', message: `${preview.toolName} is already in sync!` });
+        toast.success(`${preview.toolName} is already in sync!`);
         return;
       }
       
@@ -176,7 +166,7 @@ export function McpSettingsPanel() {
       setPendingSyncToolId(toolId);
       setIsSyncPreviewOpen(true);
     } catch (err) {
-      setToast({ type: 'error', message: String(err) });
+      toast.error(String(err));
     }
   };
 
@@ -189,12 +179,12 @@ export function McpSettingsPanel() {
       setSingleToolPreview(null);
       setPendingSyncToolId(null);
       if (result.success) {
-        setToast({ type: 'success', message: result.message });
+        toast.success(result.message);
       } else {
-        setToast({ type: 'error', message: result.message });
+        toast.error(result.message);
       }
     } catch (err) {
-      setToast({ type: 'error', message: String(err) });
+      toast.error(String(err));
     }
   };
 
@@ -214,12 +204,12 @@ export function McpSettingsPanel() {
       setSingleToolPreview(null);
       setPendingSyncToolId(null);
       if (result.success) {
-        setToast({ type: 'success', message: result.message });
+        toast.success(result.message);
       } else {
-        setToast({ type: 'error', message: result.message });
+        toast.error(result.message);
       }
     } catch (err) {
-      setToast({ type: 'error', message: String(err) });
+      toast.error(String(err));
     }
   };
 
@@ -230,7 +220,7 @@ export function McpSettingsPanel() {
       const preview = await previewConfigContent(toolId, resolvedConflicts);
       setConfigPreview(preview);
     } catch (err) {
-      setToast({ type: 'error', message: String(err) });
+      toast.error(String(err));
       setIsConfigPreviewOpen(false);
     } finally {
       setIsLoadingConfigPreview(false);
@@ -264,24 +254,6 @@ export function McpSettingsPanel() {
           </button>
         </div>
       </div>
-
-      {/* Toast notifications */}
-      {toast && (
-        <div
-          className={`mx-6 mt-4 p-3 rounded-lg flex items-center gap-2 text-sm ${
-            toast.type === 'success'
-              ? 'bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-300'
-              : 'bg-rose-50 dark:bg-rose-500/10 text-rose-700 dark:text-rose-300'
-          }`}
-        >
-          {toast.type === 'success' ? (
-            <CheckCircle className="w-4 h-4" />
-          ) : (
-            <AlertCircle className="w-4 h-4" />
-          )}
-          {toast.message}
-        </div>
-      )}
 
       {/* Error banner */}
       {error && (

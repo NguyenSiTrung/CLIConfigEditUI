@@ -63,7 +63,7 @@ export function McpServerList({ servers, onEdit, onDelete, isEditable = true }: 
                       {server.name}
                     </span>
                     {server.disabled && (
-                      <span className="flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-medium bg-slate-100 dark:bg-slate-700 text-slate-500 dark:text-slate-400">
+                      <span className="flex items-center gap-1 px-1.5 py-0.5 rounded text-[11px] font-medium bg-slate-100 dark:bg-slate-700 text-slate-500 dark:text-slate-400">
                         <PowerOff className="w-3 h-3" />
                         Disabled
                       </span>

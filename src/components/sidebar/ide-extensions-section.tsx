@@ -128,7 +128,7 @@ export const IdeExtensionsSection = memo(function IdeExtensionsSection({ onExten
                   {platform.name}
                 </span>
                 {platform.extensions && platform.extensions.length > 0 && (
-                  <span className={`px-1.5 py-0.5 text-[10px] rounded-full font-medium
+                  <span className={`px-1.5 py-0.5 text-[11px] rounded-full font-medium
                                   ${isPlatformExpanded 
                       ? `${colors.badge} ${colors.badgeText}` 
                       : 'bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400'}`}>
@@ -198,7 +198,7 @@ export const IdeExtensionsSection = memo(function IdeExtensionsSection({ onExten
                                 >
                                   <span className="text-sm">📋</span>
                                   <span className="truncate flex-1">All Settings</span>
-                                  <span className="text-[10px] text-slate-400 dark:text-slate-500 font-mono">
+                                  <span className="text-[11px] text-slate-400 dark:text-slate-500 font-mono">
                                     {extension?.settingsPrefix}.*
                                   </span>
                                 </button>
@@ -230,17 +230,17 @@ export const IdeExtensionsSection = memo(function IdeExtensionsSection({ onExten
                                           <span className="text-sm opacity-70">{setting.icon || '⚙️'}</span>
                                           <span className="truncate flex-1">{setting.label}</span>
                                           {status === 'loading' && (
-                                            <span className="px-1.5 py-0.5 text-[9px] bg-slate-100 dark:bg-slate-800 text-slate-500 rounded-full animate-pulse">
+                                            <span className="px-1.5 py-0.5 text-[11px] bg-slate-100 dark:bg-slate-800 text-slate-500 rounded-full animate-pulse">
                                               ...
                                             </span>
                                           )}
                                           {status === 'exists' && (
-                                            <span className="px-1.5 py-0.5 text-[9px] bg-emerald-100 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 rounded-full">
+                                            <span className="px-1.5 py-0.5 text-[11px] bg-emerald-100 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 rounded-full">
                                               ✓
                                             </span>
                                           )}
                                           {status === 'not-found' && (
-                                            <span className="px-1.5 py-0.5 text-[9px] bg-amber-100 dark:bg-amber-500/10 text-amber-600 dark:text-amber-400 rounded-full">
+                                            <span className="px-1.5 py-0.5 text-[11px] bg-amber-100 dark:bg-amber-500/10 text-amber-600 dark:text-amber-400 rounded-full">
                                               −
                                             </span>
                                           )}
