@@ -13,8 +13,7 @@ This file lists all development tracks (features, bugs, improvements) for CLI Co
 
 ## Active Tracks
 
-### [x] Track: Add Augment Code CLI (Auggie) Predefined Configuration
-*Priority: 🟠 High | Link: [./conductor/tracks/auggie-cli-predefine_20251223/](./conductor/tracks/auggie-cli-predefine_20251223/)*
+*No active tracks.*
 
 ---
 
@@ -25,6 +24,9 @@ This file lists all development tracks (features, bugs, improvements) for CLI Co
 ---
 
 ## Archived Tracks
+
+### [x] auggie-cli-predefine_20251223 - Add Augment Code CLI (Auggie) Predefined Configuration
+*Archived: 2025-12-23 | [conductor/archive/auggie-cli-predefine_20251223/](conductor/archive/auggie-cli-predefine_20251223/)*
 
 ### [x] opencode-mcp-fix_20251223 - Fix OpenCode MCP Sync Format
 *Archived: 2025-12-23 | [conductor/archive/opencode-mcp-fix_20251223/](conductor/archive/opencode-mcp-fix_20251223/)*
