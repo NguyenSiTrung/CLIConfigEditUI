@@ -9,6 +9,8 @@ import {
   McpSyncResult,
   McpServerConflict,
   McpConfigPreview,
+  McpImportResult,
+  McpImportMode,
 } from '@/types';
 
 interface McpState {
@@ -39,6 +41,14 @@ interface McpState {
   updateServer: (originalName: string, server: McpServer) => Promise<void>;
   removeServer: (serverName: string) => Promise<void>;
   saveServers: (servers: McpServer[]) => Promise<void>;
+  
+  // Import from file
+  importFromFile: (filePath: string) => Promise<McpImportResult>;
+  executeImport: (
+    selectedServers: McpServer[],
+    mode: McpImportMode,
+    overwriteMap: Record<string, boolean>
+  ) => Promise<void>;
   
   // Tool enablement
   setToolEnabled: (toolId: string, enabled: boolean) => Promise<void>;
@@ -177,6 +187,70 @@ export const useMcpStore = create<McpState>()((set, get) => ({
     try {
       await invoke('save_app_mcp_servers', { servers });
       set({ servers, isLoading: false });
+      await get().loadToolStatuses();
+    } catch (err) {
+      set({ error: String(err), isLoading: false });
+      throw err;
+    }
+  },
+
+  // Import MCP config from file
+  importFromFile: async (filePath: string) => {
+    set({ isLoading: true, error: null });
+    try {
+      const result: McpImportResult = await invoke('import_mcp_config_file', { filePath });
+      set({ isLoading: false });
+      return result;
+    } catch (err) {
+      set({ error: String(err), isLoading: false });
+      throw err;
+    }
+  },
+
+  // Execute import with selected servers
+  executeImport: async (
+    selectedServers: McpServer[],
+    mode: McpImportMode,
+    overwriteMap: Record<string, boolean>
+  ) => {
+    set({ isLoading: true, error: null });
+    try {
+      const currentServers = get().servers;
+      let newServers: McpServer[];
+
+      if (mode === 'replace') {
+        // Replace mode: just use selected servers
+        newServers = selectedServers;
+      } else {
+        // Merge mode: combine with existing, handling overwrites
+        const existingNames = new Set(currentServers.map((s) => s.name));
+        const toAdd: McpServer[] = [];
+        const toOverwrite: McpServer[] = [];
+
+        for (const server of selectedServers) {
+          if (existingNames.has(server.name)) {
+            // Conflict - check overwrite map
+            if (overwriteMap[server.name] !== false) {
+              toOverwrite.push(server);
+            }
+            // If overwriteMap[name] is false, skip (keep existing)
+          } else {
+            toAdd.push(server);
+          }
+        }
+
+        // Start with existing servers, replacing any that should be overwritten
+        newServers = currentServers.map((existing) => {
+          const overwriteWith = toOverwrite.find((s) => s.name === existing.name);
+          return overwriteWith || existing;
+        });
+
+        // Add new servers
+        newServers.push(...toAdd);
+      }
+
+      await invoke('save_app_mcp_servers', { servers: newServers });
+      set({ servers: newServers, isLoading: false });
       await get().loadToolStatuses();
     } catch (err) {
       set({ error: String(err), isLoading: false });

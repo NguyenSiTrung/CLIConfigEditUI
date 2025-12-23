@@ -4,3 +4,4 @@ export { McpServerList } from './mcp-server-list';
 export { McpSourceSelector } from './mcp-source-selector';
 export { McpToolStatusList } from './mcp-tool-status';
 export { McpSyncPreviewModal } from './mcp-sync-preview-modal';
+export { McpImportPreviewModal } from './mcp-import-preview-modal';

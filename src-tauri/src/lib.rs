@@ -12,7 +12,7 @@ use mcp::{
     save_app_mcp_servers, add_mcp_server, update_mcp_server, remove_mcp_server,
     read_claude_mcp_servers, get_tool_mcp_servers, get_mcp_tool_statuses, set_tool_mcp_enabled,
     preview_mcp_sync, preview_mcp_sync_all, sync_mcp_to_tool, sync_mcp_to_all,
-    preview_mcp_config_content,
+    preview_mcp_config_content, import_mcp_config_file,
 };
 use versions::{
     save_version, list_versions, load_version, delete_version, update_version_metadata,
@@ -67,6 +67,7 @@ pub fn run() {
             sync_mcp_to_tool,
             sync_mcp_to_all,
             preview_mcp_config_content,
+            import_mcp_config_file,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

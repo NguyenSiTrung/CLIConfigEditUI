@@ -234,3 +234,16 @@ export interface McpConfigPreview {
   currentContent: string;
   previewContent: string;
 }
+
+// Detected MCP config format from file import
+export type McpDetectedFormat = 'standard' | 'amp' | 'copilot' | 'opencode';
+
+// Result of importing MCP config from file
+export interface McpImportResult {
+  servers: McpServer[];
+  sourcePath: string;
+  detectedFormat: McpDetectedFormat;
+}
+
+// Import mode for MCP servers
+export type McpImportMode = 'replace' | 'merge';

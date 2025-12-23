@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
+import { open } from '@tauri-apps/plugin-dialog';
 import { useMcpStore } from '@/stores/mcp-store';
-import { McpServer, McpSyncPreview, McpServerConflict, McpConfigPreview } from '@/types';
+import { McpServer, McpSyncPreview, McpServerConflict, McpConfigPreview, McpImportResult, McpImportMode, McpDetectedFormat } from '@/types';
 import { McpSourceSelector } from './mcp-source-selector';
 import { McpServerList } from './mcp-server-list';
 import { McpServerEditorModal } from './mcp-server-editor';
@@ -8,7 +9,8 @@ import { McpToolStatusList } from './mcp-tool-status';
 import { McpSyncPreviewModal } from './mcp-sync-preview-modal';
 import { McpConflictResolutionModal } from './mcp-conflict-resolution-modal';
 import { McpConfigPreviewModal } from './mcp-config-preview-modal';
-import { RefreshCw, Plus, AlertCircle, CheckCircle } from 'lucide-react';
+import { McpImportPreviewModal } from './mcp-import-preview-modal';
+import { RefreshCw, Plus, AlertCircle, CheckCircle, Upload } from 'lucide-react';
 
 export function McpSettingsPanel() {
   const {
@@ -33,6 +35,8 @@ export function McpSettingsPanel() {
     activeConflicts,
     setActiveConflicts,
     clearActiveConflicts,
+    importFromFile,
+    executeImport,
   } = useMcpStore();
 
   const [isServerEditorOpen, setIsServerEditorOpen] = useState(false);
@@ -46,6 +50,10 @@ export function McpSettingsPanel() {
   const [configPreview, setConfigPreview] = useState<McpConfigPreview | null>(null);
   const [isLoadingConfigPreview, setIsLoadingConfigPreview] = useState(false);
   const [toast, setToast] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
+  
+  // Import modal state
+  const [isImportPreviewOpen, setIsImportPreviewOpen] = useState(false);
+  const [importResult, setImportResult] = useState<McpImportResult | null>(null);
 
   useEffect(() => {
     loadConfig();
@@ -81,6 +89,50 @@ export function McpSettingsPanel() {
     try {
       await removeServer(serverName);
       setToast({ type: 'success', message: `Deleted server "${serverName}"` });
+    } catch (err) {
+      setToast({ type: 'error', message: String(err) });
+    }
+  };
+
+  const handleImportFromFile = async () => {
+    try {
+      const selectedPath = await open({
+        multiple: false,
+        filters: [
+          { name: 'JSON Files', extensions: ['json'] },
+          { name: 'All Files', extensions: ['*'] },
+        ],
+      });
+
+      if (!selectedPath) return; // User cancelled
+
+      const result = await importFromFile(selectedPath);
+      
+      if (result.servers.length === 0) {
+        setToast({ type: 'error', message: 'No MCP servers found in the selected file' });
+        return;
+      }
+
+      setImportResult(result);
+      setIsImportPreviewOpen(true);
+    } catch (err) {
+      setToast({ type: 'error', message: String(err) });
+    }
+  };
+
+  const handleExecuteImport = async (
+    selectedServers: McpServer[],
+    mode: McpImportMode,
+    overwriteMap: Record<string, boolean>
+  ) => {
+    try {
+      await executeImport(selectedServers, mode, overwriteMap);
+      setIsImportPreviewOpen(false);
+      setImportResult(null);
+      setToast({ 
+        type: 'success', 
+        message: `Imported ${selectedServers.length} server${selectedServers.length !== 1 ? 's' : ''} successfully` 
+      });
     } catch (err) {
       setToast({ type: 'error', message: String(err) });
     }
@@ -269,17 +321,27 @@ export function McpSettingsPanel() {
                 MCP Servers
               </h2>
               {sourceMode === 'app-managed' && (
-                <button
-                  onClick={() => {
-                    setEditingServer(undefined);
-                    setIsServerEditorOpen(true);
-                  }}
-                  className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-indigo-600 dark:text-indigo-400 
-                             hover:bg-indigo-50 dark:hover:bg-indigo-500/10 rounded-lg transition-colors"
-                >
-                  <Plus className="w-4 h-4" />
-                  Add Server
-                </button>
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={handleImportFromFile}
+                    className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-slate-600 dark:text-slate-400 
+                               hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-colors"
+                  >
+                    <Upload className="w-4 h-4" />
+                    Import from File
+                  </button>
+                  <button
+                    onClick={() => {
+                      setEditingServer(undefined);
+                      setIsServerEditorOpen(true);
+                    }}
+                    className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-indigo-600 dark:text-indigo-400 
+                               hover:bg-indigo-50 dark:hover:bg-indigo-500/10 rounded-lg transition-colors"
+                  >
+                    <Plus className="w-4 h-4" />
+                    Add Server
+                  </button>
+                </div>
               )}
             </div>
             <McpServerList
@@ -373,6 +435,22 @@ export function McpSettingsPanel() {
         }}
         isLoading={isLoadingConfigPreview}
       />
+
+      {importResult && (
+        <McpImportPreviewModal
+          isOpen={isImportPreviewOpen}
+          servers={importResult.servers}
+          sourcePath={importResult.sourcePath}
+          detectedFormat={importResult.detectedFormat as McpDetectedFormat}
+          existingServers={servers}
+          onImport={handleExecuteImport}
+          onClose={() => {
+            setIsImportPreviewOpen(false);
+            setImportResult(null);
+          }}
+          isLoading={isLoading}
+        />
+      )}
     </div>
   );
 }

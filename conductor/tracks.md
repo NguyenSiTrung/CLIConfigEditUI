@@ -25,6 +25,9 @@ This file lists all development tracks (features, bugs, improvements) for CLI Co
 
 ## Archived Tracks
 
+### [x] mcp-preload_20251223 - MCP Config Preload from File
+*Archived: 2025-12-23 | [conductor/archive/mcp-preload_20251223/](conductor/archive/mcp-preload_20251223/)*
+
 ### [x] mcp-sync_20251222 - MCP Settings Sync
 *Archived: 2025-12-22 | [conductor/archive/mcp-sync_20251222/](conductor/archive/mcp-sync_20251222/)*
 
