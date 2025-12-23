@@ -41,9 +41,9 @@
 
 ## Phase 4: Verification
 
-- [ ] Task 4.1: Manual testing
-  - [ ] Test with user's actual opencode.json config
-  - [ ] Verify sync produces correct native format
+- [x] Task 4.1: Manual testing
+  - [x] Test with user's actual opencode.json config
+  - [x] Verify sync produces correct native format
 
 - [x] Task 4.2: Run all quality checks
   - [x] `cargo clippy` - no warnings
