@@ -1,0 +1,11 @@
+{
+  "track_id": "opencode-mcp-fix_20251223",
+  "type": "bug",
+  "status": "new",
+  "priority": "high",
+  "depends_on": [],
+  "estimated_hours": null,
+  "created_at": "2025-12-23T10:00:00Z",
+  "updated_at": "2025-12-23T10:00:00Z",
+  "description": "Fix MCP Sync to OpenCode - wrong config format (servers wrapper, command/args split, env vs environment)"
+}

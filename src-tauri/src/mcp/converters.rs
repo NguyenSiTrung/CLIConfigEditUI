@@ -110,31 +110,31 @@ fn parse_opencode_mcp_servers(root: &Value) -> Result<Vec<McpServer>, McpError> 
         None => return Ok(Vec::new()),
     };
 
-    let servers = match mcp.get("servers") {
-        Some(Value::Object(servers)) => servers,
-        Some(_) => return Err(McpError::InvalidFormat("mcp.servers is not an object".to_string())),
-        None => return Ok(Vec::new()),
-    };
-
     let mut result = Vec::new();
 
-    for (name, config) in servers {
+    for (name, config) in mcp {
         if let Value::Object(server_config) = config {
-            let command = server_config
-                .get("command")
-                .and_then(|v| v.as_str())
-                .unwrap_or("")
-                .to_string();
+            let (command, args) = if let Some(cmd_array) = server_config.get("command").and_then(|v| v.as_array()) {
+                let cmd_parts: Vec<String> = cmd_array
+                    .iter()
+                    .filter_map(|item| item.as_str().map(|s| s.to_string()))
+                    .collect();
+                if cmd_parts.is_empty() {
+                    (String::new(), None)
+                } else {
+                    let command = cmd_parts[0].clone();
+                    let args = if cmd_parts.len() > 1 {
+                        Some(cmd_parts[1..].to_vec())
+                    } else {
+                        None
+                    };
+                    (command, args)
+                }
+            } else {
+                (String::new(), None)
+            };
 
-            let args = server_config.get("args").and_then(|v| {
-                v.as_array().map(|arr| {
-                    arr.iter()
-                        .filter_map(|item| item.as_str().map(|s| s.to_string()))
-                        .collect()
-                })
-            });
-
-            let env = server_config.get("env").and_then(|v| {
+            let env = server_config.get("environment").and_then(|v| {
                 v.as_object().map(|obj| {
                     obj.iter()
                         .filter_map(|(k, v)| v.as_str().map(|s| (k.clone(), s.to_string())))
@@ -142,13 +142,17 @@ fn parse_opencode_mcp_servers(root: &Value) -> Result<Vec<McpServer>, McpError> 
                 })
             });
 
+            let url = server_config.get("url").and_then(|v| v.as_str()).map(|s| s.to_string());
+
+            let disabled = server_config.get("enabled").and_then(|v| v.as_bool()).map(|enabled| !enabled);
+
             result.push(McpServer {
                 name: name.clone(),
                 command,
                 args,
                 env,
-                disabled: None,
-                url: None,
+                disabled,
+                url,
                 target: None,
                 extra: None,
             });
@@ -195,34 +199,39 @@ fn servers_to_copilot_format(servers: &[McpServer]) -> Value {
 }
 
 fn servers_to_opencode_format(servers: &[McpServer]) -> Value {
-    let mut servers_map = serde_json::Map::new();
+    let mut mcp_map = serde_json::Map::new();
 
     for server in servers {
         let mut server_obj = serde_json::Map::new();
-        server_obj.insert("command".to_string(), Value::String(server.command.clone()));
 
+        let mut cmd_array: Vec<Value> = vec![Value::String(server.command.clone())];
         if let Some(args) = &server.args {
-            server_obj.insert(
-                "args".to_string(),
-                Value::Array(args.iter().map(|s| Value::String(s.clone())).collect()),
-            );
+            cmd_array.extend(args.iter().map(|s| Value::String(s.clone())));
         }
+        server_obj.insert("command".to_string(), Value::Array(cmd_array));
 
         if let Some(env) = &server.env {
             let env_obj: serde_json::Map<String, Value> = env
                 .iter()
                 .map(|(k, v)| (k.clone(), Value::String(v.clone())))
                 .collect();
-            server_obj.insert("env".to_string(), Value::Object(env_obj));
+            server_obj.insert("environment".to_string(), Value::Object(env_obj));
         }
 
-        servers_map.insert(server.name.clone(), Value::Object(server_obj));
+        if let Some(url) = &server.url {
+            server_obj.insert("url".to_string(), Value::String(url.clone()));
+            server_obj.insert("type".to_string(), Value::String("remote".to_string()));
+        } else {
+            server_obj.insert("type".to_string(), Value::String("local".to_string()));
+        }
+
+        let enabled = !server.disabled.unwrap_or(false);
+        server_obj.insert("enabled".to_string(), Value::Bool(enabled));
+
+        mcp_map.insert(server.name.clone(), Value::Object(server_obj));
     }
 
-    let mut mcp_obj = serde_json::Map::new();
-    mcp_obj.insert("servers".to_string(), Value::Object(servers_map));
-
-    Value::Object(mcp_obj)
+    Value::Object(mcp_map)
 }
 
 // Tauri command
@@ -260,10 +269,13 @@ mod tests {
     fn test_parse_opencode_format() {
         let json = serde_json::json!({
             "mcp": {
-                "servers": {
-                    "test-server": {
-                        "command": "test-cmd"
-                    }
+                "test-server": {
+                    "command": ["test-cmd", "arg1", "arg2"],
+                    "environment": {
+                        "API_KEY": "secret"
+                    },
+                    "type": "local",
+                    "enabled": true
                 }
             }
         });
@@ -271,6 +283,42 @@ mod tests {
         let servers = parse_opencode_mcp_servers(&json).unwrap();
         assert_eq!(servers.len(), 1);
         assert_eq!(servers[0].name, "test-server");
+        assert_eq!(servers[0].command, "test-cmd");
+        assert_eq!(servers[0].args, Some(vec!["arg1".to_string(), "arg2".to_string()]));
+        assert!(servers[0].env.as_ref().unwrap().contains_key("API_KEY"));
+        assert_eq!(servers[0].disabled, Some(false));
+    }
+
+    #[test]
+    fn test_parse_opencode_disabled_server() {
+        let json = serde_json::json!({
+            "mcp": {
+                "disabled-server": {
+                    "command": ["cmd"],
+                    "enabled": false
+                }
+            }
+        });
+
+        let servers = parse_opencode_mcp_servers(&json).unwrap();
+        assert_eq!(servers[0].disabled, Some(true));
+    }
+
+    #[test]
+    fn test_parse_opencode_remote_server() {
+        let json = serde_json::json!({
+            "mcp": {
+                "remote-server": {
+                    "command": [],
+                    "url": "https://api.example.com/mcp",
+                    "type": "remote",
+                    "enabled": true
+                }
+            }
+        });
+
+        let servers = parse_opencode_mcp_servers(&json).unwrap();
+        assert_eq!(servers[0].url, Some("https://api.example.com/mcp".to_string()));
     }
 
     #[test]
@@ -296,8 +344,8 @@ mod tests {
         let servers = vec![McpServer {
             name: "test".to_string(),
             command: "cmd".to_string(),
-            args: None,
-            env: None,
+            args: Some(vec!["arg1".to_string()]),
+            env: Some([("KEY".to_string(), "value".to_string())].into_iter().collect()),
             disabled: None,
             url: None,
             target: None,
@@ -305,6 +353,75 @@ mod tests {
         }];
 
         let result = servers_to_opencode_format(&servers);
-        assert!(result.get("servers").is_some());
+        let server = result.get("test").unwrap();
+        
+        let cmd = server.get("command").unwrap().as_array().unwrap();
+        assert_eq!(cmd[0].as_str().unwrap(), "cmd");
+        assert_eq!(cmd[1].as_str().unwrap(), "arg1");
+        
+        assert!(server.get("environment").unwrap().get("KEY").is_some());
+        assert_eq!(server.get("type").unwrap().as_str().unwrap(), "local");
+        assert_eq!(server.get("enabled").unwrap().as_bool().unwrap(), true);
+    }
+
+    #[test]
+    fn test_servers_to_opencode_format_disabled() {
+        let servers = vec![McpServer {
+            name: "disabled".to_string(),
+            command: "cmd".to_string(),
+            args: None,
+            env: None,
+            disabled: Some(true),
+            url: None,
+            target: None,
+            extra: None,
+        }];
+
+        let result = servers_to_opencode_format(&servers);
+        let server = result.get("disabled").unwrap();
+        assert_eq!(server.get("enabled").unwrap().as_bool().unwrap(), false);
+    }
+
+    #[test]
+    fn test_servers_to_opencode_format_remote() {
+        let servers = vec![McpServer {
+            name: "remote".to_string(),
+            command: "".to_string(),
+            args: None,
+            env: None,
+            disabled: None,
+            url: Some("https://api.example.com/mcp".to_string()),
+            target: None,
+            extra: None,
+        }];
+
+        let result = servers_to_opencode_format(&servers);
+        let server = result.get("remote").unwrap();
+        assert_eq!(server.get("type").unwrap().as_str().unwrap(), "remote");
+        assert_eq!(server.get("url").unwrap().as_str().unwrap(), "https://api.example.com/mcp");
+    }
+
+    #[test]
+    fn test_opencode_roundtrip() {
+        let original = vec![McpServer {
+            name: "roundtrip-test".to_string(),
+            command: "npx".to_string(),
+            args: Some(vec!["-y".to_string(), "@modelcontextprotocol/server".to_string()]),
+            env: Some([("TOKEN".to_string(), "abc123".to_string())].into_iter().collect()),
+            disabled: Some(false),
+            url: None,
+            target: None,
+            extra: None,
+        }];
+
+        let serialized = servers_to_opencode_format(&original);
+        let wrapped = serde_json::json!({ "mcp": serialized });
+        let parsed = parse_opencode_mcp_servers(&wrapped).unwrap();
+
+        assert_eq!(parsed.len(), 1);
+        assert_eq!(parsed[0].name, "roundtrip-test");
+        assert_eq!(parsed[0].command, "npx");
+        assert_eq!(parsed[0].args, Some(vec!["-y".to_string(), "@modelcontextprotocol/server".to_string()]));
+        assert!(parsed[0].env.as_ref().unwrap().contains_key("TOKEN"));
     }
 }

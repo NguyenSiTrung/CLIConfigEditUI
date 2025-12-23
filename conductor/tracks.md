@@ -13,7 +13,8 @@ This file lists all development tracks (features, bugs, improvements) for CLI Co
 
 ## Active Tracks
 
-*No active tracks.*
+### [~] opencode-mcp-fix_20251223 - Fix OpenCode MCP Sync Format
+*Priority: 🟠 High | [conductor/tracks/opencode-mcp-fix_20251223/](conductor/tracks/opencode-mcp-fix_20251223/)*
 
 ---
 

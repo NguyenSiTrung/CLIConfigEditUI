@@ -12,7 +12,7 @@ pub enum DetectedFormat {
     Standard,     // mcpServers key
     Amp,          // amp.mcpServers literal key
     Copilot,      // servers key
-    Opencode,     // mcp.servers key
+    Opencode,     // mcp.<server-name> (native OpenCode format)
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -38,10 +38,15 @@ pub fn parse_mcp_config_from_content(content: &str) -> Result<(Vec<McpServer>, D
         }
     }
     
-    // 2. Try OpenCode format (mcp.servers)
+    // 2. Try OpenCode format (servers directly under mcp.<server-name>)
     if let Some(mcp_value) = root.get("mcp") {
-        if let Some(servers_value) = mcp_value.get("servers") {
-            if servers_value.is_object() {
+        if let Some(mcp_obj) = mcp_value.as_object() {
+            let has_server_configs = mcp_obj.values().any(|v| {
+                v.as_object().is_some_and(|obj| {
+                    obj.contains_key("command") || obj.contains_key("url")
+                })
+            });
+            if has_server_configs {
                 let servers = parse_opencode_mcp_servers(&root)?;
                 if !servers.is_empty() {
                     return Ok((servers, DetectedFormat::Opencode));
@@ -74,7 +79,7 @@ pub fn parse_mcp_config_from_content(content: &str) -> Result<(Vec<McpServer>, D
     
     // No recognized format found
     Err(McpError::InvalidFormat(
-        "No recognized MCP config format found. Expected one of: mcpServers, amp.mcpServers, servers, mcp.servers".to_string()
+        "No recognized MCP config format found. Expected one of: mcpServers, amp.mcpServers, servers, mcp.<server-name>".to_string()
     ))
 }
 
@@ -110,13 +115,55 @@ fn parse_opencode_mcp_servers(root: &Value) -> Result<Vec<McpServer>, McpError> 
         None => return Ok(Vec::new()),
     };
 
-    let servers = match mcp.get("servers") {
-        Some(Value::Object(servers)) => servers,
-        Some(_) => return Err(McpError::InvalidFormat("mcp.servers is not an object".to_string())),
-        None => return Ok(Vec::new()),
-    };
+    let mut result = Vec::new();
 
-    Ok(parse_servers_from_object(servers))
+    for (name, config) in mcp {
+        if let Value::Object(server_config) = config {
+            let (command, args) = if let Some(cmd_array) = server_config.get("command").and_then(|v| v.as_array()) {
+                let cmd_parts: Vec<String> = cmd_array
+                    .iter()
+                    .filter_map(|item| item.as_str().map(|s| s.to_string()))
+                    .collect();
+                if cmd_parts.is_empty() {
+                    (String::new(), None)
+                } else {
+                    let command = cmd_parts[0].clone();
+                    let args = if cmd_parts.len() > 1 {
+                        Some(cmd_parts[1..].to_vec())
+                    } else {
+                        None
+                    };
+                    (command, args)
+                }
+            } else {
+                (String::new(), None)
+            };
+
+            let env = server_config.get("environment").and_then(|v| {
+                v.as_object().map(|obj| {
+                    obj.iter()
+                        .filter_map(|(k, v)| value_to_string(v).map(|s| (k.clone(), s)))
+                        .collect::<HashMap<String, String>>()
+                })
+            });
+
+            let url = server_config.get("url").and_then(|v| v.as_str()).map(|s| s.to_string());
+            let disabled = server_config.get("enabled").and_then(|v| v.as_bool()).map(|enabled| !enabled);
+
+            result.push(McpServer {
+                name: name.clone(),
+                command,
+                args,
+                env,
+                disabled,
+                url,
+                target: None,
+                extra: None,
+            });
+        }
+    }
+
+    Ok(result)
 }
 
 fn parse_servers_from_object(servers: &serde_json::Map<String, Value>) -> Vec<McpServer> {
@@ -248,10 +295,13 @@ mod tests {
     fn test_parse_opencode_format() {
         let json = r#"{
             "mcp": {
-                "servers": {
-                    "opencode-server": {
-                        "command": "opencode-mcp"
-                    }
+                "opencode-server": {
+                    "command": ["opencode-mcp", "serve"],
+                    "environment": {
+                        "API_KEY": "secret"
+                    },
+                    "type": "local",
+                    "enabled": true
                 }
             }
         }"#;
@@ -260,6 +310,8 @@ mod tests {
         assert_eq!(format, DetectedFormat::Opencode);
         assert_eq!(servers.len(), 1);
         assert_eq!(servers[0].name, "opencode-server");
+        assert_eq!(servers[0].command, "opencode-mcp");
+        assert_eq!(servers[0].args, Some(vec!["serve".to_string()]));
     }
 
     #[test]
@@ -367,10 +419,11 @@ mod tests {
     fn test_parse_opencode_with_url() {
         let json = r#"{
             "mcp": {
-                "servers": {
-                    "sse-server": {
-                        "url": "https://api.example.com/mcp"
-                    }
+                "sse-server": {
+                    "command": [],
+                    "url": "https://api.example.com/mcp",
+                    "type": "remote",
+                    "enabled": true
                 }
             }
         }"#;
