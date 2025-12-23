@@ -1,5 +1,20 @@
 # Revisions: kiro-cli_20251223
 
+## Revision 2 - 2025-12-23
+
+**Type:** Spec + Plan
+
+**Triggered by:** Path verification - Kiro CLI uses same path on macOS and Linux
+
+**Changes Made:**
+- Updated paths from `~/.config/kiro/` to `~/.kiro/`
+- Settings: `~/.kiro/settings.json`
+- MCP: `~/.kiro/settings/mcp.json`
+
+**Rationale:** Kiro CLI uses `~/.kiro/` on both macOS and Linux, not XDG paths.
+
+---
+
 ## Revision 1 - 2025-12-23
 
 **Type:** Both (Spec + Plan)

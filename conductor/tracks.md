@@ -25,6 +25,9 @@ This file lists all development tracks (features, bugs, improvements) for CLI Co
 
 ## Archived Tracks
 
+### [x] kiro-cli_20251223 - Add Kiro CLI (AWS) Predefined Configuration
+*Archived: 2025-12-23 | [conductor/archive/kiro-cli_20251223/](conductor/archive/kiro-cli_20251223/)*
+
 ### [x] cursor-mcp-config_20251223 - Fix Cursor MCP Config Paths
 *Archived: 2025-12-23 | [conductor/archive/cursor-mcp-config_20251223/](conductor/archive/cursor-mcp-config_20251223/)*
 

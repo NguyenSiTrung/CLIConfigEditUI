@@ -560,5 +560,30 @@ pub fn get_cli_tools() -> Vec<CliTool> {
                 },
             ]),
         },
+        CliTool {
+            id: "kiro-cli".to_string(),
+            name: "Kiro CLI".to_string(),
+            icon: Some("🪁".to_string()),
+            docs_url: Some("https://kiro.dev/docs/cli/reference/settings/".to_string()),
+            description: Some("AWS Kiro agentic coding CLI".to_string()),
+            suggested_configs: Some(vec![
+                SuggestedConfig {
+                    label: "Settings".to_string(),
+                    path: "~/.kiro/settings.json".to_string(),
+                    format: ConfigFormat::Json,
+                    icon: Some("⚙️".to_string()),
+                    description: Some("Main configuration (chat, telemetry, knowledge, API)".to_string()),
+                    json_path: None,
+                },
+                SuggestedConfig {
+                    label: "MCP Servers".to_string(),
+                    path: "~/.kiro/settings/mcp.json".to_string(),
+                    format: ConfigFormat::Json,
+                    icon: Some("🔌".to_string()),
+                    description: Some("User-level MCP server configuration".to_string()),
+                    json_path: None,
+                },
+            ]),
+        },
     ]
 }

@@ -1,6 +1,6 @@
 # Plan: Add Kiro CLI Support
 
-> **Last Revised:** 2025-12-23 - Added Task 1.4 for frontend CLI_TOOLS update
+> **Last Revised:** 2025-12-23 - Added Task 1.4; Fixed paths to ~/.kiro/
 
 ## Phase 1: Add Kiro CLI Tool Definition
 
@@ -15,14 +15,14 @@
 
 ### Task 1.2: Add Settings Configuration
 - [x] Add `SuggestedConfig` for main settings file
-- [x] Path: `~/.config/kiro/settings.json` (Linux standard path)
+- [x] Path: `~/.kiro/settings.json` (same for macOS/Linux)
 - [x] Format: JSON
 - [x] Icon: "⚙️"
 - [x] Description: "Main configuration (chat, telemetry, knowledge, API)"
 
 ### Task 1.3: Add MCP Server Configuration
 - [x] Add `SuggestedConfig` for MCP servers
-- [x] Path: `~/.config/kiro/settings/mcp.json`
+- [x] Path: `~/.kiro/settings/mcp.json` (same for macOS/Linux)
 - [x] Format: JSON
 - [x] Icon: "🔌"
 - [x] Description: "User-level MCP server configuration"

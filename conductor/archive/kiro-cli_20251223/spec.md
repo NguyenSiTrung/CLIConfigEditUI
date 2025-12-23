@@ -1,6 +1,6 @@
 # Spec: Add Kiro CLI Support
 
-> **Last Revised:** 2025-12-23 - Added FR-4 for frontend CLI_TOOLS update
+> **Last Revised:** 2025-12-23 - Added FR-4 for frontend; Fixed paths to ~/.kiro/ (same for macOS/Linux)
 
 ## Overview
 
@@ -18,9 +18,7 @@ Add predefined configuration support for Kiro CLI (AWS's agentic coding service)
 ### FR-2: Settings Configuration
 Add suggested config for main settings:
 - Label: "Settings"
-- Paths:
-  - macOS: `~/.kiro/settings.json`
-  - Linux: `~/.config/kiro/settings.json`
+- Path: `~/.kiro/settings.json` (same for macOS and Linux)
 - Format: JSON
 - Icon: "⚙️"
 - Description: "Main configuration (chat, telemetry, knowledge, API)"
@@ -29,7 +27,7 @@ Add suggested config for main settings:
 ### FR-3: MCP Server Configuration (User-level)
 Add suggested config for MCP servers:
 - Label: "MCP Servers"
-- Path: `~/.config/kiro/settings/mcp.json`
+- Path: `~/.kiro/settings/mcp.json` (same for macOS and Linux)
 - Format: JSON
 - Icon: "🔌"
 - Description: "User-level MCP server configuration"

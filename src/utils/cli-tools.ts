@@ -408,4 +408,27 @@ export const CLI_TOOLS: CliTool[] = [
       },
     ],
   },
+  {
+    id: 'kiro-cli',
+    name: 'Kiro CLI',
+    icon: '🪁',
+    docsUrl: 'https://kiro.dev/docs/cli/reference/settings/',
+    description: 'AWS Kiro agentic coding CLI',
+    suggestedConfigs: [
+      {
+        label: 'Settings',
+        path: '~/.kiro/settings.json',
+        format: 'json',
+        icon: '⚙️',
+        description: 'Main configuration (chat, telemetry, knowledge, API)',
+      },
+      {
+        label: 'MCP Servers',
+        path: '~/.kiro/settings/mcp.json',
+        format: 'json',
+        icon: '🔌',
+        description: 'User-level MCP server configuration',
+      },
+    ],
+  },
 ];
