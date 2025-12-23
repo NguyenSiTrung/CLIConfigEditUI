@@ -49,6 +49,7 @@ export function Sidebar({
   const setSidebarCollapsed = useAppStore((state) => state.setSidebarCollapsed);
   const sidebarWidth = useAppStore((state) => state.sidebarWidth);
   const setSidebarWidth = useAppStore((state) => state.setSidebarWidth);
+  const isDirty = useAppStore((state) => state.isDirty);
 
   const tools = useMemo(() => {
     const query = searchQuery.toLowerCase();
@@ -216,6 +217,7 @@ export function Sidebar({
               onAddConfigFile={onAddConfigFile}
               onEditConfigFile={onEditConfigFile}
               onDeleteConfigFile={onDeleteConfigFile}
+              isDirty={isDirty}
             />
 
             <div className="mx-2 my-3 border-t border-slate-200/50 dark:border-slate-700/30" />
@@ -243,6 +245,7 @@ export function Sidebar({
           onAddTool={onAddCustomTool}
           onEditTool={onEditCustomTool}
           onDeleteTool={onDeleteCustomTool}
+          isDirty={isDirty}
         />
       </div>
 

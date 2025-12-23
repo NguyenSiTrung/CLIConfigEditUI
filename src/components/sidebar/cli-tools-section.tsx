@@ -18,6 +18,7 @@ interface CliToolsSectionProps {
   onAddConfigFile: (tool: CliTool) => void;
   onEditConfigFile: (tool: CliTool, configFile: ConfigFile) => void;
   onDeleteConfigFile: (toolId: string, configFileId: string) => void;
+  isDirty?: () => boolean;
 }
 
 export const CliToolsSection = memo(function CliToolsSection({
@@ -32,6 +33,7 @@ export const CliToolsSection = memo(function CliToolsSection({
   onAddConfigFile,
   onEditConfigFile,
   onDeleteConfigFile,
+  isDirty,
 }: CliToolsSectionProps) {
   const colors = ACCENT_COLORS.indigo;
 
@@ -95,6 +97,11 @@ export const CliToolsSection = memo(function CliToolsSection({
                     key={configFile.id}
                     configFile={configFile}
                     isActive={activeToolId === tool.id && activeConfigFileId === configFile.id}
+                    hasUnsavedChanges={
+                      activeToolId === tool.id && 
+                      activeConfigFileId === configFile.id && 
+                      isDirty?.() === true
+                    }
                     onSelect={() => onConfigFileSelect(tool.id, configFile)}
                     onEdit={() => onEditConfigFile(tool, configFile)}
                     onDelete={() => onDeleteConfigFile(tool.id, configFile.id)}

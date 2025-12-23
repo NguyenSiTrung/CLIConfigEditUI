@@ -8,6 +8,7 @@ import { useAppStore } from '@/stores/app-store';
 interface ConfigFileItemProps {
   configFile: ConfigFile;
   isActive: boolean;
+  hasUnsavedChanges?: boolean;
   onSelect: () => void;
   onEdit: () => void;
   onDelete: () => void;
@@ -24,6 +25,7 @@ const FORMAT_BADGES: Record<string, { label: string; color: string; bg: string }
 export const ConfigFileItem = memo(function ConfigFileItem({
   configFile,
   isActive,
+  hasUnsavedChanges = false,
   onSelect,
   onEdit,
   onDelete,
@@ -153,6 +155,14 @@ export const ConfigFileItem = memo(function ConfigFileItem({
         <span className="truncate font-medium flex-1" title={configFile.label}>
           {configFile.label}
         </span>
+        
+        {hasUnsavedChanges && (
+          <span 
+            className="flex-shrink-0 w-2 h-2 rounded-full bg-amber-500 animate-pulse"
+            title="Unsaved changes"
+            aria-label="Unsaved changes"
+          />
+        )}
       </button>
 
       {showTooltip && !menuOpen && (

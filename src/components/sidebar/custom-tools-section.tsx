@@ -23,6 +23,7 @@ interface CustomToolsSectionProps {
   onAddTool: () => void;
   onEditTool: (tool: CustomTool) => void;
   onDeleteTool: (toolId: string) => void;
+  isDirty?: () => boolean;
 }
 
 export const CustomToolsSection = memo(function CustomToolsSection({
@@ -40,6 +41,7 @@ export const CustomToolsSection = memo(function CustomToolsSection({
   onAddTool,
   onEditTool,
   onDeleteTool,
+  isDirty,
 }: CustomToolsSectionProps) {
   const colors = ACCENT_COLORS.violet;
   const confirmBeforeDelete = useAppStore((state) => state.behaviorSettings.confirmBeforeDelete);
@@ -133,6 +135,11 @@ export const CustomToolsSection = memo(function CustomToolsSection({
                     key={configFile.id}
                     configFile={configFile}
                     isActive={activeToolId === tool.id && activeConfigFileId === configFile.id}
+                    hasUnsavedChanges={
+                      activeToolId === tool.id && 
+                      activeConfigFileId === configFile.id && 
+                      isDirty?.() === true
+                    }
                     onSelect={() => onConfigFileSelect(tool.id, configFile)}
                     onEdit={() => onEditConfigFile(tool, configFile)}
                     onDelete={() => onDeleteConfigFile(tool.id, configFile.id)}

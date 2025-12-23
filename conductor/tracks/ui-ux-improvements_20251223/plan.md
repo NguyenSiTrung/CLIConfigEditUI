@@ -116,11 +116,11 @@
 ## Phase 5: User Flow Optimization
 
 ### Task 5.1: Redesign Welcome Screen
-- [ ] Update welcome screen with 3 primary action buttons
-- [ ] Add "Scan for CLIs" / "Open config" / "Add custom tool" buttons
-- [ ] Add quick-start step list (1-2-3 bullets)
-- [ ] Reduce marketing copy, increase actionable guidance
-- [ ] Update feature cards to be more concise
+- [x] Update welcome screen with 3 primary action buttons
+- [x] Add "Scan for CLIs" / "Open config" / "Add custom tool" buttons
+- [x] Add quick-start step list (1-2-3 bullets)
+- [x] Reduce marketing copy, increase actionable guidance
+- [x] Update feature cards to be more concise
 
 ### Task 5.2: Improve Error States
 - [ ] Create inline empty-state component for non-existing files
@@ -129,10 +129,10 @@
 - [ ] Add "Start editing" button with default content
 
 ### Task 5.3: Unsaved Changes Indicator
-- [ ] Add unsaved dot indicator to sidebar config file items
-- [ ] Track dirty state per config file in store
-- [ ] Update `config-file-item.tsx` to show indicator
-- [ ] Style indicator to be subtle but visible
+- [x] Add unsaved dot indicator to sidebar config file items
+- [x] Track dirty state per config file in store
+- [x] Update `config-file-item.tsx` to show indicator
+- [x] Style indicator to be subtle but visible
 
 ### Task 5.4: Monaco Error Feedback
 - [ ] Integrate Monaco markers for JSON parse errors
