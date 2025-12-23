@@ -268,6 +268,21 @@ export const CLI_TOOLS: CliTool[] = [
         icon: '⚙️',
         description: 'User settings file',
       },
+      {
+        label: 'MCP Servers',
+        path: '~/.cursor/mcp.json',
+        format: 'json',
+        icon: '🔌',
+        description: 'Global MCP server configuration',
+        jsonPath: 'mcpServers',
+      },
+      {
+        label: 'CLI Config',
+        path: '~/.cursor/cli-config.json',
+        format: 'json',
+        icon: '🖥️',
+        description: 'CLI Agent configuration',
+      },
     ],
   },
   {

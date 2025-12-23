@@ -25,6 +25,9 @@ This file lists all development tracks (features, bugs, improvements) for CLI Co
 
 ## Archived Tracks
 
+### [x] cursor-mcp-config_20251223 - Fix Cursor MCP Config Paths
+*Archived: 2025-12-23 | [conductor/archive/cursor-mcp-config_20251223/](conductor/archive/cursor-mcp-config_20251223/)*
+
 ### [x] auggie-cli-predefine_20251223 - Add Augment Code CLI (Auggie) Predefined Configuration
 *Archived: 2025-12-23 | [conductor/archive/auggie-cli-predefine_20251223/](conductor/archive/auggie-cli-predefine_20251223/)*
 

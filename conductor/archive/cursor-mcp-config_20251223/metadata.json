@@ -1,0 +1,11 @@
+{
+  "track_id": "cursor-mcp-config_20251223",
+  "type": "fix",
+  "status": "new",
+  "priority": "high",
+  "depends_on": [],
+  "estimated_hours": null,
+  "created_at": "2025-12-23T12:00:00Z",
+  "updated_at": "2025-12-23T12:00:00Z",
+  "description": "Add MCP and CLI config paths to Cursor tool definition"
+}

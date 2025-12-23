@@ -407,7 +407,7 @@ pub fn get_cli_tools() -> Vec<CliTool> {
             id: "cursor".to_string(),
             name: "Cursor".to_string(),
             icon: Some("📝".to_string()),
-            docs_url: Some("https://cursor.sh/docs".to_string()),
+            docs_url: Some("https://cursor.com/docs".to_string()),
             description: Some("AI-first code editor".to_string()),
             suggested_configs: Some(vec![
                 SuggestedConfig {
@@ -416,6 +416,22 @@ pub fn get_cli_tools() -> Vec<CliTool> {
                     format: ConfigFormat::Json,
                     icon: Some("⚙️".to_string()),
                     description: Some("User settings file".to_string()),
+                    json_path: None,
+                },
+                SuggestedConfig {
+                    label: "MCP Servers".to_string(),
+                    path: "~/.cursor/mcp.json".to_string(),
+                    format: ConfigFormat::Json,
+                    icon: Some("🔌".to_string()),
+                    description: Some("Global MCP server configuration".to_string()),
+                    json_path: Some("mcpServers".to_string()),
+                },
+                SuggestedConfig {
+                    label: "CLI Config".to_string(),
+                    path: "~/.cursor/cli-config.json".to_string(),
+                    format: ConfigFormat::Json,
+                    icon: Some("🖥️".to_string()),
+                    description: Some("CLI Agent configuration".to_string()),
                     json_path: None,
                 },
             ]),
