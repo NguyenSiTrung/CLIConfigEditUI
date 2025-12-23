@@ -2,8 +2,8 @@ import { useState, useEffect, useCallback } from 'react';
 import { DiffEditor } from '@monaco-editor/react';
 import { invoke } from '@tauri-apps/api/core';
 import { useAppStore } from '@/stores/app-store';
+import { Modal, Button } from '@/components/ui';
 import {
-  X,
   History,
   RotateCcw,
   Clock,
@@ -132,38 +132,59 @@ export function BackupModal({
     return formatDate(timestamp);
   };
 
-  if (!isOpen) return null;
+  const footerContent = (
+    <>
+      <div className="flex-1">
+        {error ? (
+          <div className="flex items-center gap-2 text-red-500 text-sm">
+            <AlertTriangle className="w-4 h-4" />
+            <span>{error}</span>
+          </div>
+        ) : (
+          <div className="flex items-center gap-2 text-sm dark:text-gray-400 text-slate-500">
+            <AlertTriangle className="w-4 h-4" />
+            <span>Restoring will create a backup of the current file first</span>
+          </div>
+        )}
+      </div>
+      <Button variant="ghost" onClick={onClose}>
+        Cancel
+      </Button>
+      <Button
+        variant="primary"
+        onClick={handleRestore}
+        disabled={!selectedBackup || restoring}
+        isLoading={restoring}
+        leftIcon={!restoring ? <RotateCcw className="w-4 h-4" /> : undefined}
+      >
+        {restoring ? 'Restoring...' : 'Restore This Backup'}
+      </Button>
+    </>
+  );
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-      <div
-        className="absolute inset-0 bg-black/60 backdrop-blur-sm"
-        onClick={onClose}
-      />
-      
-      <div className="relative w-full max-w-6xl h-[85vh] dark:bg-gray-800 bg-white rounded-xl shadow-2xl flex flex-col overflow-hidden">
-        {/* Header */}
-        <div className="flex items-center justify-between px-5 py-4 border-b dark:border-gray-700 border-slate-200">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-lg dark:bg-blue-500/20 bg-blue-100 flex items-center justify-center">
-              <History className="w-5 h-5 text-blue-500" />
-            </div>
-            <div>
-              <h2 className="text-lg font-semibold dark:text-white text-slate-800">
-                Backup History
-              </h2>
-              <p className="text-sm dark:text-gray-400 text-slate-500">
-                Compare and restore previous versions
-              </p>
-            </div>
+    <Modal
+      isOpen={isOpen}
+      onClose={onClose}
+      showCloseButton={true}
+      size="full"
+      className="!max-w-6xl h-[85vh]"
+      footer={footerContent}
+    >
+      <div className="flex flex-col h-full -mx-6 -my-4">
+        {/* Custom Header */}
+        <div className="flex items-center gap-3 px-5 py-4 border-b dark:border-gray-700 border-slate-200">
+          <div className="w-10 h-10 rounded-lg dark:bg-blue-500/20 bg-blue-100 flex items-center justify-center">
+            <History className="w-5 h-5 text-blue-500" />
           </div>
-          <button
-            onClick={onClose}
-            className="p-2 dark:text-gray-400 text-slate-400 dark:hover:text-white hover:text-slate-600 
-                       dark:hover:bg-gray-700/50 hover:bg-slate-100 rounded-lg transition-colors"
-          >
-            <X className="w-5 h-5" />
-          </button>
+          <div>
+            <h2 className="text-lg font-semibold dark:text-white text-slate-800">
+              Backup History
+            </h2>
+            <p className="text-sm dark:text-gray-400 text-slate-500">
+              Compare and restore previous versions
+            </p>
+          </div>
         </div>
 
         {/* Content */}
@@ -284,50 +305,7 @@ export function BackupModal({
             )}
           </div>
         </div>
-
-        {/* Footer */}
-        <div className="flex items-center justify-between px-5 py-4 border-t dark:border-gray-700 border-slate-200 dark:bg-gray-900/30 bg-slate-50">
-          {error ? (
-            <div className="flex items-center gap-2 text-red-500 text-sm">
-              <AlertTriangle className="w-4 h-4" />
-              <span>{error}</span>
-            </div>
-          ) : (
-            <div className="flex items-center gap-2 text-sm dark:text-gray-400 text-slate-500">
-              <AlertTriangle className="w-4 h-4" />
-              <span>Restoring will create a backup of the current file first</span>
-            </div>
-          )}
-
-          <div className="flex items-center gap-3">
-            <button
-              onClick={onClose}
-              className="px-4 py-2 text-sm dark:text-gray-300 text-slate-600 
-                         dark:hover:bg-gray-700 hover:bg-slate-100 rounded-lg transition-colors"
-            >
-              Cancel
-            </button>
-            <button
-              onClick={handleRestore}
-              disabled={!selectedBackup || restoring}
-              className="px-4 py-2 text-sm bg-blue-600 hover:bg-blue-500 text-white rounded-lg 
-                         transition-colors flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {restoring ? (
-                <>
-                  <Loader2 className="w-4 h-4 animate-spin" />
-                  Restoring...
-                </>
-              ) : (
-                <>
-                  <RotateCcw className="w-4 h-4" />
-                  Restore This Backup
-                </>
-              )}
-            </button>
-          </div>
-        </div>
       </div>
-    </div>
+    </Modal>
   );
 }

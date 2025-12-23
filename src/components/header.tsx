@@ -2,6 +2,7 @@ import { Settings, Moon, Sun, Terminal, Sparkles, Minus, Square, X, Server } fro
 import { useAppStore } from '@/stores/app-store';
 import { useEffect } from 'react';
 import { getCurrentWindow } from '@tauri-apps/api/window';
+import { APP_VERSION } from '@/constants/design-tokens';
 
 export type AppView = 'editor' | 'mcp';
 
@@ -59,7 +60,7 @@ export function Header({ onSettingsClick, currentView = 'editor', onViewChange }
         <div className="flex flex-col justify-center">
           <h1 className="text-sm font-bold dark:text-slate-200 text-slate-800 tracking-tight leading-none mb-0.5">CLI Config Editor</h1>
           <div className="flex items-center gap-1.5 opacity-60">
-            <span className="text-[10px] font-medium dark:text-slate-400 text-slate-500 uppercase tracking-widest">v1.2.0</span>
+            <span className="text-[11px] font-medium dark:text-slate-400 text-slate-500 uppercase tracking-widest">v{APP_VERSION}</span>
             <Sparkles className="w-2.5 h-2.5 text-amber-500" />
           </div>
         </div>

@@ -13,7 +13,8 @@ This file lists all development tracks (features, bugs, improvements) for CLI Co
 
 ## Active Tracks
 
-*No active tracks.*
+### [~] ui-ux-improvements_20251223 - UI/UX Comprehensive Improvement
+*Priority: 🟠 High | [conductor/tracks/ui-ux-improvements_20251223/](conductor/tracks/ui-ux-improvements_20251223/)*
 
 ---
 
