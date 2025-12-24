@@ -7,6 +7,7 @@ import { CliToolsSection } from './cli-tools-section';
 import { CustomToolsSection } from './custom-tools-section';
 import { IdeExtensionsSection } from './ide-extensions-section';
 import { CLI_TOOLS } from '@/utils/cli-tools';
+import { formatShortcut } from '@/hooks/use-keyboard-shortcut';
 
 interface SidebarProps {
   onConfigFileSelect: (toolId: string, configFile: ConfigFile) => void;
@@ -136,7 +137,7 @@ export function Sidebar({
                       transition-all duration-200 active:scale-95
                       focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500/40"
             aria-label="Expand sidebar"
-            title="Expand sidebar"
+            title={`Expand sidebar (${formatShortcut({ ctrl: true, key: 'B' })})`}
           >
             <PanelLeft className="w-5 h-5" />
           </button>
@@ -171,7 +172,7 @@ export function Sidebar({
                     transition-colors duration-200 active:scale-95
                     focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500/40"
           aria-label="Collapse sidebar"
-          title="Collapse sidebar"
+          title={`Collapse sidebar (${formatShortcut({ ctrl: true, key: 'B' })})`}
         >
           <PanelLeftClose className="w-4 h-4" />
         </button>

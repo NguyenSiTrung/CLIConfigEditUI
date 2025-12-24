@@ -9,6 +9,7 @@ import { VersionsTab } from './versions-tab';
 import { OnboardingTooltip, Modal, Button } from './ui';
 import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { invoke } from '@tauri-apps/api/core';
+import { formatShortcut } from '@/hooks/use-keyboard-shortcut';
 import {
   Save,
   AlignLeft,
@@ -443,9 +444,13 @@ export function ConfigEditor({
                     ? 'bg-indigo-600 hover:bg-indigo-500 text-white shadow-indigo-500/25 hover:shadow-indigo-500/40 hover:scale-105 active:scale-95'
                     : 'bg-slate-100 dark:bg-slate-800 text-slate-400 dark:text-slate-600 cursor-not-allowed border border-slate-200 dark:border-slate-700'}`}
                 aria-label={isDirty() ? 'Save changes' : 'No changes to save'}
+                title={`Save (${formatShortcut({ ctrl: true, key: 'S' })})`}
               >
                 {isDirty() ? <Save className="w-3.5 h-3.5" /> : <CheckCircle2 className="w-3.5 h-3.5" />}
                 Save
+                <kbd className="ml-1 px-1.5 py-0.5 text-[10px] font-medium bg-white/20 rounded opacity-75">
+                  {formatShortcut({ ctrl: true, key: 'S' })}
+                </kbd>
               </button>
             </>
           )}

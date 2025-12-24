@@ -3,6 +3,7 @@ import { useAppStore } from '@/stores/app-store';
 import { useEffect } from 'react';
 import { getCurrentWindow } from '@tauri-apps/api/window';
 import { APP_VERSION } from '@/constants/design-tokens';
+import { formatShortcut } from '@/hooks/use-keyboard-shortcut';
 
 export type AppView = 'editor' | 'mcp';
 
@@ -120,7 +121,7 @@ export function Header({ onSettingsClick, currentView = 'editor', onViewChange }
                        hover:bg-white dark:hover:bg-white/10 
                        transition-all duration-200
                        focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500/40"
-            title="Settings"
+            title={`Settings (${formatShortcut({ ctrl: true, key: ',' })})`}
             aria-label="Settings"
           >
             <Settings className="w-4 h-4" />

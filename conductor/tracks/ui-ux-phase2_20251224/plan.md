@@ -120,11 +120,11 @@
 - [x] Add link/button to shortcuts from Settings modal
 
 ### Task 6.2: Inline Shortcut Hints
-- [ ] Add shortcut hint to Save button ("⌘S" / "Ctrl+S")
-- [ ] Add shortcut hint to Settings button tooltip
-- [ ] Add shortcut hint to sidebar toggle tooltip
-- [ ] Create utility for platform-aware shortcut formatting
-- [ ] Test hints display correctly on macOS and other platforms
+- [x] Add shortcut hint to Save button ("⌘S" / "Ctrl+S")
+- [x] Add shortcut hint to Settings button tooltip
+- [x] Add shortcut hint to sidebar toggle tooltip
+- [x] Create utility for platform-aware shortcut formatting
+- [x] Test hints display correctly on macOS and other platforms
 
 ### Task 6.3: Command Palette Visibility
 - [ ] Add Command Palette button to Header
