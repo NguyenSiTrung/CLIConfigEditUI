@@ -28,6 +28,7 @@ export function KeyboardShortcutsModal({ isOpen, onClose }: KeyboardShortcutsMod
       icon: <Navigation className="w-4 h-4" />,
       shortcuts: [
         { keys: { ctrl: true, key: 'k' }, description: 'Open command palette' },
+        { keys: { ctrl: true, key: 'p' }, description: 'Quick open file' },
         { keys: { ctrl: true, key: ',' }, description: 'Open settings' },
         { keys: { ctrl: true, key: 'b' }, description: 'Toggle sidebar' },
       ],

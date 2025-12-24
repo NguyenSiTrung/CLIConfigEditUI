@@ -127,82 +127,82 @@
 - [x] Test hints display correctly on macOS and other platforms
 
 ### Task 6.3: Command Palette Visibility
-- [ ] Add Command Palette button to Header
-- [ ] Show "⌘K" hint on the button
-- [ ] Implement first-time OnboardingTooltip for command palette
-- [ ] Store "command palette discovered" flag in app store
-- [ ] Test tooltip appears only on first use
+- [x] Add Command Palette button to Header
+- [x] Show "⌘K" hint on the button
+- [x] Implement first-time OnboardingTooltip for command palette
+- [x] Store "command palette discovered" flag in app store
+- [x] Test tooltip appears only on first use
 
 ### Task 6.4: Welcome Screen Enhancements
-- [ ] Add "Power Features" section to WelcomeScreen
-- [ ] Add MCP Sync feature card with link to MCP view
-- [ ] Add Version History feature card
-- [ ] Add Backups feature card with link to Settings
-- [ ] Test all links navigate correctly
+- [x] Add "Power Features" section to WelcomeScreen
+- [x] Add MCP Sync feature card with link to MCP view
+- [x] Add Version History feature card
+- [x] Add Backups feature card with link to Settings
+- [x] Test all links navigate correctly
 
 ### Task 6.5: MCP Panel Guidance
-- [ ] Create collapsible "How MCP Sync Works" info block
-- [ ] Add 3-step explanation (source, servers, sync)
-- [ ] Create empty state component for MCP Servers section
-- [ ] Show empty state with Import/Add CTA when no servers
-- [ ] Test empty state appears correctly
+- [x] Create collapsible "How MCP Sync Works" info block
+- [x] Add 3-step explanation (source, servers, sync)
+- [x] Create empty state component for MCP Servers section
+- [x] Show empty state with Import/Add CTA when no servers
+- [x] Test empty state appears correctly
 
 ### Task 6.6: Settings Cross-References
-- [ ] Add hint in Settings theme section: "Toggle from top bar"
-- [ ] Add hint in Header theme tooltip: "More options in Settings"
-- [ ] Review other settings for cross-reference opportunities
-- [ ] Test hints are helpful and not cluttering
+- [x] Add hint in Settings theme section: "Toggle from top bar"
+- [x] Add hint in Header theme tooltip: "More options in Settings"
+- [x] Review other settings for cross-reference opportunities
+- [x] Test hints are helpful and not cluttering
 
 ## Phase 7: Modern Desktop Features
 
 ### Task 7.1: Quick Open
-- [ ] Create useRecentFiles hook with localStorage persistence
-- [ ] Track file opens in recent files list (max 10)
-- [ ] Add Ctrl/Cmd+P keyboard shortcut handler
-- [ ] Create Quick Open mode in command palette (filtered to configs)
-- [ ] Show file path in Quick Open results
-- [ ] Test Quick Open navigates to correct config
+- [x] Create useRecentFiles hook with localStorage persistence
+- [x] Track file opens in recent files list (max 10)
+- [x] Add Ctrl/Cmd+P keyboard shortcut handler
+- [x] Create Quick Open mode in command palette (filtered to configs)
+- [x] Show file path in Quick Open results
+- [x] Test Quick Open navigates to correct config
 
 ### Task 7.2: Diff View for Versions
-- [ ] Add Monaco DiffEditor component wrapper
-- [ ] Add "Compare" action to version list items
-- [ ] Create VersionDiffModal with DiffEditor
-- [ ] Pass selected version content and current content to diff
-- [ ] Add navigation between diff and apply actions
-- [ ] Test diff view shows correct differences
+- [x] Add Monaco DiffEditor component wrapper
+- [x] Add "Compare" action to version list items
+- [x] Create VersionDiffModal with DiffEditor
+- [x] Pass selected version content and current content to diff
+- [x] Add navigation between diff and apply actions
+- [x] Test diff view shows correct differences
 
 ### Task 7.3: Diff View for Backups
-- [ ] Add "Compare" action to backup list items in BackupModal
-- [ ] Create BackupDiffModal with DiffEditor
-- [ ] Load backup content and compare with current
-- [ ] Add restore action from diff view
-- [ ] Test diff view for backup comparison
+- [x] Add "Compare" action to backup list items in BackupModal
+- [x] Create BackupDiffModal with DiffEditor
+- [x] Load backup content and compare with current
+- [x] Add restore action from diff view
+- [x] Test diff view for backup comparison
 
 ### Task 7.4: Recent Files in Command Palette
-- [ ] Add "Recent" category to command palette
-- [ ] Display recent files with path info
-- [ ] Add clear recent files action
-- [ ] Limit display to 5 most recent in palette
-- [ ] Test recent files update on navigation
+- [x] Add "Recent" category to command palette
+- [x] Display recent files with path info
+- [x] Add clear recent files action
+- [x] Limit display to 5 most recent in palette
+- [x] Test recent files update on navigation
 
 ### Task 7.5: Search Integration
-- [ ] Add "Find in file (Ctrl+F)" hint to status bar
-- [ ] Show hint only on first config open (use flag)
-- [ ] Add "Find in File" command to command palette
-- [ ] Trigger Monaco's built-in find widget from command
-- [ ] Test search focus works correctly
+- [x] Add "Find in file (Ctrl+F)" hint to status bar
+- [x] Show hint only on first config open (use flag)
+- [x] Add "Find in File" command to command palette
+- [x] Trigger Monaco's built-in find widget from command
+- [x] Test search focus works correctly
 
 ### Task 7.6: Update Indicator
-- [ ] Add tauri-plugin-updater dependency
-- [ ] Create useUpdateChecker hook
-- [ ] Check for updates on app launch (with debounce)
-- [ ] Add update badge to Header version display
-- [ ] Create simple update available notification/dialog
-- [ ] Handle update check failures gracefully
-- [ ] Test update flow (may require mock for development)
+- [x] Add tauri-plugin-updater dependency
+- [x] Create useUpdateChecker hook
+- [x] Check for updates on app launch (with debounce)
+- [x] Add update badge to Header version display
+- [x] Create simple update available notification/dialog
+- [x] Handle update check failures gracefully
+- [x] Test update flow (may require mock for development)
 
 ### Task 7.7: Command Palette Categories
-- [ ] Group existing commands into categories
-- [ ] Add section headers to command list (Navigation, Tools, Settings, Recent)
-- [ ] Style section headers distinctly from command items
-- [ ] Test keyboard navigation works across sections
+- [x] Group existing commands into categories
+- [x] Add section headers to command list (Navigation, Tools, Settings, Recent)
+- [x] Style section headers distinctly from command items
+- [x] Test keyboard navigation works across sections

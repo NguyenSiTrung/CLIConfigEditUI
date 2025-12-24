@@ -7,7 +7,7 @@ import { WelcomeScreen } from './welcome-screen';
 import { BackupModal } from './backup-modal';
 import { VersionsTab } from './versions-tab';
 import { OnboardingTooltip, Modal, Button } from './ui';
-import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
+import { useState, useEffect, useCallback, useRef, useMemo, useImperativeHandle, forwardRef } from 'react';
 import { invoke } from '@tauri-apps/api/core';
 import { formatShortcut } from '@/hooks/use-keyboard-shortcut';
 import {
@@ -46,22 +46,28 @@ interface ConfigEditorProps {
   onFormat: () => void;
   onAddCustomTool: () => void;
   onOpenSettings?: () => void;
+  onSwitchToMcp?: () => void;
   externalChangeDetected?: boolean;
   onReloadFile?: () => void;
   onDismissExternalChange?: () => void;
 }
 
+export interface ConfigEditorHandle {
+  triggerFind: () => void;
+}
+
 type EditorTab = 'editor' | 'versions';
 
-export function ConfigEditor({
+export const ConfigEditor = forwardRef<ConfigEditorHandle, ConfigEditorProps>(function ConfigEditor({
   onSave,
   onFormat,
   onAddCustomTool,
   onOpenSettings,
+  onSwitchToMcp,
   externalChangeDetected,
   onReloadFile,
   onDismissExternalChange,
-}: ConfigEditorProps) {
+}, ref) {
   const {
     editorContent,
     setEditorContent,
@@ -100,6 +106,16 @@ export function ConfigEditor({
       setCursorPosition({ line: e.position.lineNumber, column: e.position.column });
     });
   };
+
+  // Expose triggerFind to parent via ref
+  useImperativeHandle(ref, () => ({
+    triggerFind: () => {
+      if (editorRef.current) {
+        editorRef.current.focus();
+        editorRef.current.trigger('keyboard', 'actions.find', null);
+      }
+    },
+  }), []);
 
   // Validate JSON and set Monaco markers for parse errors
   useEffect(() => {
@@ -270,7 +286,7 @@ export function ConfigEditor({
   const formatInfo = FORMAT_LABELS[currentFormat];
 
   if (!activeToolId) {
-    return <WelcomeScreen onAddCustomTool={onAddCustomTool} />;
+    return <WelcomeScreen onAddCustomTool={onAddCustomTool} onOpenSettings={onOpenSettings} onSwitchToMcp={onSwitchToMcp} />;
   }
 
   if (isLoading) {
@@ -593,7 +609,7 @@ export function ConfigEditor({
       </Modal>
     </div>
   );
-}
+});
 
 function formatBytes(bytes: number): string {
   if (bytes < 1024) return `${bytes} B`;

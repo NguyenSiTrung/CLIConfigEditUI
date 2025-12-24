@@ -1,9 +1,11 @@
-import { Settings, Moon, Sun, Terminal, Sparkles, Minus, Square, X, Server } from 'lucide-react';
+import { Settings, Moon, Sun, Terminal, Sparkles, Minus, Square, X, Server, Search } from 'lucide-react';
 import { useAppStore } from '@/stores/app-store';
 import { useEffect } from 'react';
 import { getCurrentWindow } from '@tauri-apps/api/window';
 import { APP_VERSION } from '@/constants/design-tokens';
 import { formatShortcut } from '@/hooks/use-keyboard-shortcut';
+import { OnboardingTooltip } from './ui';
+import { UpdateBadge } from './update-modal';
 
 export type AppView = 'editor' | 'mcp';
 
@@ -11,11 +13,15 @@ interface HeaderProps {
   onSettingsClick?: () => void;
   currentView?: AppView;
   onViewChange?: (view: AppView) => void;
+  onCommandPaletteClick?: () => void;
+  updateAvailable?: boolean;
+  updateVersion?: string;
+  onUpdateClick?: () => void;
 }
 
 const appWindow = getCurrentWindow();
 
-export function Header({ onSettingsClick, currentView = 'editor', onViewChange }: HeaderProps) {
+export function Header({ onSettingsClick, currentView = 'editor', onViewChange, onCommandPaletteClick, updateAvailable, updateVersion, onUpdateClick }: HeaderProps) {
   const { theme, toggleTheme } = useAppStore();
 
   useEffect(() => {
@@ -65,6 +71,9 @@ export function Header({ onSettingsClick, currentView = 'editor', onViewChange }
             <Sparkles className="w-2.5 h-2.5 text-amber-500" />
           </div>
         </div>
+        {updateAvailable && updateVersion && onUpdateClick && (
+          <UpdateBadge onClick={onUpdateClick} version={updateVersion} />
+        )}
       </div>
 
       {/* Center - View tabs */}
@@ -99,6 +108,34 @@ export function Header({ onSettingsClick, currentView = 'editor', onViewChange }
 
       {/* Right side - Actions and window controls */}
       <div className="flex items-center h-full pr-2 gap-2">
+        {/* Command Palette button */}
+        <OnboardingTooltip
+          id="command-palette-hint"
+          title="Quick Actions"
+          description={`Press ${formatShortcut({ ctrl: true, key: 'K' })} to open the command palette for quick access to all actions.`}
+          position="bottom"
+          delay={3000}
+        >
+          <button
+            onClick={onCommandPaletteClick}
+            className="flex items-center gap-2 px-2.5 py-1.5 rounded-lg
+                       bg-slate-100 dark:bg-white/5 
+                       hover:bg-slate-200 dark:hover:bg-white/10
+                       border border-slate-200/60 dark:border-white/10
+                       text-slate-500 dark:text-slate-400
+                       hover:text-slate-700 dark:hover:text-slate-200
+                       transition-all duration-200
+                       focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500/40"
+            title={`Command Palette (${formatShortcut({ ctrl: true, key: 'K' })})`}
+            aria-label="Open command palette"
+          >
+            <Search className="w-3.5 h-3.5" />
+            <kbd className="px-1.5 py-0.5 text-[10px] font-medium bg-white dark:bg-slate-700 rounded border border-slate-200 dark:border-slate-600 text-slate-500 dark:text-slate-400">
+              {formatShortcut({ ctrl: true, key: 'K' })}
+            </kbd>
+          </button>
+        </OnboardingTooltip>
+
         {/* App actions */}
         <div className="flex items-center gap-1 p-1 rounded-lg bg-slate-200/50 dark:bg-white/5 border border-slate-200/60 dark:border-white/5 mr-2">
           <button
@@ -108,7 +145,7 @@ export function Header({ onSettingsClick, currentView = 'editor', onViewChange }
                        hover:bg-white dark:hover:bg-white/10 
                        transition-all duration-200
                        focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500/40"
-            title={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+            title={theme === 'dark' ? 'Switch to light mode (more options in Settings)' : 'Switch to dark mode (more options in Settings)'}
             aria-label={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
           >
             {theme === 'dark' ? <Moon className="w-4 h-4" /> : <Sun className="w-4 h-4" />}

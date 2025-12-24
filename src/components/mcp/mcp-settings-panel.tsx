@@ -12,7 +12,7 @@ import { McpConfigPreviewModal } from './mcp-config-preview-modal';
 import { McpImportPreviewModal } from './mcp-import-preview-modal';
 import { toast } from '@/components/toast';
 import { ConfirmDialog, McpServerListSkeleton, McpToolStatusListSkeleton } from '@/components/ui';
-import { RefreshCw, Plus, AlertCircle, Upload, Loader2 } from 'lucide-react';
+import { RefreshCw, Plus, AlertCircle, Upload, Loader2, Info, ChevronDown, ChevronUp } from 'lucide-react';
 
 export function McpSettingsPanel() {
   const {
@@ -59,6 +59,9 @@ export function McpSettingsPanel() {
   // Delete confirmation dialog state
   const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState(false);
   const [pendingDeleteServerName, setPendingDeleteServerName] = useState<string | null>(null);
+  
+  // How it works collapse state
+  const [isHowItWorksOpen, setIsHowItWorksOpen] = useState(false);
 
   useEffect(() => {
     loadConfig();
@@ -294,6 +297,63 @@ export function McpSettingsPanel() {
       {/* Content */}
       <div className="flex-1 overflow-y-auto p-6">
         <div className="max-w-4xl mx-auto space-y-8">
+          {/* How MCP Sync Works - Collapsible */}
+          <div className="bg-indigo-50 dark:bg-indigo-500/10 rounded-xl border border-indigo-200 dark:border-indigo-500/20 overflow-hidden">
+            <button
+              onClick={() => setIsHowItWorksOpen(!isHowItWorksOpen)}
+              className="w-full flex items-center justify-between px-5 py-3 text-left hover:bg-indigo-100/50 dark:hover:bg-indigo-500/20 transition-colors"
+              aria-expanded={isHowItWorksOpen}
+              aria-controls="how-mcp-works-content"
+            >
+              <span className="flex items-center gap-2 text-sm font-medium text-indigo-700 dark:text-indigo-300">
+                <Info className="w-4 h-4" />
+                How MCP Sync Works
+              </span>
+              {isHowItWorksOpen ? (
+                <ChevronUp className="w-4 h-4 text-indigo-500 dark:text-indigo-400" />
+              ) : (
+                <ChevronDown className="w-4 h-4 text-indigo-500 dark:text-indigo-400" />
+              )}
+            </button>
+            {isHowItWorksOpen && (
+              <div id="how-mcp-works-content" className="px-5 pb-4 space-y-4">
+                <div className="flex items-start gap-3">
+                  <div className="flex-shrink-0 w-6 h-6 rounded-full bg-indigo-200 dark:bg-indigo-500/30 flex items-center justify-center text-xs font-bold text-indigo-700 dark:text-indigo-300">
+                    1
+                  </div>
+                  <div>
+                    <h4 className="text-sm font-medium text-indigo-800 dark:text-indigo-200">Configure Your Source</h4>
+                    <p className="text-xs text-indigo-600 dark:text-indigo-400 mt-0.5">
+                      Choose where your MCP server definitions come from—manage them in the app or import from Claude Desktop.
+                    </p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3">
+                  <div className="flex-shrink-0 w-6 h-6 rounded-full bg-indigo-200 dark:bg-indigo-500/30 flex items-center justify-center text-xs font-bold text-indigo-700 dark:text-indigo-300">
+                    2
+                  </div>
+                  <div>
+                    <h4 className="text-sm font-medium text-indigo-800 dark:text-indigo-200">Add MCP Servers</h4>
+                    <p className="text-xs text-indigo-600 dark:text-indigo-400 mt-0.5">
+                      Define your MCP servers with their commands, arguments, and environment variables.
+                    </p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3">
+                  <div className="flex-shrink-0 w-6 h-6 rounded-full bg-indigo-200 dark:bg-indigo-500/30 flex items-center justify-center text-xs font-bold text-indigo-700 dark:text-indigo-300">
+                    3
+                  </div>
+                  <div>
+                    <h4 className="text-sm font-medium text-indigo-800 dark:text-indigo-200">Sync to Tools</h4>
+                    <p className="text-xs text-indigo-600 dark:text-indigo-400 mt-0.5">
+                      Push your configuration to Claude Desktop, Cursor, VS Code, and other supported tools with one click.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+
           {/* Source Configuration */}
           <section className="bg-white dark:bg-slate-800/50 rounded-xl border border-slate-200 dark:border-white/10 p-6">
             <h2 className="text-lg font-semibold text-slate-800 dark:text-slate-200 mb-4">
@@ -347,6 +407,11 @@ export function McpSettingsPanel() {
                 }}
                 onDelete={handleDeleteServer}
                 isEditable={sourceMode === 'app-managed'}
+                onAddServer={sourceMode === 'app-managed' ? () => {
+                  setEditingServer(undefined);
+                  setIsServerEditorOpen(true);
+                } : undefined}
+                onImportFromFile={sourceMode === 'app-managed' ? handleImportFromFile : undefined}
               />
             )}
             {sourceMode === 'claude' && servers.length > 0 && (

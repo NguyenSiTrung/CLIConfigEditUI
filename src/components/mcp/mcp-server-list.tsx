@@ -1,5 +1,5 @@
 import { McpServer } from '@/types';
-import { Edit2, Trash2, Terminal, ChevronDown, ChevronUp, PowerOff } from 'lucide-react';
+import { Edit2, Trash2, ChevronDown, ChevronUp, PowerOff, Plus, Upload, Server } from 'lucide-react';
 import { useState } from 'react';
 
 interface McpServerListProps {
@@ -7,9 +7,11 @@ interface McpServerListProps {
   onEdit: (server: McpServer) => void;
   onDelete: (serverName: string) => void;
   isEditable?: boolean;
+  onAddServer?: () => void;
+  onImportFromFile?: () => void;
 }
 
-export function McpServerList({ servers, onEdit, onDelete, isEditable = true }: McpServerListProps) {
+export function McpServerList({ servers, onEdit, onDelete, isEditable = true, onAddServer, onImportFromFile }: McpServerListProps) {
   const [expandedServers, setExpandedServers] = useState<Set<string>>(new Set());
 
   const toggleExpand = (name: string) => {
@@ -24,10 +26,37 @@ export function McpServerList({ servers, onEdit, onDelete, isEditable = true }: 
 
   if (servers.length === 0) {
     return (
-      <div className="text-center py-8 text-slate-400 dark:text-slate-500">
-        <Terminal className="w-12 h-12 mx-auto mb-3 opacity-50" />
-        <p className="text-sm">No MCP servers configured</p>
-        <p className="text-xs mt-1">Add a server to get started</p>
+      <div className="text-center py-8 border-2 border-dashed border-slate-200 dark:border-slate-700 rounded-lg">
+        <div className="inline-flex items-center justify-center w-14 h-14 rounded-xl bg-slate-100 dark:bg-slate-800 mb-4">
+          <Server className="w-7 h-7 text-slate-400 dark:text-slate-500" />
+        </div>
+        <p className="text-sm font-medium text-slate-600 dark:text-slate-300 mb-1">No MCP servers configured</p>
+        <p className="text-xs text-slate-400 dark:text-slate-500 mb-4">Add servers to sync across your AI coding tools</p>
+        {isEditable && (onAddServer || onImportFromFile) && (
+          <div className="flex items-center justify-center gap-2">
+            {onImportFromFile && (
+              <button
+                onClick={onImportFromFile}
+                className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-slate-600 dark:text-slate-400 
+                           bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 
+                           rounded-lg transition-colors"
+              >
+                <Upload className="w-4 h-4" />
+                Import from File
+              </button>
+            )}
+            {onAddServer && (
+              <button
+                onClick={onAddServer}
+                className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-white 
+                           bg-indigo-600 hover:bg-indigo-500 rounded-lg transition-colors"
+              >
+                <Plus className="w-4 h-4" />
+                Add Server
+              </button>
+            )}
+          </div>
+        )}
       </div>
     );
   }

@@ -13,11 +13,7 @@ This file lists all development tracks (features, bugs, improvements) for CLI Co
 
 ## Active Tracks
 
-### [~] ui-ux-phase2_20251224 - UI/UX Improvements Phase 2
-*Link: [./tracks/ui-ux-phase2_20251224/](./tracks/ui-ux-phase2_20251224/)*
-*Priority: 🟠 High*
-
-Comprehensive UI/UX enhancements: toast feedback, file safety, discoverability, visual polish, modern features (Quick Open, Diff View, Recent Files), accessibility, and performance improvements.
+*No active tracks.*
 
 ---
 
@@ -28,6 +24,9 @@ Comprehensive UI/UX enhancements: toast feedback, file safety, discoverability, 
 ---
 
 ## Archived Tracks
+
+### [x] ui-ux-phase2_20251224 - UI/UX Improvements Phase 2
+*Archived: 2025-12-24 | [conductor/archive/ui-ux-phase2_20251224/](conductor/archive/ui-ux-phase2_20251224/)*
 
 ### [x] ui-ux-improvements_20251223 - UI/UX Comprehensive Improvement
 *Archived: 2025-12-24 | [conductor/archive/ui-ux-improvements_20251223/](conductor/archive/ui-ux-improvements_20251223/)*

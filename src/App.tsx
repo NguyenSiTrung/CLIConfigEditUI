@@ -12,12 +12,14 @@ import {
   toast,
   McpSettingsPanel,
   KeyboardShortcutsModal,
+  UpdateModal,
 } from '@/components';
+import type { ConfigEditorHandle } from '@/components/config-editor';
 import { CommandPalette } from '@/components/command-palette';
 import { UnsavedChangesDialog, type UnsavedChangesAction } from '@/components/ui';
 import type { AppView } from '@/components';
 import { useAppStore } from '@/stores/app-store';
-import { useFileWatcher, useSystemTheme, useReducedMotion } from '@/hooks';
+import { useFileWatcher, useSystemTheme, useReducedMotion, useRecentFiles, useUpdateChecker } from '@/hooks';
 import { invoke } from '@tauri-apps/api/core';
 import { ConfigFormat, CustomTool, CliTool, ConfigFile } from '@/types';
 import { IDE_PLATFORMS } from '@/utils/cli-tools';
@@ -43,7 +45,9 @@ function App() {
   const [isAddToolModalOpen, setIsAddToolModalOpen] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isCommandPaletteOpen, setIsCommandPaletteOpen] = useState(false);
+  const [isQuickOpenMode, setIsQuickOpenMode] = useState(false);
   const [isKeyboardShortcutsOpen, setIsKeyboardShortcutsOpen] = useState(false);
+  const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
   const [editingTool, setEditingTool] = useState<CustomTool | null>(null);
   const [addConfigFileTool, setAddConfigFileTool] = useState<CliTool | CustomTool | null>(null);
   const [editingConfigFile, setEditingConfigFile] = useState<{ tool: CliTool | CustomTool; configFile: ConfigFile } | null>(null);
@@ -53,6 +57,7 @@ function App() {
   const [isUnsavedDialogOpen, setIsUnsavedDialogOpen] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const pendingNavigationRef = useRef<(() => Promise<void>) | null>(null);
+  const configEditorRef = useRef<ConfigEditorHandle>(null);
 
   const {
     setActiveToolId,
@@ -84,6 +89,17 @@ function App() {
     getAllTools,
   } = useAppStore();
 
+  const { recentFiles, addRecentFile, clearRecentFiles } = useRecentFiles();
+
+  const {
+    updateAvailable,
+    updateInfo,
+    isInstalling,
+    installProgress,
+    downloadAndInstall,
+    dismissUpdate,
+  } = useUpdateChecker(true);
+
   useSystemTheme();
   useReducedMotion();
 
@@ -112,6 +128,15 @@ function App() {
       // Ctrl/Cmd+K - Command palette
       if (isMod && e.key === 'k') {
         e.preventDefault();
+        setIsQuickOpenMode(false);
+        setIsCommandPaletteOpen(true);
+        return;
+      }
+      
+      // Ctrl/Cmd+P - Quick Open (file picker)
+      if (isMod && e.key === 'p') {
+        e.preventDefault();
+        setIsQuickOpenMode(true);
         setIsCommandPaletteOpen(true);
         return;
       }
@@ -182,6 +207,11 @@ function App() {
       setError(null);
       setFileNotFound(false);
 
+      // Get tool name for recent files tracking
+      const allTools = getAllTools();
+      const tool = allTools.find((t) => t.id === toolId);
+      const toolName = tool?.name || toolId;
+
       try {
         let content: string;
         if (configFile.jsonPath) {
@@ -198,6 +228,15 @@ function App() {
         setCurrentFormat(configFile.format);
         setCurrentJsonPath(configFile.jsonPath || null);
         setFileNotFound(false);
+
+        // Track recent file
+        addRecentFile({
+          toolId,
+          toolName,
+          configId: configFile.id,
+          configLabel: configFile.label,
+          path: configFile.path,
+        });
       } catch {
         const defaultContent = configFile.jsonPath ? '{}' : getDefaultContent(configFile.format);
         setEditorContent(defaultContent);
@@ -206,6 +245,15 @@ function App() {
         setCurrentFormat(configFile.format);
         setCurrentJsonPath(configFile.jsonPath || null);
         setFileNotFound(true);
+
+        // Still track recent file even if it's new
+        addRecentFile({
+          toolId,
+          toolName,
+          configId: configFile.id,
+          configLabel: configFile.label,
+          path: configFile.path,
+        });
       } finally {
         setLoading(false);
       }
@@ -221,6 +269,8 @@ function App() {
       setCurrentFilePath,
       setCurrentFormat,
       setCurrentJsonPath,
+      getAllTools,
+      addRecentFile,
     ]
   );
 
@@ -519,6 +569,10 @@ function App() {
         onSettingsClick={() => setIsSettingsOpen(true)}
         currentView={currentView}
         onViewChange={setCurrentView}
+        onCommandPaletteClick={() => setIsCommandPaletteOpen(true)}
+        updateAvailable={updateAvailable}
+        updateVersion={updateInfo?.version}
+        onUpdateClick={() => setIsUpdateModalOpen(true)}
       />
       {currentView === 'editor' ? (
         <div className="flex-1 flex min-h-0">
@@ -535,10 +589,12 @@ function App() {
             onIdeExtensionConfigSelect={handleIdeExtensionConfigSelect}
           />
           <ConfigEditor
+            ref={configEditorRef}
             onSave={handleSave}
             onFormat={handleFormat}
             onAddCustomTool={() => setIsAddToolModalOpen(true)}
             onOpenSettings={() => setIsSettingsOpen(true)}
+            onSwitchToMcp={() => setCurrentView('mcp')}
             externalChangeDetected={externalChangeDetected}
             onReloadFile={handleReloadFile}
             onDismissExternalChange={handleDismissExternalChange}
@@ -580,16 +636,33 @@ function App() {
       />
       <CommandPalette
         isOpen={isCommandPaletteOpen}
-        onClose={() => setIsCommandPaletteOpen(false)}
+        onClose={() => {
+          setIsCommandPaletteOpen(false);
+          setIsQuickOpenMode(false);
+        }}
         onOpenSettings={() => setIsSettingsOpen(true)}
         onAddCustomTool={() => setIsAddToolModalOpen(true)}
         onSwitchToMcp={() => setCurrentView('mcp')}
         onSwitchToEditor={() => setCurrentView('editor')}
         onOpenKeyboardShortcuts={() => setIsKeyboardShortcutsOpen(true)}
+        onFindInFile={() => configEditorRef.current?.triggerFind()}
+        isQuickOpenMode={isQuickOpenMode}
+        recentFiles={recentFiles}
+        onFileSelect={handleConfigFileSelect}
+        onClearRecentFiles={clearRecentFiles}
       />
       <KeyboardShortcutsModal
         isOpen={isKeyboardShortcutsOpen}
         onClose={() => setIsKeyboardShortcutsOpen(false)}
+      />
+      <UpdateModal
+        isOpen={isUpdateModalOpen}
+        onClose={() => setIsUpdateModalOpen(false)}
+        updateInfo={updateInfo}
+        onDownloadAndInstall={downloadAndInstall}
+        isInstalling={isInstalling}
+        installProgress={installProgress}
+        onDismiss={dismissUpdate}
       />
       <UnsavedChangesDialog
         isOpen={isUnsavedDialogOpen}

@@ -172,6 +172,9 @@ export function SettingsModal({ isOpen, onClose, onOpenKeyboardShortcuts }: Sett
                 Theme will automatically match your system preference
               </p>
             )}
+            <p className="text-xs dark:text-gray-500 text-slate-400 mt-2">
+              💡 You can also toggle between light and dark mode from the top bar.
+            </p>
           </div>
         )}
 

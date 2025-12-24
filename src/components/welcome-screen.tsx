@@ -1,21 +1,22 @@
-import { Terminal, Wrench, FolderOpen, Zap, Sparkles, ChevronRight, Scan, Settings } from 'lucide-react';
+import { Terminal, Wrench, FolderOpen, Zap, Sparkles, ChevronRight, Scan, Settings, Server, Layers, Shield, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui';
 
 interface WelcomeScreenProps {
   onAddCustomTool: () => void;
   onOpenSettings?: () => void;
+  onSwitchToMcp?: () => void;
 }
 
-export function WelcomeScreen({ onAddCustomTool, onOpenSettings }: WelcomeScreenProps) {
+export function WelcomeScreen({ onAddCustomTool, onOpenSettings, onSwitchToMcp }: WelcomeScreenProps) {
   return (
-    <div className="flex-1 flex flex-col items-center justify-center min-w-0 bg-white dark:bg-[#020617] relative overflow-hidden">
+    <div className="flex-1 flex flex-col items-center min-w-0 bg-white dark:bg-[#020617] relative overflow-y-auto">
       {/* Background decoration */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute -top-[20%] -right-[10%] w-[500px] h-[500px] rounded-full bg-indigo-500/10 blur-[100px]"></div>
         <div className="absolute bottom-[0%] -left-[10%] w-[400px] h-[400px] rounded-full bg-purple-500/10 blur-[80px]"></div>
       </div>
 
-      <div className="max-w-2xl w-full text-center px-8 relative z-10 animate-fade-in">
+      <div className="max-w-2xl w-full text-center px-8 py-12 relative z-10 animate-fade-in">
         <div className="mb-6 flex justify-center">
           <div className="relative group">
             <div className="absolute inset-0 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-3xl blur-xl opacity-20 group-hover:opacity-40 transition-opacity duration-500"></div>
@@ -62,7 +63,7 @@ export function WelcomeScreen({ onAddCustomTool, onOpenSettings }: WelcomeScreen
         </div>
 
         {/* Feature Cards */}
-        <div className="grid grid-cols-3 gap-3 mb-8">
+        <div className="grid grid-cols-3 gap-3 mb-6">
           <FeatureItem
             icon={<Scan className="w-4 h-4" />}
             title="Auto Detect"
@@ -84,6 +85,39 @@ export function WelcomeScreen({ onAddCustomTool, onOpenSettings }: WelcomeScreen
             color="text-purple-500"
             bgColor="bg-purple-500/10"
           />
+        </div>
+
+        {/* Power Features Section */}
+        <div className="bg-slate-50 dark:bg-white/5 rounded-xl border border-slate-200 dark:border-white/10 p-5 mb-8 text-left">
+          <h3 className="text-sm font-semibold dark:text-slate-200 text-slate-700 mb-4 flex items-center gap-2">
+            <Sparkles className="w-4 h-4 text-indigo-500" />
+            Power Features
+          </h3>
+          <div className="space-y-3">
+            <PowerFeatureItem
+              icon={<Server className="w-4 h-4" />}
+              title="MCP Sync"
+              description="Sync MCP server configurations across Claude, Cursor, VS Code, and more"
+              color="text-blue-500"
+              bgColor="bg-blue-500/10"
+              action={onSwitchToMcp ? { label: "Open MCP Sync", onClick: onSwitchToMcp } : undefined}
+            />
+            <PowerFeatureItem
+              icon={<Layers className="w-4 h-4" />}
+              title="Version History"
+              description="Track changes over time and restore previous versions of your configs"
+              color="text-violet-500"
+              bgColor="bg-violet-500/10"
+            />
+            <PowerFeatureItem
+              icon={<Shield className="w-4 h-4" />}
+              title="Automatic Backups"
+              description="Backups are created before each save—never lose your work"
+              color="text-emerald-500"
+              bgColor="bg-emerald-500/10"
+              action={onOpenSettings ? { label: "Configure", onClick: onOpenSettings } : undefined}
+            />
+          </div>
         </div>
 
         {/* Action Buttons */}
@@ -154,6 +188,45 @@ function FeatureItem({
       </div>
       <h3 className="text-xs font-semibold dark:text-slate-200 text-slate-700">{title}</h3>
       <p className="text-xs dark:text-slate-500 text-slate-500">{description}</p>
+    </div>
+  );
+}
+
+function PowerFeatureItem({
+  icon,
+  title,
+  description,
+  color,
+  bgColor,
+  action,
+}: {
+  icon: React.ReactNode;
+  title: string;
+  description: string;
+  color: string;
+  bgColor: string;
+  action?: { label: string; onClick: () => void };
+}) {
+  return (
+    <div className="flex items-start gap-3 p-3 rounded-lg bg-white/50 dark:bg-white/5 border border-slate-100 dark:border-white/5">
+      <div className={`p-2 rounded-lg ${bgColor} ${color} flex-shrink-0`}>
+        {icon}
+      </div>
+      <div className="flex-1 min-w-0">
+        <h4 className="text-sm font-medium dark:text-slate-200 text-slate-700">{title}</h4>
+        <p className="text-xs dark:text-slate-500 text-slate-500 mt-0.5">{description}</p>
+      </div>
+      {action && (
+        <button
+          onClick={action.onClick}
+          className="flex-shrink-0 flex items-center gap-1 px-2 py-1 text-xs font-medium 
+                     text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300
+                     hover:bg-indigo-50 dark:hover:bg-indigo-500/10 rounded-md transition-colors"
+        >
+          {action.label}
+          <ArrowRight className="w-3 h-3" />
+        </button>
+      )}
     </div>
   );
 }
