@@ -12,6 +12,7 @@ interface SidebarSectionProps {
   children: ReactNode;
   action?: ReactNode;
   icon?: ReactNode;
+  tooltip?: string;
 }
 
 export const SidebarSection = memo(function SidebarSection({
@@ -24,6 +25,7 @@ export const SidebarSection = memo(function SidebarSection({
   children,
   action,
   icon,
+  tooltip,
 }: SidebarSectionProps) {
   const [internalExpanded, setInternalExpanded] = useState(defaultExpanded);
   const contentRef = useRef<HTMLDivElement>(null);
@@ -52,6 +54,7 @@ export const SidebarSection = memo(function SidebarSection({
           onClick={handleToggle}
           aria-expanded={isExpanded}
           aria-controls={listId}
+          title={tooltip}
           className={`flex-1 px-2 py-2 flex items-center justify-between text-xs font-semibold 
                      text-slate-500 dark:text-slate-400 uppercase tracking-wider 
                      hover:text-slate-700 dark:hover:text-slate-200 

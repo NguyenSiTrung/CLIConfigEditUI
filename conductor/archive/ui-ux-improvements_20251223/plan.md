@@ -14,7 +14,7 @@
 - [x] Add size variants (sm, md, lg)
 - [x] Implement keyboard shortcut display prop
 - [x] Add aria-label support and focus ring styles
-- [ ] Write tests for Button component
+- [x] Write tests for Button component
 
 ### Task 1.3: Create Shared Modal Component
 - [x] Create `src/components/ui/modal.tsx` with accessible dialog pattern
@@ -22,7 +22,7 @@
 - [x] Add ESC key to close functionality
 - [x] Add `role="dialog"`, `aria-modal`, `aria-labelledby` attributes
 - [x] Implement backdrop click handling with optional disable
-- [ ] Write tests for Modal component
+- [x] Write tests for Modal component
 
 ### Task 1.4: Create Additional UI Components
 - [x] Create `src/components/ui/card.tsx` with consistent panel styling
@@ -30,7 +30,7 @@
 - [x] Create `src/components/ui/input.tsx` with label and error states
 - [x] Create `src/components/ui/section-header.tsx` for panel headers
 - [x] Create `src/components/ui/index.ts` barrel export
-- [ ] Write tests for UI components
+- [x] Write tests for UI components
 
 ### Task 1.5: Migrate Existing Modals
 - [x] Migrate `SettingsModal` to use shared Modal component
@@ -102,16 +102,16 @@
 - [x] Update Save button to show shortcut (⌘S / Ctrl+S)
 - [x] Update Format button to show shortcut
 - [x] Create `useKeyboardShortcut` hook for registering shortcuts
-- [ ] Add Ctrl/Cmd+, shortcut for Settings
-- [ ] Add Ctrl/Cmd+B shortcut for sidebar toggle
-- [ ] Add Ctrl/Cmd+Shift+M shortcut for MCP panel
+- [x] Add Ctrl/Cmd+, shortcut for Settings
+- [x] Add Ctrl/Cmd+B shortcut for sidebar toggle
+- [x] Add Ctrl/Cmd+Shift+M shortcut for MCP panel
 
 ### Task 4.3: Replace Native Dialogs
 - [x] Create `ConfirmDialog` component using shared Modal
 - [x] Replace `confirm()` in MCP delete server flow
-- [ ] Create custom unsaved-changes dialog component
-- [ ] Replace Tauri `ask()` with custom unsaved-changes dialog
-- [ ] Add "Save & switch / Discard / Cancel" options
+- [x] Create custom unsaved-changes dialog component
+- [x] Replace Tauri `ask()` with custom unsaved-changes dialog
+- [x] Add "Save & switch / Discard / Cancel" options
 
 ## Phase 5: User Flow Optimization
 
@@ -123,10 +123,10 @@
 - [x] Update feature cards to be more concise
 
 ### Task 5.2: Improve Error States
-- [ ] Create inline empty-state component for non-existing files
-- [ ] Replace full-screen error in `config-editor.tsx` for missing files
-- [ ] Show "File will be created on save" message inline
-- [ ] Add "Start editing" button with default content
+- [x] Create inline empty-state component for non-existing files
+- [x] Replace full-screen error in `config-editor.tsx` for missing files
+- [x] Show "File will be created on save" message inline
+- [x] Add "Start editing" button with default content
 
 ### Task 5.3: Unsaved Changes Indicator
 - [x] Add unsaved dot indicator to sidebar config file items
@@ -135,92 +135,92 @@
 - [x] Style indicator to be subtle but visible
 
 ### Task 5.4: Monaco Error Feedback
-- [ ] Integrate Monaco markers for JSON parse errors
-- [ ] Show error location in editor gutter on format failure
-- [ ] Update format error handling to use markers instead of toast-only
-- [ ] Clear markers on successful parse
+- [x] Integrate Monaco markers for JSON parse errors
+- [x] Show error location in editor gutter on format failure
+- [x] Update format error handling to use markers instead of toast-only
+- [x] Clear markers on successful parse
 
 ## Phase 6: Discoverability
 
 ### Task 6.1: Onboarding Hints
-- [ ] Create `OnboardingTooltip` component for first-visit hints
-- [ ] Add hint for Versions tab on first visit
-- [ ] Add hint for Backups feature when first available
-- [ ] Store shown hints in localStorage to avoid repetition
+- [x] Create `OnboardingTooltip` component for first-visit hints
+- [x] Add hint for Versions tab on first visit
+- [x] Add hint for Backups feature when first available
+- [x] Store shown hints in localStorage to avoid repetition
 
 ### Task 6.2: Contextual Help
-- [ ] Add "Backups disabled" note with Settings link when backups are off
-- [ ] Add "Change in Settings" link near delete confirmation behavior
-- [ ] Add descriptive tooltip for IDE Extensions section in sidebar
-- [ ] Add tooltip explaining History button functionality
+- [x] Add "Backups disabled" note with Settings link when backups are off
+- [x] Add "Change in Settings" link near delete confirmation behavior
+- [x] Add descriptive tooltip for IDE Extensions section in sidebar
+- [x] Add tooltip explaining History button functionality
 
 ## Phase 7: Modern Features
 
 ### Task 7.1: Command Palette
-- [ ] Create `CommandPalette` component with search input
-- [ ] Implement fuzzy search for commands
-- [ ] Add commands: switch tools, open settings, toggle theme, switch view
-- [ ] Register Ctrl/Cmd+K shortcut to open palette
-- [ ] Add keyboard navigation (arrow keys, enter to select)
-- [ ] Style consistently with app design system
+- [x] Create `CommandPalette` component with search input
+- [x] Implement fuzzy search for commands
+- [x] Add commands: switch tools, open settings, toggle theme, switch view
+- [x] Register Ctrl/Cmd+K shortcut to open palette
+- [x] Add keyboard navigation (arrow keys, enter to select)
+- [x] Style consistently with app design system
 
 ### Task 7.2: System Theme Sync
-- [ ] Add "Follow system" option to theme settings
-- [ ] Implement `useSystemTheme` hook with media query listener
-- [ ] Update theme store to support 'light' | 'dark' | 'system'
-- [ ] Update Settings appearance tab with three-way toggle
-- [ ] Persist theme preference
+- [x] Add "Follow system" option to theme settings
+- [x] Implement `useSystemTheme` hook with media query listener
+- [x] Update theme store to support 'light' | 'dark' | 'system'
+- [x] Update Settings appearance tab with three-way toggle
+- [x] Persist theme preference
 
 ### Task 7.3: Reduced Motion Setting
-- [ ] Add "Reduce motion" toggle in Settings → Behavior
-- [ ] Create CSS class `.reduce-motion` that disables animations
-- [ ] Apply reduced motion preference to glassmorphism effects
-- [ ] Respect `prefers-reduced-motion` media query as default
+- [x] Add "Reduce motion" toggle in Settings → Behavior
+- [x] Create CSS class `.reduce-motion` that disables animations
+- [x] Apply reduced motion preference to glassmorphism effects
+- [x] Respect `prefers-reduced-motion` media query as default
 
 ### Task 7.4: Auto-save Feature
-- [ ] Add "Auto-save" toggle in Settings → Editor
-- [ ] Implement debounced auto-save (e.g., 2 second delay after change)
-- [ ] Add visual indicator in status bar when auto-save is enabled
-- [ ] Show "Auto-saved" toast/indicator on successful auto-save
-- [ ] Ensure auto-save respects backup settings
+- [x] Add "Auto-save" toggle in Settings → Editor
+- [x] Implement debounced auto-save (e.g., 2 second delay after change)
+- [x] Add visual indicator in status bar when auto-save is enabled
+- [x] Show "Auto-saved" toast/indicator on successful auto-save
+- [x] Ensure auto-save respects backup settings
 
 ## Phase 8: Performance UX
 
 ### Task 8.1: Optimize Status Bar Metrics
-- [ ] Memoize line count and byte size calculations
-- [ ] Use `useMemo` with `editorContent` dependency
-- [ ] Verify no unnecessary recalculations on render
+- [x] Memoize line count and byte size calculations
+- [x] Use `useMemo` with `editorContent` dependency
+- [x] Verify no unnecessary recalculations on render
 
 ### Task 8.2: Optimize CSS Transitions
-- [ ] Update `index.css` button transition to specific properties
-- [ ] Change `transition: all` to `transition: color, background-color, transform, box-shadow`
-- [ ] Audit other `transition: all` usages and fix
+- [x] Update `index.css` button transition to specific properties
+- [x] Change `transition: all` to `transition: color, background-color, transform, box-shadow`
+- [x] Audit other `transition: all` usages and fix
 
 ### Task 8.3: Optimize Async Operations
-- [ ] Debounce backup checks in `config-editor.tsx`
-- [ ] Only trigger backup check on file path change, not minor updates
-- [ ] Add loading state for backup check to avoid UI blocking
+- [x] Debounce backup checks in `config-editor.tsx`
+- [x] Only trigger backup check on file path change, not minor updates
+- [x] Add loading state for backup check to avoid UI blocking
 
 ### Task 8.4: Reduce Visual Complexity
-- [ ] Audit and reduce blur layers in glassmorphism
-- [ ] Simplify shadow stacking in cards/panels
-- [ ] Ensure reduced motion setting disables heavy effects
+- [x] Audit and reduce blur layers in glassmorphism
+- [x] Simplify shadow stacking in cards/panels
+- [x] Ensure reduced motion setting disables heavy effects
 
 ## Phase 9: Final Polish & Testing
 
 ### Task 9.1: Cross-component Testing
-- [ ] Test all modals for accessibility (focus trap, ESC, aria)
-- [ ] Test keyboard shortcuts in all contexts
-- [ ] Test theme switching (light, dark, system)
-- [ ] Test command palette with various commands
+- [x] Test all modals for accessibility (focus trap, ESC, aria)
+- [x] Test keyboard shortcuts in all contexts
+- [x] Test theme switching (light, dark, system)
+- [x] Test command palette with various commands
 
 ### Task 9.2: Visual Regression Check
-- [ ] Review all screens in light mode
-- [ ] Review all screens in dark mode
-- [ ] Check typography consistency
-- [ ] Verify color usage matches design tokens
+- [x] Review all screens in light mode
+- [x] Review all screens in dark mode
+- [x] Check typography consistency
+- [x] Verify color usage matches design tokens
 
 ### Task 9.3: Documentation
-- [ ] Document design tokens usage in code comments
-- [ ] Document keyboard shortcuts in README or help
-- [ ] Update component inline documentation
+- [x] Document design tokens usage in code comments
+- [x] Document keyboard shortcuts in README or help
+- [x] Update component inline documentation

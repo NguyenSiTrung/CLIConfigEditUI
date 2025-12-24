@@ -11,6 +11,8 @@ interface EditorSettings {
   lineNumbers: 'on' | 'off' | 'relative';
   minimap: boolean;
   formatOnSave: boolean;
+  autoSave: boolean;
+  autoSaveDelay: number;
 }
 
 interface BackupSettings {
@@ -22,6 +24,7 @@ interface BehaviorSettings {
   confirmBeforeDelete: boolean;
   expandToolsByDefault: boolean;
   rememberLastOpenedFile: boolean;
+  reduceMotion: 'on' | 'off' | 'system';
 }
 
 interface AppState {
@@ -48,7 +51,8 @@ interface AppState {
   sidebarWidth: number;
   isLoading: boolean;
   error: string | null;
-  theme: 'dark' | 'light';
+  theme: 'dark' | 'light' | 'system';
+  resolvedTheme: 'dark' | 'light';
 
   // Settings
   editorSettings: EditorSettings;
@@ -69,7 +73,11 @@ interface AppState {
   setSidebarWidth: (width: number) => void;
   setLoading: (loading: boolean) => void;
   setError: (error: string | null) => void;
+  fileNotFound: boolean;
+  setFileNotFound: (notFound: boolean) => void;
   toggleTheme: () => void;
+  setTheme: (theme: 'dark' | 'light' | 'system') => void;
+  setResolvedTheme: (theme: 'dark' | 'light') => void;
   toggleToolExpanded: (toolId: string) => void;
 
   // Settings actions
@@ -116,7 +124,9 @@ export const useAppStore = create<AppState>()(
       sidebarWidth: 288,
       isLoading: false,
       error: null,
+      fileNotFound: false,
       theme: 'dark',
+      resolvedTheme: 'dark',
 
       // Default settings
       editorSettings: {
@@ -127,6 +137,8 @@ export const useAppStore = create<AppState>()(
         lineNumbers: 'on',
         minimap: false,
         formatOnSave: false,
+        autoSave: false,
+        autoSaveDelay: 2000,
       },
       backupSettings: {
         enabled: true,
@@ -136,6 +148,7 @@ export const useAppStore = create<AppState>()(
         confirmBeforeDelete: true,
         expandToolsByDefault: false,
         rememberLastOpenedFile: true,
+        reduceMotion: 'system',
       },
 
       // Actions
@@ -152,11 +165,30 @@ export const useAppStore = create<AppState>()(
       setSidebarWidth: (width) => set({ sidebarWidth: width }),
       setLoading: (loading) => set({ isLoading: loading }),
       setError: (error) => set({ error }),
+      setFileNotFound: (notFound) => set({ fileNotFound: notFound }),
       toggleTheme: () =>
         set((state) => {
-          const newTheme = state.theme === 'dark' ? 'light' : 'dark';
-          document.documentElement.classList.toggle('dark', newTheme === 'dark');
+          const themes: Array<'dark' | 'light' | 'system'> = ['dark', 'light', 'system'];
+          const currentIndex = themes.indexOf(state.theme);
+          const newTheme = themes[(currentIndex + 1) % themes.length];
+          if (newTheme !== 'system') {
+            document.documentElement.classList.toggle('dark', newTheme === 'dark');
+            return { theme: newTheme, resolvedTheme: newTheme };
+          }
           return { theme: newTheme };
+        }),
+      setTheme: (theme) =>
+        set(() => {
+          if (theme !== 'system') {
+            document.documentElement.classList.toggle('dark', theme === 'dark');
+            return { theme, resolvedTheme: theme };
+          }
+          return { theme };
+        }),
+      setResolvedTheme: (resolvedTheme) =>
+        set(() => {
+          document.documentElement.classList.toggle('dark', resolvedTheme === 'dark');
+          return { resolvedTheme };
         }),
       toggleToolExpanded: (toolId) =>
         set((state) => {
@@ -192,6 +224,8 @@ export const useAppStore = create<AppState>()(
             lineNumbers: 'on',
             minimap: false,
             formatOnSave: false,
+            autoSave: false,
+            autoSaveDelay: 2000,
           },
           backupSettings: {
             enabled: true,
@@ -201,6 +235,7 @@ export const useAppStore = create<AppState>()(
             confirmBeforeDelete: true,
             expandToolsByDefault: false,
             rememberLastOpenedFile: true,
+            reduceMotion: 'system',
           },
         }),
 

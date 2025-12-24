@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Moon, Sun, Type, Code, Settings2, Shield, RotateCcw } from 'lucide-react';
+import { Moon, Sun, Monitor, Type, Code, Settings2, Shield, RotateCcw } from 'lucide-react';
 import { useAppStore } from '@/stores/app-store';
 import { APP_VERSION } from '@/constants/design-tokens';
 import { Modal, Toggle, Button } from '@/components/ui';
@@ -14,7 +14,7 @@ type SettingsTab = 'appearance' | 'editor' | 'backup' | 'behavior';
 export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
   const {
     theme,
-    toggleTheme,
+    setTheme,
     editorSettings,
     updateEditorSettings,
     backupSettings,
@@ -115,9 +115,9 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
             <label className="block text-sm font-medium dark:text-gray-300 text-slate-700 mb-3">
               Theme
             </label>
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-3 gap-3">
               <button
-                onClick={() => { if (theme === 'light') toggleTheme(); }}
+                onClick={() => setTheme('dark')}
                 className={`px-4 py-3 rounded-lg text-sm font-medium flex items-center justify-center gap-2
                            border transition-all
                            ${theme === 'dark'
@@ -129,7 +129,7 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                 Dark
               </button>
               <button
-                onClick={() => { if (theme === 'dark') toggleTheme(); }}
+                onClick={() => setTheme('light')}
                 className={`px-4 py-3 rounded-lg text-sm font-medium flex items-center justify-center gap-2
                            border transition-all
                            ${theme === 'light'
@@ -140,7 +140,24 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                 <Sun className="w-4 h-4" />
                 Light
               </button>
+              <button
+                onClick={() => setTheme('system')}
+                className={`px-4 py-3 rounded-lg text-sm font-medium flex items-center justify-center gap-2
+                           border transition-all
+                           ${theme === 'system'
+                             ? 'bg-indigo-600 border-indigo-500 text-white shadow-md'
+                             : 'dark:bg-gray-900/50 bg-slate-50 dark:border-gray-700/50 border-slate-200 dark:text-gray-400 text-slate-500 dark:hover:text-white hover:text-slate-700 dark:hover:border-gray-600 hover:border-slate-300 hover:bg-slate-100'
+                           }`}
+              >
+                <Monitor className="w-4 h-4" />
+                System
+              </button>
             </div>
+            {theme === 'system' && (
+              <p className="text-xs dark:text-gray-500 text-slate-400 mt-2">
+                Theme will automatically match your system preference
+              </p>
+            )}
           </div>
         )}
 
@@ -223,6 +240,12 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                 description="Automatically format code when saving"
                 checked={editorSettings.formatOnSave}
                 onChange={(checked) => updateEditorSettings({ formatOnSave: checked })}
+              />
+              <Toggle
+                label="Auto-save"
+                description={`Automatically save changes after ${editorSettings.autoSaveDelay / 1000} seconds of inactivity`}
+                checked={editorSettings.autoSave}
+                onChange={(checked) => updateEditorSettings({ autoSave: checked })}
               />
             </div>
 
@@ -307,6 +330,39 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
               checked={behaviorSettings.rememberLastOpenedFile}
               onChange={(checked) => updateBehaviorSettings({ rememberLastOpenedFile: checked })}
             />
+
+            <div className="pt-2 border-t dark:border-gray-700/50 border-slate-200">
+              <label className="block text-sm font-medium dark:text-gray-300 text-slate-700 mb-2">
+                Reduce Motion
+              </label>
+              <div className="flex gap-2">
+                {[
+                  { value: 'off', label: 'Off' },
+                  { value: 'on', label: 'On' },
+                  { value: 'system', label: 'System' },
+                ].map((option) => (
+                  <button
+                    key={option.value}
+                    onClick={() => updateBehaviorSettings({ reduceMotion: option.value as 'on' | 'off' | 'system' })}
+                    className={`px-4 py-2 rounded-lg text-sm font-medium border transition-all
+                               ${behaviorSettings.reduceMotion === option.value
+                                 ? 'bg-indigo-600 border-indigo-500 text-white'
+                                 : 'dark:bg-gray-900/50 bg-slate-50 dark:border-gray-700/50 border-slate-200 dark:text-gray-400 text-slate-500 hover:border-slate-300 dark:hover:border-gray-600'
+                               }`}
+                  >
+                    {option.label}
+                  </button>
+                ))}
+              </div>
+              <p className="text-xs dark:text-gray-500 text-slate-400 mt-1">
+                {behaviorSettings.reduceMotion === 'system' 
+                  ? 'Follows your system\'s motion preference'
+                  : behaviorSettings.reduceMotion === 'on'
+                    ? 'Animations and transitions are disabled'
+                    : 'Animations and transitions are enabled'
+                }
+              </p>
+            </div>
           </div>
         )}
       </div>

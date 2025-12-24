@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 import {
   Header,
   Sidebar,
@@ -12,11 +12,12 @@ import {
   toast,
   McpSettingsPanel,
 } from '@/components';
+import { CommandPalette } from '@/components/command-palette';
+import { UnsavedChangesDialog, type UnsavedChangesAction } from '@/components/ui';
 import type { AppView } from '@/components';
 import { useAppStore } from '@/stores/app-store';
-import { useFileWatcher } from '@/hooks';
+import { useFileWatcher, useSystemTheme, useReducedMotion } from '@/hooks';
 import { invoke } from '@tauri-apps/api/core';
-import { ask } from '@tauri-apps/plugin-dialog';
 import { ConfigFormat, CustomTool, CliTool, ConfigFile } from '@/types';
 import { IDE_PLATFORMS } from '@/utils/cli-tools';
 
@@ -40,11 +41,16 @@ function getDefaultContent(format: ConfigFormat): string {
 function App() {
   const [isAddToolModalOpen, setIsAddToolModalOpen] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [isCommandPaletteOpen, setIsCommandPaletteOpen] = useState(false);
   const [editingTool, setEditingTool] = useState<CustomTool | null>(null);
   const [addConfigFileTool, setAddConfigFileTool] = useState<CliTool | CustomTool | null>(null);
   const [editingConfigFile, setEditingConfigFile] = useState<{ tool: CliTool | CustomTool; configFile: ConfigFile } | null>(null);
   const [externalChangeDetected, setExternalChangeDetected] = useState(false);
   const [currentView, setCurrentView] = useState<AppView>('editor');
+  
+  const [isUnsavedDialogOpen, setIsUnsavedDialogOpen] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+  const pendingNavigationRef = useRef<(() => Promise<void>) | null>(null);
 
   const {
     setActiveToolId,
@@ -57,6 +63,7 @@ function App() {
     setCurrentJsonPrefix,
     setLoading,
     setError,
+    setFileNotFound,
     editorContent,
     currentFilePath,
     currentJsonPath,
@@ -75,6 +82,9 @@ function App() {
     getAllTools,
   } = useAppStore();
 
+  useSystemTheme();
+  useReducedMotion();
+
   // Auto-expand tools on first load
   useEffect(() => {
     const tools = getAllTools();
@@ -88,6 +98,46 @@ function App() {
       }
     });
   }, [getAllTools, toggleToolExpanded]);
+
+  const sidebarCollapsed = useAppStore((state) => state.sidebarCollapsed);
+  const setSidebarCollapsed = useAppStore((state) => state.setSidebarCollapsed);
+
+  // Global keyboard shortcuts
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      const isMod = e.metaKey || e.ctrlKey;
+      
+      // Ctrl/Cmd+K - Command palette
+      if (isMod && e.key === 'k') {
+        e.preventDefault();
+        setIsCommandPaletteOpen(true);
+        return;
+      }
+      
+      // Ctrl/Cmd+, - Settings
+      if (isMod && e.key === ',') {
+        e.preventDefault();
+        setIsSettingsOpen(true);
+        return;
+      }
+      
+      // Ctrl/Cmd+B - Toggle sidebar
+      if (isMod && e.key === 'b' && !e.shiftKey) {
+        e.preventDefault();
+        setSidebarCollapsed(!sidebarCollapsed);
+        return;
+      }
+      
+      // Ctrl/Cmd+Shift+M - Toggle MCP panel
+      if (isMod && e.shiftKey && e.key.toLowerCase() === 'm') {
+        e.preventDefault();
+        setCurrentView(currentView === 'mcp' ? 'editor' : 'mcp');
+        return;
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [sidebarCollapsed, setSidebarCollapsed, currentView]);
 
   const handleExternalChange = useCallback(() => {
     setExternalChangeDetected(true);
@@ -122,20 +172,13 @@ function App() {
     setExternalChangeDetected(false);
   }, []);
 
-  const handleConfigFileSelect = useCallback(
+  const performConfigFileSelect = useCallback(
     async (toolId: string, configFile: ConfigFile) => {
-      if (isDirty()) {
-        const confirmed = await ask(
-          'You have unsaved changes. Do you want to discard them?',
-          { title: 'Unsaved Changes', kind: 'warning' }
-        );
-        if (!confirmed) return;
-      }
-
       setActiveToolId(toolId);
       setActiveConfigFileId(configFile.id);
       setLoading(true);
       setError(null);
+      setFileNotFound(false);
 
       try {
         let content: string;
@@ -152,25 +195,25 @@ function App() {
         setCurrentFilePath(configFile.path);
         setCurrentFormat(configFile.format);
         setCurrentJsonPath(configFile.jsonPath || null);
+        setFileNotFound(false);
       } catch {
-        // File doesn't exist or jsonPath not found - create with default content
         const defaultContent = configFile.jsonPath ? '{}' : getDefaultContent(configFile.format);
         setEditorContent(defaultContent);
         setOriginalContent(defaultContent);
         setCurrentFilePath(configFile.path);
         setCurrentFormat(configFile.format);
         setCurrentJsonPath(configFile.jsonPath || null);
-        setError(`File not found. It will be created when you save.`);
+        setFileNotFound(true);
       } finally {
         setLoading(false);
       }
     },
     [
-      isDirty,
       setActiveToolId,
       setActiveConfigFileId,
       setLoading,
       setError,
+      setFileNotFound,
       setEditorContent,
       setOriginalContent,
       setCurrentFilePath,
@@ -179,16 +222,20 @@ function App() {
     ]
   );
 
-  const handleIdeExtensionConfigSelect = useCallback(
-    async (platformId: string, extensionId: string, settingPath: string | null) => {
+  const handleConfigFileSelect = useCallback(
+    (toolId: string, configFile: ConfigFile) => {
       if (isDirty()) {
-        const confirmed = await ask(
-          'You have unsaved changes. Do you want to discard them?',
-          { title: 'Unsaved Changes', kind: 'warning' }
-        );
-        if (!confirmed) return;
+        pendingNavigationRef.current = () => performConfigFileSelect(toolId, configFile);
+        setIsUnsavedDialogOpen(true);
+        return;
       }
+      performConfigFileSelect(toolId, configFile);
+    },
+    [isDirty, performConfigFileSelect]
+  );
 
+  const performIdeExtensionConfigSelect = useCallback(
+    async (platformId: string, extensionId: string, settingPath: string | null) => {
       const platform = IDE_PLATFORMS.find(p => p.id === platformId);
       if (!platform) {
         toast.error(`Platform "${platformId}" not found`);
@@ -202,7 +249,6 @@ function App() {
         return;
       }
 
-      // Get the extension config to find the prefix
       const extConfig = platform.extensions?.find(e => e.extensionId === extensionId);
       const prefix = extConfig?.jsonPathPrefix || 'amp';
 
@@ -210,11 +256,11 @@ function App() {
       setActiveConfigFileId(`${platformId}-${settingPath || 'all'}`);
       setLoading(true);
       setError(null);
+      setFileNotFound(false);
 
       try {
         let content: string;
         if (settingPath) {
-          // Specific setting path
           content = await invoke<string>('read_json_path', {
             path: settingsPath,
             jsonPath: settingPath,
@@ -222,7 +268,6 @@ function App() {
           setCurrentJsonPath(settingPath);
           setCurrentJsonPrefix(null);
         } else {
-          // All settings - use prefix filter
           content = await invoke<string>('read_json_prefix', {
             path: settingsPath,
             prefix: prefix,
@@ -234,6 +279,7 @@ function App() {
         setOriginalContent(content);
         setCurrentFilePath(settingsPath);
         setCurrentFormat('json');
+        setFileNotFound(false);
       } catch {
         const defaultContent = '{}';
         setEditorContent(defaultContent);
@@ -243,22 +289,21 @@ function App() {
         if (settingPath) {
           setCurrentJsonPath(settingPath);
           setCurrentJsonPrefix(null);
-          setError(`Setting not found. It will be created when you save.`);
         } else {
           setCurrentJsonPath(null);
           setCurrentJsonPrefix(prefix);
-          setError(`No ${prefix}.* settings found. Add settings and save to create.`);
         }
+        setFileNotFound(true);
       } finally {
         setLoading(false);
       }
     },
     [
-      isDirty,
       setActiveToolId,
       setActiveConfigFileId,
       setLoading,
       setError,
+      setFileNotFound,
       setEditorContent,
       setOriginalContent,
       setCurrentFilePath,
@@ -268,8 +313,20 @@ function App() {
     ]
   );
 
-  const handleSave = useCallback(async () => {
-    if (!currentFilePath) return;
+  const handleIdeExtensionConfigSelect = useCallback(
+    (platformId: string, extensionId: string, settingPath: string | null) => {
+      if (isDirty()) {
+        pendingNavigationRef.current = () => performIdeExtensionConfigSelect(platformId, extensionId, settingPath);
+        setIsUnsavedDialogOpen(true);
+        return;
+      }
+      performIdeExtensionConfigSelect(platformId, extensionId, settingPath);
+    },
+    [isDirty, performIdeExtensionConfigSelect]
+  );
+
+  const handleSave = useCallback(async (): Promise<boolean> => {
+    if (!currentFilePath) return false;
 
     const { backupSettings } = useAppStore.getState();
 
@@ -307,11 +364,37 @@ function App() {
       }
       setOriginalContent(editorContent);
       setError(null);
+      setFileNotFound(false);
       toast.success('Configuration saved successfully');
+      return true;
     } catch (err) {
       toast.error(`Failed to save: ${err instanceof Error ? err.message : String(err)}`);
+      return false;
     }
-  }, [currentFilePath, currentJsonPath, currentJsonPrefix, editorContent, setOriginalContent, markAsInternalWrite, setError]);
+  }, [currentFilePath, currentJsonPath, currentJsonPrefix, editorContent, setOriginalContent, markAsInternalWrite, setError, setFileNotFound]);
+
+  const handleUnsavedChangesAction = useCallback(async (action: UnsavedChangesAction) => {
+    if (action === 'cancel') {
+      setIsUnsavedDialogOpen(false);
+      pendingNavigationRef.current = null;
+      return;
+    }
+    
+    if (action === 'save') {
+      setIsSaving(true);
+      const saved = await handleSave();
+      setIsSaving(false);
+      if (!saved) {
+        return;
+      }
+    }
+    
+    setIsUnsavedDialogOpen(false);
+    if (pendingNavigationRef.current) {
+      await pendingNavigationRef.current();
+      pendingNavigationRef.current = null;
+    }
+  }, [handleSave]);
 
   const handleFormat = useCallback(() => {
     try {
@@ -456,6 +539,7 @@ function App() {
             onSave={handleSave}
             onFormat={handleFormat}
             onAddCustomTool={() => setIsAddToolModalOpen(true)}
+            onOpenSettings={() => setIsSettingsOpen(true)}
             externalChangeDetected={externalChangeDetected}
             onReloadFile={handleReloadFile}
             onDismissExternalChange={handleDismissExternalChange}
@@ -493,6 +577,24 @@ function App() {
       <SettingsModal
         isOpen={isSettingsOpen}
         onClose={() => setIsSettingsOpen(false)}
+      />
+      <CommandPalette
+        isOpen={isCommandPaletteOpen}
+        onClose={() => setIsCommandPaletteOpen(false)}
+        onOpenSettings={() => setIsSettingsOpen(true)}
+        onAddCustomTool={() => setIsAddToolModalOpen(true)}
+        onSwitchToMcp={() => setCurrentView('mcp')}
+        onSwitchToEditor={() => setCurrentView('editor')}
+      />
+      <UnsavedChangesDialog
+        isOpen={isUnsavedDialogOpen}
+        onClose={() => {
+          setIsUnsavedDialogOpen(false);
+          pendingNavigationRef.current = null;
+        }}
+        onAction={handleUnsavedChangesAction}
+        isSaving={isSaving}
+        fileName={currentFilePath?.split('/').pop()}
       />
       <ToastContainer />
     </div>

@@ -13,8 +13,7 @@ This file lists all development tracks (features, bugs, improvements) for CLI Co
 
 ## Active Tracks
 
-### [~] ui-ux-improvements_20251223 - UI/UX Comprehensive Improvement
-*Priority: 🟠 High | [conductor/tracks/ui-ux-improvements_20251223/](conductor/tracks/ui-ux-improvements_20251223/)*
+*No active tracks.*
 
 ---
 
@@ -25,6 +24,9 @@ This file lists all development tracks (features, bugs, improvements) for CLI Co
 ---
 
 ## Archived Tracks
+
+### [x] ui-ux-improvements_20251223 - UI/UX Comprehensive Improvement
+*Archived: 2025-12-24 | [conductor/archive/ui-ux-improvements_20251223/](conductor/archive/ui-ux-improvements_20251223/)*
 
 ### [x] kiro-cli_20251223 - Add Kiro CLI (AWS) Predefined Configuration
 *Archived: 2025-12-23 | [conductor/archive/kiro-cli_20251223/](conductor/archive/kiro-cli_20251223/)*

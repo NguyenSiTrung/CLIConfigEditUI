@@ -1,3 +1,27 @@
+/**
+ * Design Tokens - Centralized visual language for CLI Config Editor
+ *
+ * Usage:
+ * - Import specific tokens: import { colors, typography } from '@/constants/design-tokens'
+ * - For version display: import { APP_VERSION } from '@/constants/design-tokens'
+ *
+ * Colors:
+ * - primary (indigo) - Main interactive elements, buttons, links
+ * - secondary (emerald) - Success states, confirmations
+ * - status - Success/warning/error/info states
+ * - accent - Highlight colors for badges, tags
+ *
+ * Typography:
+ * - xs (11px) - Metadata, timestamps, subtle text
+ * - sm (12px) - Secondary text, descriptions
+ * - base (14px) - Body text (default)
+ * - lg+ - Headings
+ *
+ * Spacing:
+ * - Uses 4px base unit (spacing[1] = 4px)
+ * - Common: 2 (8px), 3 (12px), 4 (16px), 6 (24px)
+ */
+
 export const APP_VERSION = '1.2.0';
 export const APP_NAME = 'CLI Config Editor';
 

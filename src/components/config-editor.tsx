@@ -1,11 +1,13 @@
-import Editor from '@monaco-editor/react';
+import Editor, { OnMount } from '@monaco-editor/react';
+import type * as Monaco from 'monaco-editor';
 import { useAppStore } from '@/stores/app-store';
 import { useVersionsStore } from '@/stores/versions-store';
 import { ConfigFormat } from '@/types';
 import { WelcomeScreen } from './welcome-screen';
 import { BackupModal } from './backup-modal';
 import { VersionsTab } from './versions-tab';
-import { useState, useEffect, useCallback } from 'react';
+import { OnboardingTooltip } from './ui';
+import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { invoke } from '@tauri-apps/api/core';
 import {
   Save,
@@ -18,6 +20,8 @@ import {
   FileCode,
   CheckCircle2,
   Layers,
+  FilePlus,
+  Settings,
 } from 'lucide-react';
 
 const FORMAT_TO_LANGUAGE: Record<ConfigFormat, string> = {
@@ -40,6 +44,7 @@ interface ConfigEditorProps {
   onSave: () => void;
   onFormat: () => void;
   onAddCustomTool: () => void;
+  onOpenSettings?: () => void;
   externalChangeDetected?: boolean;
   onReloadFile?: () => void;
   onDismissExternalChange?: () => void;
@@ -51,6 +56,7 @@ export function ConfigEditor({
   onSave,
   onFormat,
   onAddCustomTool,
+  onOpenSettings,
   externalChangeDetected,
   onReloadFile,
   onDismissExternalChange,
@@ -66,9 +72,11 @@ export function ConfigEditor({
     isDirty,
     isLoading,
     error,
+    fileNotFound,
     theme,
     editorSettings,
     sidebarCollapsed,
+    backupSettings,
   } = useAppStore();
   
   const { setCurrentConfigId } = useVersionsStore();
@@ -76,6 +84,77 @@ export function ConfigEditor({
   const [showBackupModal, setShowBackupModal] = useState(false);
   const [hasBackups, setHasBackups] = useState(false);
   const [activeTab, setActiveTab] = useState<EditorTab>('editor');
+  
+  // Monaco editor refs for JSON validation markers
+  const editorRef = useRef<Monaco.editor.IStandaloneCodeEditor | null>(null);
+  const monacoRef = useRef<typeof Monaco | null>(null);
+
+  const handleEditorMount: OnMount = (editor, monaco) => {
+    editorRef.current = editor;
+    monacoRef.current = monaco;
+  };
+
+  // Validate JSON and set Monaco markers for parse errors
+  useEffect(() => {
+    if (!editorRef.current || !monacoRef.current || currentFormat !== 'json') {
+      return;
+    }
+    
+    const model = editorRef.current.getModel();
+    if (!model) return;
+    
+    const monaco = monacoRef.current;
+    
+    try {
+      JSON.parse(editorContent);
+      // Clear markers on successful parse
+      monaco.editor.setModelMarkers(model, 'json-validation', []);
+    } catch (err) {
+      if (err instanceof SyntaxError) {
+        // Parse error message to extract position
+        const message = err.message;
+        const posMatch = message.match(/position (\d+)/i);
+        const lineColMatch = message.match(/line (\d+) column (\d+)/i);
+        
+        let startLineNumber = 1;
+        let startColumn = 1;
+        let endLineNumber = 1;
+        let endColumn = 1;
+        
+        if (lineColMatch) {
+          startLineNumber = parseInt(lineColMatch[1], 10);
+          startColumn = parseInt(lineColMatch[2], 10);
+          endLineNumber = startLineNumber;
+          endColumn = startColumn + 1;
+        } else if (posMatch) {
+          const position = parseInt(posMatch[0].replace('position ', ''), 10);
+          const pos = model.getPositionAt(position);
+          startLineNumber = pos.lineNumber;
+          startColumn = pos.column;
+          endLineNumber = pos.lineNumber;
+          endColumn = pos.column + 1;
+        } else {
+          // Default to last character if we can't parse position
+          const lineCount = model.getLineCount();
+          startLineNumber = lineCount;
+          startColumn = 1;
+          endLineNumber = lineCount;
+          endColumn = model.getLineMaxColumn(lineCount);
+        }
+        
+        monaco.editor.setModelMarkers(model, 'json-validation', [
+          {
+            severity: monaco.MarkerSeverity.Error,
+            message: message.replace(/^JSON\.parse: /, '').replace(/^Unexpected token.*/, 'Syntax error'),
+            startLineNumber,
+            startColumn,
+            endLineNumber,
+            endColumn,
+          },
+        ]);
+      }
+    }
+  }, [editorContent, currentFormat]);
 
   // Sync versions store with current config file
   useEffect(() => {
@@ -96,7 +175,10 @@ export function ConfigEditor({
   }, [currentFilePath]);
 
   useEffect(() => {
-    checkBackups();
+    const timer = setTimeout(() => {
+      checkBackups();
+    }, 300);
+    return () => clearTimeout(timer);
   }, [checkBackups]);
 
   // Trigger resize when sidebar collapses/expands to fix Monaco layout
@@ -107,6 +189,31 @@ export function ConfigEditor({
     }, 350);
     return () => clearTimeout(timer);
   }, [sidebarCollapsed]);
+
+  // Auto-save functionality
+  const autoSaveTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [lastAutoSaved, setLastAutoSaved] = useState<Date | null>(null);
+
+  useEffect(() => {
+    if (!editorSettings.autoSave || !currentFilePath || !isDirty()) {
+      return;
+    }
+
+    if (autoSaveTimeoutRef.current) {
+      clearTimeout(autoSaveTimeoutRef.current);
+    }
+
+    autoSaveTimeoutRef.current = setTimeout(() => {
+      onSave();
+      setLastAutoSaved(new Date());
+    }, editorSettings.autoSaveDelay);
+
+    return () => {
+      if (autoSaveTimeoutRef.current) {
+        clearTimeout(autoSaveTimeoutRef.current);
+      }
+    };
+  }, [editorContent, editorSettings.autoSave, editorSettings.autoSaveDelay, currentFilePath, isDirty, onSave]);
 
   const handleBackupRestored = useCallback(() => {
     onReloadFile?.();
@@ -131,6 +238,11 @@ export function ConfigEditor({
     setOriginalContent(content);
     setActiveTab('editor');
   }, [setEditorContent, setOriginalContent]);
+
+  // Memoized calculations - must be before early returns
+  const lineCount = useMemo(() => editorContent.split('\n').length, [editorContent]);
+  const byteSize = useMemo(() => new Blob([editorContent]).size, [editorContent]);
+  const formatInfo = FORMAT_LABELS[currentFormat];
 
   if (!activeToolId) {
     return <WelcomeScreen onAddCustomTool={onAddCustomTool} />;
@@ -168,10 +280,6 @@ export function ConfigEditor({
       </div>
     );
   }
-
-  const lineCount = editorContent.split('\n').length;
-  const byteSize = new Blob([editorContent]).size;
-  const formatInfo = FORMAT_LABELS[currentFormat];
 
   return (
     <div className="flex-1 flex flex-col h-full min-w-0 bg-white dark:bg-[#020617] relative" onKeyDown={handleKeyDown}>
@@ -240,30 +348,46 @@ export function ConfigEditor({
               <FileCode className="w-3.5 h-3.5" />
               Editor
             </button>
-            <button
-              onClick={() => setActiveTab('versions')}
-              className={`px-3 py-1.5 text-xs font-medium rounded-md transition-all flex items-center gap-1.5
-                ${activeTab === 'versions' 
-                  ? 'bg-white dark:bg-slate-700 text-slate-700 dark:text-slate-200 shadow-sm' 
-                  : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300'
-                }`}
+            <OnboardingTooltip
+              id="versions-tab-hint"
+              title="Version History"
+              description="Track changes over time. Compare versions and restore previous configurations easily."
+              position="bottom"
+              delay={2000}
             >
-              <Layers className="w-3.5 h-3.5" />
-              Versions
-            </button>
+              <button
+                onClick={() => setActiveTab('versions')}
+                className={`px-3 py-1.5 text-xs font-medium rounded-md transition-all flex items-center gap-1.5
+                  ${activeTab === 'versions' 
+                    ? 'bg-white dark:bg-slate-700 text-slate-700 dark:text-slate-200 shadow-sm' 
+                    : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300'
+                  }`}
+              >
+                <Layers className="w-3.5 h-3.5" />
+                Versions
+              </button>
+            </OnboardingTooltip>
           </div>
 
           {hasBackups && activeTab === 'editor' && (
-            <button
-              onClick={() => setShowBackupModal(true)}
-              className="px-3 py-1.5 text-xs font-medium flex items-center gap-2 
-                         bg-white dark:bg-white/5 hover:bg-slate-50 dark:hover:bg-white/10 
-                         text-slate-600 dark:text-slate-300 rounded-lg 
-                         border border-slate-200 dark:border-white/10 transition-all shadow-sm"
+            <OnboardingTooltip
+              id="backups-hint"
+              title="File Backups"
+              description="Automatic backups are created before each save. Restore any previous version from here."
+              position="bottom"
+              delay={3000}
             >
-              <History className="w-3.5 h-3.5" />
-              History
-            </button>
+              <button
+                onClick={() => setShowBackupModal(true)}
+                className="px-3 py-1.5 text-xs font-medium flex items-center gap-2 
+                           bg-white dark:bg-white/5 hover:bg-slate-50 dark:hover:bg-white/10 
+                           text-slate-600 dark:text-slate-300 rounded-lg 
+                           border border-slate-200 dark:border-white/10 transition-all shadow-sm"
+              >
+                <History className="w-3.5 h-3.5" />
+                History
+              </button>
+            </OnboardingTooltip>
           )}
 
           {activeTab === 'editor' && (
@@ -297,12 +421,34 @@ export function ConfigEditor({
 
       {activeTab === 'editor' ? (
         <>
+          {fileNotFound && (
+            <div className="flex items-center gap-3 px-5 py-3 bg-emerald-50 dark:bg-emerald-500/10 border-b border-emerald-200 dark:border-emerald-500/20 backdrop-blur-sm z-10">
+              <div className="flex items-center justify-center w-8 h-8 rounded-full bg-emerald-100 dark:bg-emerald-500/20">
+                <FilePlus className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+              </div>
+              <div className="flex-1">
+                <span className="text-sm font-medium text-emerald-800 dark:text-emerald-200">
+                  New file
+                </span>
+                <span className="text-sm text-emerald-600 dark:text-emerald-400 ml-2">
+                  — This file doesn't exist yet. It will be created when you save.
+                </span>
+              </div>
+              <button
+                onClick={onSave}
+                className="px-4 py-1.5 text-xs font-semibold bg-emerald-600 hover:bg-emerald-500 text-white rounded-full shadow-lg shadow-emerald-500/20 transition-all hover:scale-105"
+              >
+                Create File
+              </button>
+            </div>
+          )}
           <div className="flex-1 relative">
             <Editor
               height="100%"
               language={FORMAT_TO_LANGUAGE[currentFormat]}
               value={editorContent}
               onChange={handleEditorChange}
+              onMount={handleEditorMount}
               theme={theme === 'dark' ? 'vs-dark' : 'light'}
               options={{
                 minimap: { enabled: editorSettings.minimap },
@@ -333,6 +479,25 @@ export function ConfigEditor({
                 <span className="w-1.5 h-1.5 rounded-full bg-slate-400 dark:bg-slate-500"></span>
                 {currentFilePath}
               </span>
+              {editorSettings.autoSave && (
+                <span 
+                  className="flex items-center gap-1.5 text-emerald-600 dark:text-emerald-400"
+                  title={lastAutoSaved ? `Last auto-saved: ${lastAutoSaved.toLocaleTimeString()}` : 'Auto-save enabled'}
+                >
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse-subtle"></span>
+                  <span>Auto-save</span>
+                </span>
+              )}
+              {!backupSettings.enabled && (
+                <button
+                  onClick={onOpenSettings}
+                  className="flex items-center gap-1.5 text-amber-600 dark:text-amber-400 hover:text-amber-700 dark:hover:text-amber-300 transition-colors"
+                  title="Click to enable backups in Settings"
+                >
+                  <Settings className="w-3 h-3" />
+                  <span>Backups disabled</span>
+                </button>
+              )}
             </div>
             <div className="flex items-center gap-6">
               <span className="flex items-center gap-1.5">

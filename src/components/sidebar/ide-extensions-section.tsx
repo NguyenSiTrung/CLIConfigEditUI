@@ -95,6 +95,7 @@ export const IdeExtensionsSection = memo(function IdeExtensionsSection({ onExten
       count={IDE_PLATFORMS.length}
       accent="emerald"
       defaultExpanded={true}
+      tooltip="Configure AI coding assistant settings for your IDE extensions like Copilot, Amp, and Continue"
     >
       <ul className="space-y-0.5">
         {IDE_PLATFORMS.map((platform) => {

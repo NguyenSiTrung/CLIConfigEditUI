@@ -135,11 +135,30 @@ html, body, #root {
 
 /* Button transitions */
 button {
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: color 0.2s, background-color 0.2s, border-color 0.2s, box-shadow 0.2s, transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 button:active {
   transform: scale(0.98);
+}
+
+/* Reduced Motion */
+.reduce-motion,
+.reduce-motion * {
+  animation-duration: 0.01ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.01ms !important;
+}
+
+.reduce-motion button:active {
+  transform: none;
+}
+
+.reduce-motion .glass,
+.reduce-motion .glass-panel,
+.reduce-motion .dark .glass,
+.reduce-motion .dark .glass-panel {
+  backdrop-filter: none;
 }
 
 /* Selection colors */

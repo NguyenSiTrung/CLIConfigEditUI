@@ -29,15 +29,18 @@ CLI Config Editor provides a unified interface to:
 
 - ✅ Auto-detection of installed CLI tools
 - ✅ Monaco Editor with syntax highlighting (JSON, YAML, TOML, INI)
-- ✅ Dark and light theme support
+- ✅ Dark, light, and system theme support
 - ✅ Custom tool configurations
-- ✅ Unsaved changes indicator
+- ✅ Unsaved changes indicator (visual dot on sidebar items)
 - ✅ Format/prettify code
-- ✅ Keyboard shortcuts (Ctrl+S to save)
+- ✅ Comprehensive keyboard shortcuts
 - ✅ Toast notifications
 - ✅ Persistent settings (theme, custom tools)
 - ✅ **Config file versioning** - Save, compare, and switch between config snapshots
 - ✅ **MCP Settings Sync** - Sync MCP server configurations across all AI coding tools
+- ✅ **Command Palette** - Quick access to all actions (Ctrl/Cmd+K)
+- ✅ **Auto-save** - Optional automatic saving with configurable delay
+- ✅ **Reduced motion** - Accessibility option to minimize animations
 
 ## Supported Platforms
 
@@ -128,6 +131,18 @@ pnpm tauri build
 | `pnpm lint` | Run ESLint |
 | `pnpm format` | Format code with Prettier |
 | `pnpm test` | Run frontend tests |
+
+## Keyboard Shortcuts
+
+| Shortcut | Action |
+|----------|--------|
+| `Ctrl/Cmd + S` | Save current file |
+| `Ctrl/Cmd + K` | Open Command Palette |
+| `Ctrl/Cmd + ,` | Open Settings |
+| `Ctrl/Cmd + B` | Toggle sidebar |
+| `Ctrl/Cmd + Shift + M` | Toggle MCP panel |
+| `Alt/Option + Shift + F` | Format code |
+| `Escape` | Close modal/dialog |
 
 ## Project Structure
 
