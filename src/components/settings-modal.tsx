@@ -54,7 +54,7 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
   const tabs: { id: SettingsTab; label: string; icon: React.ReactNode }[] = [
     { id: 'appearance', label: 'Appearance', icon: <Sun className="w-4 h-4" /> },
     { id: 'editor', label: 'Editor', icon: <Code className="w-4 h-4" /> },
-    { id: 'backup', label: 'Backup', icon: <Shield className="w-4 h-4" /> },
+    { id: 'backup', label: 'File Backups', icon: <Shield className="w-4 h-4" /> },
     { id: 'behavior', label: 'Behavior', icon: <Settings2 className="w-4 h-4" /> },
   ];
 

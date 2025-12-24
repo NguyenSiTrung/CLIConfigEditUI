@@ -325,7 +325,7 @@ function App() {
     [isDirty, performIdeExtensionConfigSelect]
   );
 
-  const handleSave = useCallback(async (): Promise<boolean> => {
+  const handleSave = useCallback(async (isAutoSave?: boolean): Promise<boolean> => {
     if (!currentFilePath) return false;
 
     const { backupSettings } = useAppStore.getState();
@@ -365,7 +365,9 @@ function App() {
       setOriginalContent(editorContent);
       setError(null);
       setFileNotFound(false);
-      toast.success('Configuration saved successfully');
+      if (!isAutoSave) {
+        toast.success('Configuration saved successfully');
+      }
       return true;
     } catch (err) {
       toast.error(`Failed to save: ${err instanceof Error ? err.message : String(err)}`);
@@ -398,14 +400,9 @@ function App() {
 
   const handleFormat = useCallback(() => {
     try {
-      const format = useAppStore.getState().currentFormat;
-      if (format === 'json') {
-        const formatted = JSON.stringify(JSON.parse(editorContent), null, 2);
-        setEditorContent(formatted);
-        toast.success('Code formatted');
-      } else {
-        toast.info(`Formatting for ${format.toUpperCase()} coming soon`);
-      }
+      const formatted = JSON.stringify(JSON.parse(editorContent), null, 2);
+      setEditorContent(formatted);
+      toast.success('Code formatted');
     } catch {
       toast.error('Failed to format: Invalid syntax');
     }

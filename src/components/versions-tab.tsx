@@ -113,11 +113,14 @@ export function VersionsTab({ onApplyVersion }: VersionsTabProps) {
     <div className="flex-1 flex flex-col h-full bg-white dark:bg-[#020617]">
       {/* Header */}
       <div className="flex items-center justify-between px-4 py-3 border-b border-slate-200 dark:border-white/5">
-        <div className="flex items-center gap-2">
-          <Layers className="w-4 h-4 text-slate-400" />
-          <span className="text-sm font-medium text-slate-600 dark:text-slate-300">
-            Versions ({versions.length})
-          </span>
+        <div className="flex flex-col">
+          <div className="flex items-center gap-2">
+            <Layers className="w-4 h-4 text-slate-400" />
+            <span className="text-sm font-medium text-slate-600 dark:text-slate-300">
+              Versions ({versions.length})
+            </span>
+          </div>
+          <span className="text-xs text-slate-400 dark:text-slate-500 ml-6">Compare app snapshots and restore previous versions</span>
         </div>
         <div className="flex items-center gap-2">
           {selectedVersionIds.length > 0 && (

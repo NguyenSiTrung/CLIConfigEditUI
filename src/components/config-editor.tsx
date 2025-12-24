@@ -6,7 +6,7 @@ import { ConfigFormat } from '@/types';
 import { WelcomeScreen } from './welcome-screen';
 import { BackupModal } from './backup-modal';
 import { VersionsTab } from './versions-tab';
-import { OnboardingTooltip } from './ui';
+import { OnboardingTooltip, Modal, Button } from './ui';
 import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { invoke } from '@tauri-apps/api/core';
 import {
@@ -41,7 +41,7 @@ const FORMAT_LABELS: Record<ConfigFormat, { label: string; color: string; bg: st
 };
 
 interface ConfigEditorProps {
-  onSave: () => void;
+  onSave: (isAutoSave?: boolean) => void;
   onFormat: () => void;
   onAddCustomTool: () => void;
   onOpenSettings?: () => void;
@@ -84,6 +84,8 @@ export function ConfigEditor({
   const [showBackupModal, setShowBackupModal] = useState(false);
   const [hasBackups, setHasBackups] = useState(false);
   const [activeTab, setActiveTab] = useState<EditorTab>('editor');
+  const [showReloadWarning, setShowReloadWarning] = useState(false);
+  const [cursorPosition, setCursorPosition] = useState<{ line: number; column: number }>({ line: 1, column: 1 });
   
   // Monaco editor refs for JSON validation markers
   const editorRef = useRef<Monaco.editor.IStandaloneCodeEditor | null>(null);
@@ -92,6 +94,10 @@ export function ConfigEditor({
   const handleEditorMount: OnMount = (editor, monaco) => {
     editorRef.current = editor;
     monacoRef.current = monaco;
+    
+    editor.onDidChangeCursorPosition((e) => {
+      setCursorPosition({ line: e.position.lineNumber, column: e.position.column });
+    });
   };
 
   // Validate JSON and set Monaco markers for parse errors
@@ -204,7 +210,7 @@ export function ConfigEditor({
     }
 
     autoSaveTimeoutRef.current = setTimeout(() => {
-      onSave();
+      onSave(true);
       setLastAutoSaved(new Date());
     }, editorSettings.autoSaveDelay);
 
@@ -238,6 +244,24 @@ export function ConfigEditor({
     setOriginalContent(content);
     setActiveTab('editor');
   }, [setEditorContent, setOriginalContent]);
+
+  const handleReloadClick = useCallback(() => {
+    if (isDirty()) {
+      setShowReloadWarning(true);
+    } else {
+      onReloadFile?.();
+    }
+  }, [isDirty, onReloadFile]);
+
+  const handleKeepEdits = useCallback(() => {
+    setShowReloadWarning(false);
+    onDismissExternalChange?.();
+  }, [onDismissExternalChange]);
+
+  const handleReloadAndDiscard = useCallback(() => {
+    setShowReloadWarning(false);
+    onReloadFile?.();
+  }, [onReloadFile]);
 
   // Memoized calculations - must be before early returns
   const lineCount = useMemo(() => editorContent.split('\n').length, [editorContent]);
@@ -294,7 +318,7 @@ export function ConfigEditor({
           </div>
           <div className="flex items-center gap-3">
             <button
-              onClick={onReloadFile}
+              onClick={handleReloadClick}
               className="px-4 py-1.5 text-xs font-semibold bg-blue-600 hover:bg-blue-500 text-white rounded-full shadow-lg shadow-blue-500/20 transition-all hover:scale-105"
             >
               Reload Content
@@ -385,26 +409,29 @@ export function ConfigEditor({
                            border border-slate-200 dark:border-white/10 transition-all shadow-sm"
               >
                 <History className="w-3.5 h-3.5" />
-                History
+                File Backups
               </button>
             </OnboardingTooltip>
           )}
 
           {activeTab === 'editor' && (
             <>
-              <button
-                onClick={onFormat}
-                className="px-3 py-1.5 text-xs font-medium flex items-center gap-2 
-                           bg-white dark:bg-white/5 hover:bg-slate-50 dark:hover:bg-white/10 
-                           text-slate-600 dark:text-slate-300 rounded-lg 
-                           border border-slate-200 dark:border-white/10 transition-all shadow-sm group"
-              >
-                <AlignLeft className="w-3.5 h-3.5 group-hover:text-indigo-500 transition-colors" />
-                Format
-              </button>
+              <span title={currentFormat === 'json' ? 'Format document' : 'Formatting supported for JSON only'}>
+                <button
+                  onClick={onFormat}
+                  disabled={currentFormat !== 'json'}
+                  className={`px-3 py-1.5 text-xs font-medium flex items-center gap-2 rounded-lg transition-all shadow-sm
+                             ${currentFormat === 'json'
+                      ? 'bg-white dark:bg-white/5 hover:bg-slate-50 dark:hover:bg-white/10 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-white/10 group'
+                      : 'bg-slate-100 dark:bg-slate-800 text-slate-400 dark:text-slate-600 cursor-not-allowed border border-slate-200 dark:border-slate-700'}`}
+                >
+                  <AlignLeft className={`w-3.5 h-3.5 ${currentFormat === 'json' ? 'group-hover:text-indigo-500 transition-colors' : ''}`} />
+                  Format
+                </button>
+              </span>
 
               <button
-                onClick={onSave}
+                onClick={() => onSave()}
                 disabled={!isDirty()}
                 className={`px-4 py-1.5 text-xs font-medium flex items-center gap-2 rounded-lg transition-all shadow-sm
                            ${isDirty()
@@ -435,7 +462,7 @@ export function ConfigEditor({
                 </span>
               </div>
               <button
-                onClick={onSave}
+                onClick={() => onSave()}
                 className="px-4 py-1.5 text-xs font-semibold bg-emerald-600 hover:bg-emerald-500 text-white rounded-full shadow-lg shadow-emerald-500/20 transition-all hover:scale-105"
               >
                 Create File
@@ -485,7 +512,11 @@ export function ConfigEditor({
                   title={lastAutoSaved ? `Last auto-saved: ${lastAutoSaved.toLocaleTimeString()}` : 'Auto-save enabled'}
                 >
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse-subtle"></span>
-                  <span>Auto-save</span>
+                  <span className={lastAutoSaved ? 'animate-fade-in' : ''}>
+                    {lastAutoSaved 
+                      ? `Auto-saved at ${lastAutoSaved.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false })}`
+                      : 'Auto-save'}
+                  </span>
                 </span>
               )}
               {!backupSettings.enabled && (
@@ -501,7 +532,10 @@ export function ConfigEditor({
             </div>
             <div className="flex items-center gap-6">
               <span className="flex items-center gap-1.5">
-                Ln {lineCount}
+                Ln {cursorPosition.line}, Col {cursorPosition.column}
+              </span>
+              <span className="flex items-center gap-1.5">
+                {lineCount} lines
               </span>
               <span className="flex items-center gap-1.5">
                 {formatBytes(byteSize)}
@@ -522,6 +556,30 @@ export function ConfigEditor({
         currentContent={editorContent}
         onRestored={handleBackupRestored}
       />
+
+      <Modal
+        isOpen={showReloadWarning}
+        onClose={() => setShowReloadWarning(false)}
+        title="Unsaved Changes"
+        size="sm"
+        footer={
+          <>
+            <Button variant="ghost" onClick={() => setShowReloadWarning(false)}>
+              Cancel
+            </Button>
+            <Button variant="secondary" onClick={handleKeepEdits}>
+              Keep my edits
+            </Button>
+            <Button variant="danger" onClick={handleReloadAndDiscard}>
+              Reload and discard
+            </Button>
+          </>
+        }
+      >
+        <p className="text-sm text-slate-600 dark:text-slate-300">
+          You have unsaved changes. Reloading will discard them.
+        </p>
+      </Modal>
     </div>
   );
 }
