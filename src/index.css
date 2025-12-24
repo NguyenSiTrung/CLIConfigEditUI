@@ -207,22 +207,20 @@ button {
 
 /* Alternative solid backgrounds when blur is disabled */
 .reduce-motion .glass {
-  @apply bg-white/95 dark:bg-slate-900/95;
-}
-
-.reduce-motion .glass-panel {
-  @apply bg-white/95 dark:bg-slate-900/95;
-}
-
-/* Solid backgrounds for common blur usage areas */
-.reduce-motion .bg-white\/50,
-.reduce-motion .bg-white\/70 {
   background-color: rgba(255, 255, 255, 0.95) !important;
 }
 
-.reduce-motion .dark .bg-slate-900\/40,
-.reduce-motion .dark .bg-slate-900\/60,
-.reduce-motion .dark .bg-slate-900\/80 {
+.reduce-motion.dark .glass,
+.reduce-motion .dark .glass {
+  background-color: rgba(15, 23, 42, 0.95) !important;
+}
+
+.reduce-motion .glass-panel {
+  background-color: rgba(255, 255, 255, 0.95) !important;
+}
+
+.reduce-motion.dark .glass-panel,
+.reduce-motion .dark .glass-panel {
   background-color: rgba(15, 23, 42, 0.95) !important;
 }
 
