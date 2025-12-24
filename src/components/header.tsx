@@ -60,7 +60,7 @@ export function Header({ onSettingsClick, currentView = 'editor', onViewChange }
         <div className="flex flex-col justify-center">
           <h1 className="text-sm font-bold dark:text-slate-200 text-slate-800 tracking-tight leading-none mb-0.5">CLI Config Editor</h1>
           <div className="flex items-center gap-1.5 opacity-60">
-            <span className="text-[11px] font-medium dark:text-slate-400 text-slate-500 uppercase tracking-widest">v{APP_VERSION}</span>
+            <span className="text-xs font-medium dark:text-slate-400 text-slate-500 uppercase tracking-widest">v{APP_VERSION}</span>
             <Sparkles className="w-2.5 h-2.5 text-amber-500" />
           </div>
         </div>
@@ -75,6 +75,8 @@ export function Header({ onSettingsClick, currentView = 'editor', onViewChange }
               ? 'bg-indigo-100 dark:bg-indigo-500/20 text-indigo-700 dark:text-indigo-300'
               : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-white/5'
           }`}
+          aria-label="Switch to Configs view"
+          aria-pressed={currentView === 'editor'}
         >
           <Terminal className="w-3.5 h-3.5" />
           Configs
@@ -86,6 +88,8 @@ export function Header({ onSettingsClick, currentView = 'editor', onViewChange }
               ? 'bg-indigo-100 dark:bg-indigo-500/20 text-indigo-700 dark:text-indigo-300'
               : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-white/5'
           }`}
+          aria-label="Switch to MCP Sync view"
+          aria-pressed={currentView === 'mcp'}
         >
           <Server className="w-3.5 h-3.5" />
           MCP Sync

@@ -51,7 +51,7 @@ export function McpToolStatusList({
   isSyncing,
 }: McpToolStatusListProps) {
   return (
-    <div className="space-y-2">
+    <div className="space-y-2" role="list">
       {toolStatuses.map((status) => {
         const config = STATUS_CONFIG[status.syncStatus];
         const StatusIcon = config.icon;
@@ -59,11 +59,24 @@ export function McpToolStatusList({
         return (
           <div
             key={status.toolId}
-            className={`p-3 rounded-lg border transition-all ${
+            role="listitem"
+            tabIndex={0}
+            className={`p-3 rounded-lg border transition-all
+              focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2
+              dark:focus-visible:ring-offset-slate-900
+              ${
               status.installed
                 ? 'bg-white dark:bg-slate-800/50 border-slate-200 dark:border-white/10'
                 : 'bg-slate-50/50 dark:bg-slate-800/30 border-slate-200/50 dark:border-white/5 opacity-60'
             }`}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                if (status.installed) {
+                  onToggleEnabled(status.toolId, !status.enabled);
+                }
+              }
+            }}
           >
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
@@ -76,6 +89,7 @@ export function McpToolStatusList({
                       : 'text-slate-300 dark:text-slate-600'
                   } ${status.installed ? 'hover:bg-slate-100 dark:hover:bg-white/5' : 'cursor-not-allowed'}`}
                   title={status.enabled ? 'Disable sync' : 'Enable sync'}
+                  aria-label={`${status.enabled ? 'Disable' : 'Enable'} sync for ${status.name}`}
                 >
                   {status.enabled ? (
                     <ToggleRight className="w-5 h-5" />
@@ -110,6 +124,7 @@ export function McpToolStatusList({
                     disabled={isSyncing}
                     className="px-2 py-1 text-xs font-medium bg-indigo-600 hover:bg-indigo-500 
                                text-white rounded transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                    aria-label={`Sync MCP settings for ${status.name}`}
                   >
                     Sync
                   </button>

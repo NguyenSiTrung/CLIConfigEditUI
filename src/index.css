@@ -11,6 +11,14 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 
+  /* Animation constants */
+  --duration-hover: 150ms;
+  --duration-enter: 200ms;
+  --duration-exit: 150ms;
+  --easing-default: ease-out;
+  --easing-smooth: cubic-bezier(0.4, 0, 0.2, 1);
+  --easing-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
+
   /* Light theme defaults */
   color: #334155; /* slate-700 */
   background-color: #f8fafc; /* slate-50 */
@@ -86,19 +94,19 @@ html, body, #root {
 }
 
 .animate-fade-in {
-  animation: fadeIn 0.3s ease-out forwards;
+  animation: fadeIn var(--duration-enter) var(--easing-default) forwards;
 }
 
 .animate-slide-in {
-  animation: slideIn 0.2s ease-out forwards;
+  animation: slideIn var(--duration-enter) var(--easing-default) forwards;
 }
 
 .animate-scale-in {
-  animation: scaleIn 0.15s ease-out forwards;
+  animation: scaleIn var(--duration-hover) var(--easing-default) forwards;
 }
 
 .animate-slide-down {
-  animation: slideDown 0.2s ease-out forwards;
+  animation: slideDown var(--duration-enter) var(--easing-default) forwards;
 }
 
 .animate-pulse-subtle {
@@ -126,6 +134,25 @@ html, body, #root {
   .text-glow {
     text-shadow: 0 0 10px rgba(59, 130, 246, 0.5);
   }
+
+  /* Standardized transition utilities */
+  .transition-standard {
+    transition-property: color, background-color, border-color, box-shadow, opacity, transform;
+    transition-duration: var(--duration-hover);
+    transition-timing-function: var(--easing-default);
+  }
+
+  .transition-enter {
+    transition-property: color, background-color, border-color, box-shadow, opacity, transform;
+    transition-duration: var(--duration-enter);
+    transition-timing-function: var(--easing-default);
+  }
+
+  .transition-smooth {
+    transition-property: all;
+    transition-duration: var(--duration-enter);
+    transition-timing-function: var(--easing-smooth);
+  }
 }
 
 /* Focus Ring */
@@ -133,16 +160,19 @@ html, body, #root {
   @apply focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500/50 transition-all duration-200;
 }
 
-/* Button transitions */
+/* Button transitions - standardized with easing-default */
 button {
-  transition: color 0.2s, background-color 0.2s, border-color 0.2s, box-shadow 0.2s, transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  transition-property: color, background-color, border-color, box-shadow;
+  transition-duration: var(--duration-hover);
+  transition-timing-function: var(--easing-default);
 }
 
-button:active {
+/* Primary action buttons can use scale-on-hover class */
+.btn-primary:active {
   transform: scale(0.98);
 }
 
-/* Reduced Motion */
+/* Reduced Motion - also disables blur effects for performance */
 .reduce-motion,
 .reduce-motion * {
   animation-duration: 0.01ms !important;
@@ -150,15 +180,50 @@ button:active {
   transition-duration: 0.01ms !important;
 }
 
-.reduce-motion button:active {
+.reduce-motion .btn-primary:active {
   transform: none;
 }
 
+/* Disable all backdrop blur effects in reduce-motion mode */
 .reduce-motion .glass,
 .reduce-motion .glass-panel,
 .reduce-motion .dark .glass,
 .reduce-motion .dark .glass-panel {
-  backdrop-filter: none;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+/* Disable backdrop-blur on all elements with inline blur classes */
+.reduce-motion [class*="backdrop-blur"],
+.reduce-motion .backdrop-blur-sm,
+.reduce-motion .backdrop-blur-md,
+.reduce-motion .backdrop-blur-lg,
+.reduce-motion .backdrop-blur-xl,
+.reduce-motion .backdrop-blur-2xl,
+.reduce-motion .backdrop-blur-3xl {
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+/* Alternative solid backgrounds when blur is disabled */
+.reduce-motion .glass {
+  @apply bg-white/95 dark:bg-slate-900/95;
+}
+
+.reduce-motion .glass-panel {
+  @apply bg-white/95 dark:bg-slate-900/95;
+}
+
+/* Solid backgrounds for common blur usage areas */
+.reduce-motion .bg-white\/50,
+.reduce-motion .bg-white\/70 {
+  background-color: rgba(255, 255, 255, 0.95) !important;
+}
+
+.reduce-motion .dark .bg-slate-900\/40,
+.reduce-motion .dark .bg-slate-900\/60,
+.reduce-motion .dark .bg-slate-900\/80 {
+  background-color: rgba(15, 23, 42, 0.95) !important;
 }
 
 /* Selection colors */

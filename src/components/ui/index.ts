@@ -28,3 +28,11 @@ export { SectionHeader, type SectionHeaderProps } from './section-header';
 export { ConfirmDialog, type ConfirmDialogProps } from './confirm-dialog';
 export { UnsavedChangesDialog, type UnsavedChangesDialogProps, type UnsavedChangesAction } from './unsaved-changes-dialog';
 export { OnboardingTooltip, resetOnboardingHints } from './onboarding-tooltip';
+export { 
+  Skeleton, 
+  SkeletonText, 
+  McpServerSkeleton, 
+  McpServerListSkeleton, 
+  McpToolStatusSkeleton, 
+  McpToolStatusListSkeleton 
+} from './skeleton';

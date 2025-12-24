@@ -85,6 +85,7 @@ function ToastItem({ toast: t, onRemove }: { toast: Toast; onRemove: () => void 
       <button
         onClick={onRemove}
         className="p-1 rounded dark:hover:bg-white/10 hover:bg-black/5 transition-colors"
+        aria-label="Dismiss notification"
       >
         <X className="w-4 h-4" />
       </button>
@@ -96,7 +97,12 @@ export function ToastContainer() {
   const { toasts, removeToast } = useToastStore();
 
   return (
-    <div className="fixed bottom-4 right-4 z-50 flex flex-col gap-2 pointer-events-none">
+    <div 
+      className="fixed bottom-4 right-4 z-50 flex flex-col gap-2 pointer-events-none"
+      role="status"
+      aria-live="polite"
+      aria-label="Notifications"
+    >
       {toasts.map((t) => (
         <div key={t.id} className="pointer-events-auto">
           <ToastItem toast={t} onRemove={() => removeToast(t.id)} />

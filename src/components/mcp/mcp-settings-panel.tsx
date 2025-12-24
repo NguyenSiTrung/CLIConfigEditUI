@@ -11,8 +11,8 @@ import { McpConflictResolutionModal } from './mcp-conflict-resolution-modal';
 import { McpConfigPreviewModal } from './mcp-config-preview-modal';
 import { McpImportPreviewModal } from './mcp-import-preview-modal';
 import { toast } from '@/components/toast';
-import { ConfirmDialog } from '@/components/ui';
-import { RefreshCw, Plus, AlertCircle, Upload } from 'lucide-react';
+import { ConfirmDialog, McpServerListSkeleton, McpToolStatusListSkeleton } from '@/components/ui';
+import { RefreshCw, Plus, AlertCircle, Upload, Loader2 } from 'lucide-react';
 
 export function McpSettingsPanel() {
   const {
@@ -252,7 +252,14 @@ export function McpSettingsPanel() {
               MCP Settings
             </h1>
             <p className="text-sm text-slate-500 dark:text-slate-400 mt-0.5">
-              Manage and sync MCP server configurations across tools
+              {isLoading ? (
+                <span className="flex items-center gap-1.5">
+                  <Loader2 className="w-3 h-3 animate-spin" />
+                  Loading configuration...
+                </span>
+              ) : (
+                'Manage and sync MCP server configurations across tools'
+              )}
             </p>
           </div>
           <button
@@ -329,15 +336,19 @@ export function McpSettingsPanel() {
                 </div>
               )}
             </div>
-            <McpServerList
-              servers={servers}
-              onEdit={(server) => {
-                setEditingServer(server);
-                setIsServerEditorOpen(true);
-              }}
-              onDelete={handleDeleteServer}
-              isEditable={sourceMode === 'app-managed'}
-            />
+            {isLoading && servers.length === 0 ? (
+              <McpServerListSkeleton count={3} />
+            ) : (
+              <McpServerList
+                servers={servers}
+                onEdit={(server) => {
+                  setEditingServer(server);
+                  setIsServerEditorOpen(true);
+                }}
+                onDelete={handleDeleteServer}
+                isEditable={sourceMode === 'app-managed'}
+              />
+            )}
             {sourceMode === 'claude' && servers.length > 0 && (
               <p className="text-xs text-slate-500 dark:text-slate-400 mt-4">
                 Servers imported from ~/.claude.json. Switch to App-Managed mode to edit.
@@ -357,12 +368,16 @@ export function McpSettingsPanel() {
                 </p>
               </div>
             </div>
-            <McpToolStatusList
-              toolStatuses={toolStatuses}
-              onToggleEnabled={setToolEnabled}
-              onSyncTool={handleSyncTool}
-              isSyncing={isLoading}
-            />
+            {isLoading && toolStatuses.length === 0 ? (
+              <McpToolStatusListSkeleton count={4} />
+            ) : (
+              <McpToolStatusList
+                toolStatuses={toolStatuses}
+                onToggleEnabled={setToolEnabled}
+                onSyncTool={handleSyncTool}
+                isSyncing={isLoading}
+              />
+            )}
           </section>
         </div>
       </div>

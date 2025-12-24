@@ -153,7 +153,7 @@ function FeatureItem({
         {icon}
       </div>
       <h3 className="text-xs font-semibold dark:text-slate-200 text-slate-700">{title}</h3>
-      <p className="text-[11px] dark:text-slate-500 text-slate-500">{description}</p>
+      <p className="text-xs dark:text-slate-500 text-slate-500">{description}</p>
     </div>
   );
 }

@@ -211,6 +211,7 @@ export function CommandPalette({
                 key={cmd.id}
                 onClick={cmd.action}
                 className={`w-full px-4 py-3 flex items-center gap-3 text-left transition-colors
+                  focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-inset
                   ${
                     index === selectedIndex
                       ? 'bg-indigo-50 dark:bg-indigo-500/10 text-indigo-700 dark:text-indigo-300'
