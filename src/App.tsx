@@ -11,6 +11,7 @@ import {
   ToastContainer,
   toast,
   McpSettingsPanel,
+  KeyboardShortcutsModal,
 } from '@/components';
 import { CommandPalette } from '@/components/command-palette';
 import { UnsavedChangesDialog, type UnsavedChangesAction } from '@/components/ui';
@@ -42,6 +43,7 @@ function App() {
   const [isAddToolModalOpen, setIsAddToolModalOpen] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isCommandPaletteOpen, setIsCommandPaletteOpen] = useState(false);
+  const [isKeyboardShortcutsOpen, setIsKeyboardShortcutsOpen] = useState(false);
   const [editingTool, setEditingTool] = useState<CustomTool | null>(null);
   const [addConfigFileTool, setAddConfigFileTool] = useState<CliTool | CustomTool | null>(null);
   const [editingConfigFile, setEditingConfigFile] = useState<{ tool: CliTool | CustomTool; configFile: ConfigFile } | null>(null);
@@ -574,6 +576,7 @@ function App() {
       <SettingsModal
         isOpen={isSettingsOpen}
         onClose={() => setIsSettingsOpen(false)}
+        onOpenKeyboardShortcuts={() => setIsKeyboardShortcutsOpen(true)}
       />
       <CommandPalette
         isOpen={isCommandPaletteOpen}
@@ -582,6 +585,11 @@ function App() {
         onAddCustomTool={() => setIsAddToolModalOpen(true)}
         onSwitchToMcp={() => setCurrentView('mcp')}
         onSwitchToEditor={() => setCurrentView('editor')}
+        onOpenKeyboardShortcuts={() => setIsKeyboardShortcutsOpen(true)}
+      />
+      <KeyboardShortcutsModal
+        isOpen={isKeyboardShortcutsOpen}
+        onClose={() => setIsKeyboardShortcutsOpen(false)}
       />
       <UnsavedChangesDialog
         isOpen={isUnsavedDialogOpen}

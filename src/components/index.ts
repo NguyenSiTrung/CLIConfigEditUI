@@ -16,3 +16,4 @@ export { VersionListItem } from './version-list-item';
 export { SaveVersionDialog } from './save-version-dialog';
 export { VersionDiffView } from './version-diff-view';
 export { McpSettingsPanel } from './mcp';
+export { KeyboardShortcutsModal } from './keyboard-shortcuts-modal';

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Moon, Sun, Monitor, Type, Code, Settings2, Shield, RotateCcw } from 'lucide-react';
+import { Moon, Sun, Monitor, Type, Code, Settings2, Shield, RotateCcw, Keyboard } from 'lucide-react';
 import { useAppStore } from '@/stores/app-store';
 import { APP_VERSION } from '@/constants/design-tokens';
 import { Modal, Toggle, Button } from '@/components/ui';
@@ -7,11 +7,12 @@ import { Modal, Toggle, Button } from '@/components/ui';
 interface SettingsModalProps {
   isOpen: boolean;
   onClose: () => void;
+  onOpenKeyboardShortcuts?: () => void;
 }
 
 type SettingsTab = 'appearance' | 'editor' | 'backup' | 'behavior';
 
-export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
+export function SettingsModal({ isOpen, onClose, onOpenKeyboardShortcuts }: SettingsModalProps) {
   const {
     theme,
     setTheme,
@@ -68,6 +69,19 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
       >
         Reset to Defaults
       </Button>
+      {onOpenKeyboardShortcuts && (
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={() => {
+            onClose();
+            onOpenKeyboardShortcuts();
+          }}
+          leftIcon={<Keyboard className="w-4 h-4" />}
+        >
+          Keyboard Shortcuts
+        </Button>
+      )}
       <span className="flex-1" />
       <p className="text-xs dark:text-gray-500 text-slate-400">
         CLI Config Editor v{APP_VERSION}

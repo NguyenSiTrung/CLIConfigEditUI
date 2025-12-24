@@ -10,6 +10,7 @@ import {
   Server,
   Plus,
   Palette,
+  Keyboard,
 } from 'lucide-react';
 
 interface Command {
@@ -28,6 +29,7 @@ interface CommandPaletteProps {
   onAddCustomTool: () => void;
   onSwitchToMcp: () => void;
   onSwitchToEditor: () => void;
+  onOpenKeyboardShortcuts: () => void;
 }
 
 export function CommandPalette({
@@ -37,6 +39,7 @@ export function CommandPalette({
   onAddCustomTool,
   onSwitchToMcp,
   onSwitchToEditor,
+  onOpenKeyboardShortcuts,
 }: CommandPaletteProps) {
   const { toggleTheme, theme, getAllTools, setActiveToolId } = useAppStore();
   const [query, setQuery] = useState('');
@@ -103,6 +106,17 @@ export function CommandPalette({
         },
         keywords: ['editor', 'config', 'edit'],
       },
+      {
+        id: 'keyboard-shortcuts',
+        label: 'View Keyboard Shortcuts',
+        description: 'Show all available keyboard shortcuts',
+        icon: <Keyboard className="w-4 h-4" />,
+        action: () => {
+          onOpenKeyboardShortcuts();
+          onClose();
+        },
+        keywords: ['keyboard', 'shortcuts', 'keys', 'hotkeys', 'bindings'],
+      },
     ];
 
     const toolCommands: Command[] = allTools.map((tool) => ({
@@ -118,7 +132,7 @@ export function CommandPalette({
     }));
 
     return [...baseCommands, ...toolCommands];
-  }, [theme, toggleTheme, onOpenSettings, onAddCustomTool, onSwitchToMcp, onSwitchToEditor, onClose, allTools, setActiveToolId]);
+  }, [theme, toggleTheme, onOpenSettings, onAddCustomTool, onSwitchToMcp, onSwitchToEditor, onOpenKeyboardShortcuts, onClose, allTools, setActiveToolId]);
 
   const filteredCommands = useMemo(() => {
     if (!query.trim()) return commands;

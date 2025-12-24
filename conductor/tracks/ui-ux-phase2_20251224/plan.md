@@ -112,12 +112,12 @@
 ## Phase 6: Discoverability Enhancements
 
 ### Task 6.1: Keyboard Shortcuts Modal
-- [ ] Create KeyboardShortcutsModal component
-- [ ] Define shortcuts data structure with categories
-- [ ] Implement shortcuts list grouped by category (Navigation, Editor, Views)
-- [ ] Add platform-aware key display (⌘ vs Ctrl)
-- [ ] Add "Keyboard Shortcuts" entry to command palette
-- [ ] Add link/button to shortcuts from Settings modal
+- [x] Create KeyboardShortcutsModal component
+- [x] Define shortcuts data structure with categories
+- [x] Implement shortcuts list grouped by category (Navigation, Editor, Views)
+- [x] Add platform-aware key display (⌘ vs Ctrl)
+- [x] Add "Keyboard Shortcuts" entry to command palette
+- [x] Add link/button to shortcuts from Settings modal
 
 ### Task 6.2: Inline Shortcut Hints
 - [ ] Add shortcut hint to Save button ("⌘S" / "Ctrl+S")
