@@ -1,0 +1,11 @@
+{
+  "track_id": "sidebar-expand-state_20251225",
+  "type": "feature",
+  "status": "new",
+  "priority": "high",
+  "depends_on": [],
+  "estimated_hours": null,
+  "created_at": "2025-12-25T12:00:00Z",
+  "updated_at": "2025-12-25T12:00:00Z",
+  "description": "Persist sidebar CLI tools expand/collapse state across app restarts for cleaner UI/UX"
+}

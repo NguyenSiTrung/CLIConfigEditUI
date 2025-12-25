@@ -15,6 +15,10 @@ This file lists all development tracks (features, bugs, improvements) for CLI Co
 
 ---
 
+## [~] Track: Sidebar Expand/Collapse State Persistence
+*Link: [./conductor/tracks/sidebar-expand-state_20251225/](./conductor/tracks/sidebar-expand-state_20251225/)*
+*Priority: 🟠 High*
+
 ---
 
 ## Completed Tracks

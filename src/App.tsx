@@ -103,20 +103,6 @@ function App() {
   useSystemTheme();
   useReducedMotion();
 
-  // Auto-expand tools on first load
-  useEffect(() => {
-    const tools = getAllTools();
-    tools.forEach((tool) => {
-      const configFiles = useAppStore.getState().getToolConfigFiles(tool.id);
-      if (configFiles.length > 0) {
-        const { expandedTools } = useAppStore.getState();
-        if (!expandedTools.has(tool.id)) {
-          toggleToolExpanded(tool.id);
-        }
-      }
-    });
-  }, [getAllTools, toggleToolExpanded]);
-
   const sidebarCollapsed = useAppStore((state) => state.sidebarCollapsed);
   const setSidebarCollapsed = useAppStore((state) => state.setSidebarCollapsed);
 
