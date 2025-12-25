@@ -19,7 +19,8 @@ conductor/
         ├── metadata.json   # Track type, status, dates
         ├── spec.md         # Requirements and acceptance criteria
         ├── plan.md         # Phased task list with status
-        ├── implement_state.json  # Implementation resume state (if in progress)
+        ├── implement_state.json  # Phase-aware implementation resume state (if in progress)
+        ├── handoff_*.md    # Section handoff documents (if any)
         ├── blockers.md     # Block history log (if any)
         ├── skipped.md      # Skipped tasks log (if any)
         └── revisions.md    # Revision history log (if any)
@@ -49,7 +50,8 @@ Throughout conductor files:
 | `conductor/tracks/<id>/metadata.json` | Track metadata |
 | `conductor/tracks/<id>/spec.md` | Requirements |
 | `conductor/tracks/<id>/plan.md` | Phased task list |
-| `conductor/tracks/<id>/implement_state.json` | Implementation resume state |
+| `conductor/tracks/<id>/implement_state.json` | Phase-aware implementation resume state |
+| `conductor/tracks/<id>/handoff_*.md` | Section handoff documents |
 | `conductor/tracks/<id>/blockers.md` | Block history log |
 | `conductor/tracks/<id>/skipped.md` | Skipped tasks log |
 | `conductor/tracks/<id>/revisions.md` | Revision history log |
@@ -69,6 +71,7 @@ The only differences are command syntax:
 | `/conductor:implement` | `/conductor-implement` |
 | `/conductor:status` | `/conductor-status` |
 | `/conductor:revert` | `/conductor-revert` |
+| `/conductor:handoff` | `/conductor-handoff` |
 | `/conductor:refresh` | `/conductor-refresh` |
 
 Files, workflows, and state management are fully compatible.
