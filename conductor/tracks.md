@@ -15,6 +15,9 @@ This file lists all development tracks (features, bugs, improvements) for CLI Co
 
 ---
 
+## [ ] Track: Sidebar Drag-and-Drop Reordering
+*Link: [./conductor/tracks/sidebar-dnd_20251225/](./conductor/tracks/sidebar-dnd_20251225/)*
+
 ---
 
 ## Completed Tracks

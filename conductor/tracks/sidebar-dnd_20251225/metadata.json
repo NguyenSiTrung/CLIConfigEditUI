@@ -1,0 +1,11 @@
+{
+  "track_id": "sidebar-dnd_20251225",
+  "type": "feature",
+  "status": "new",
+  "priority": "high",
+  "depends_on": [],
+  "estimated_hours": null,
+  "created_at": "2025-12-25T12:00:00Z",
+  "updated_at": "2025-12-25T12:00:00Z",
+  "description": "Drag-and-drop reordering of CLI Tools and Custom Tools in the sidebar"
+}
