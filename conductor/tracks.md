@@ -13,7 +13,10 @@ This file lists all development tracks (features, bugs, improvements) for CLI Co
 
 ## Active Tracks
 
-*No active tracks.*
+---
+
+## [x] Track: Command Palette Section Headers UI/UX Improvement
+*Link: [./conductor/tracks/palette-section-headers_20251225/](./conductor/tracks/palette-section-headers_20251225/)*
 
 ---
 

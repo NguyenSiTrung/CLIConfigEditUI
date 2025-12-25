@@ -16,6 +16,8 @@ import {
   Clock,
   File,
   Trash2,
+  Compass,
+  Wrench,
 } from 'lucide-react';
 import { formatShortcut } from '@/hooks/use-keyboard-shortcut';
 
@@ -356,7 +358,7 @@ export function CommandPalette({
       return null; // Don't group when filtering or in quick open mode
     }
 
-    const groups: { category: string; label: string; commands: Command[] }[] = [];
+    const groups: { category: string; label: string; icon: React.ReactNode; commands: Command[] }[] = [];
     const categoryOrder = ['recent', 'navigation', 'tools', 'settings'];
     const categoryLabels: Record<string, string> = {
       recent: 'Recent',
@@ -364,18 +366,24 @@ export function CommandPalette({
       tools: 'Tools',
       settings: 'Settings',
     };
+    const categoryIcons: Record<string, React.ReactNode> = {
+      recent: <Clock className="w-3.5 h-3.5" />,
+      navigation: <Compass className="w-3.5 h-3.5" />,
+      tools: <Wrench className="w-3.5 h-3.5" />,
+      settings: <Settings className="w-3.5 h-3.5" />,
+    };
 
     categoryOrder.forEach((cat) => {
       const catCommands = filteredCommands.filter((cmd) => cmd.category === cat);
       if (catCommands.length > 0) {
-        groups.push({ category: cat, label: categoryLabels[cat], commands: catCommands });
+        groups.push({ category: cat, label: categoryLabels[cat], icon: categoryIcons[cat], commands: catCommands });
       }
     });
 
     // Add any uncategorized commands
     const uncategorized = filteredCommands.filter((cmd) => !cmd.category || !categoryOrder.includes(cmd.category));
     if (uncategorized.length > 0) {
-      groups.push({ category: 'other', label: 'Other', commands: uncategorized });
+      groups.push({ category: 'other', label: 'Other', icon: null, commands: uncategorized });
     }
 
     return groups;
@@ -418,8 +426,13 @@ export function CommandPalette({
           ) : groupedCommands ? (
             // Grouped display with section headers
             groupedCommands.map((group, groupIndex) => (
-              <div key={group.category}>
-                <div className="px-4 py-1.5 text-[10px] font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500 sticky top-0 bg-white dark:bg-slate-900">
+              <div key={group.category} className={groupIndex > 0 ? 'mt-2' : ''}>
+                <div className="flex items-center gap-2 px-4 py-2 text-xs font-semibold uppercase tracking-wider text-slate-600 dark:text-slate-300 sticky top-0 bg-white/95 dark:bg-slate-900/95 backdrop-blur-sm border-b border-slate-100 dark:border-slate-800 z-10">
+                  {group.icon && (
+                    <span className="text-slate-400 dark:text-slate-500">
+                      {group.icon}
+                    </span>
+                  )}
                   {group.label}
                 </div>
                 {group.commands.map((cmd, cmdIndex) => {

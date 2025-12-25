@@ -74,11 +74,11 @@ export function KeyboardShortcutsModal({ isOpen, onClose }: KeyboardShortcutsMod
       <div className="space-y-6">
         {categories.map((category) => (
           <div key={category.id}>
-            <div className="flex items-center gap-2 mb-3">
-              <span className="text-indigo-500 dark:text-indigo-400">
+            <div className="flex items-center gap-2 mb-3 pb-2 border-b border-slate-100 dark:border-slate-800">
+              <span className="text-slate-400 dark:text-slate-500">
                 {category.icon}
               </span>
-              <h3 className="text-sm font-semibold text-slate-800 dark:text-slate-200">
+              <h3 className="text-xs font-semibold uppercase tracking-wider text-slate-600 dark:text-slate-300">
                 {category.label}
               </h3>
             </div>
