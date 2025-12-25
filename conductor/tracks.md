@@ -15,9 +15,6 @@ This file lists all development tracks (features, bugs, improvements) for CLI Co
 
 ---
 
-## [x] Track: Command Palette Section Headers UI/UX Improvement
-*Link: [./conductor/tracks/palette-section-headers_20251225/](./conductor/tracks/palette-section-headers_20251225/)*
-
 ---
 
 ## Completed Tracks
@@ -27,6 +24,9 @@ This file lists all development tracks (features, bugs, improvements) for CLI Co
 ---
 
 ## Archived Tracks
+
+### [x] palette-section-headers_20251225 - Command Palette Section Headers UI/UX Improvement
+*Archived: 2025-12-25 | [conductor/archive/palette-section-headers_20251225/](conductor/archive/palette-section-headers_20251225/)*
 
 ### [x] ui-ux-phase2_20251224 - UI/UX Improvements Phase 2
 *Archived: 2025-12-24 | [conductor/archive/ui-ux-phase2_20251224/](conductor/archive/ui-ux-phase2_20251224/)*
