@@ -1,10 +1,24 @@
-import { memo, useCallback } from 'react';
-import { Plus, FolderOpen, ChevronsUpDown, ChevronsDownUp } from 'lucide-react';
+import { memo, useCallback, useMemo } from 'react';
+import { FolderOpen, ChevronsUpDown, ChevronsDownUp } from 'lucide-react';
+import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  type DragEndEvent,
+} from '@dnd-kit/core';
+import {
+  SortableContext,
+  sortableKeyboardCoordinates,
+  verticalListSortingStrategy,
+} from '@dnd-kit/sortable';
 import { CliTool, ConfigFile } from '@/types';
-import { TOOL_ICONS, DEFAULT_TOOL_ICON, ACCENT_COLORS } from '@/constants/tool-icons';
 import { SidebarSection } from './sidebar-section';
-import { CollapsibleTreeItem } from './collapsible-tree-item';
-import { ConfigFileItem } from './config-file-item';
+import { SidebarToolItem } from './sidebar-tool-item';
+import { SortableToolItem } from './sortable-tool-item';
+import { useToolVisibilityStore } from '@/stores/tool-visibility-store';
 
 interface CliToolsSectionProps {
   tools: CliTool[];
@@ -39,14 +53,68 @@ export const CliToolsSection = memo(function CliToolsSection({
   onDeleteConfigFile,
   isDirty,
 }: CliToolsSectionProps) {
-  const colors = ACCENT_COLORS.indigo;
+  const pinnedTools = useToolVisibilityStore((state) => state.pinnedTools);
+  const hiddenTools = useToolVisibilityStore((state) => state.hiddenTools);
+  const showHiddenTools = useToolVisibilityStore((state) => state.showHiddenTools);
+  const getSortedTools = useToolVisibilityStore((state) => state.getSortedTools);
+  const togglePinTool = useToolVisibilityStore((state) => state.togglePinTool);
+  const toggleHideTool = useToolVisibilityStore((state) => state.toggleHideTool);
+  const toggleShowHiddenTools = useToolVisibilityStore((state) => state.toggleShowHiddenTools);
+  const reorderTools = useToolVisibilityStore((state) => state.reorderTools);
+  // Subscribe to toolOrder to trigger re-render when order changes
+  useToolVisibilityStore((state) => state.toolOrder);
 
-  const handleToggleExpanded = useCallback(
-    (toolId: string) => onToggleExpanded(toolId),
-    [onToggleExpanded]
+  const { pinned, visible, hidden } = getSortedTools(tools);
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 8,
+      },
+    }),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
   );
 
-  const allExpanded = tools.length > 0 && tools.every((tool) => expandedTools.has(tool.id));
+  const pinnedIds = useMemo(() => pinned.map((t) => t.id), [pinned]);
+  const visibleIds = useMemo(() => visible.map((t) => t.id), [visible]);
+  const hiddenIds = useMemo(() => hidden.map((t) => t.id), [hidden]);
+
+  const handleDragEnd = useCallback(
+    (event: DragEndEvent) => {
+      const { active, over } = event;
+      if (!over || active.id === over.id) return;
+
+      const activeId = String(active.id);
+      const overId = String(over.id);
+
+      const isPinnedDrag = pinnedTools.includes(activeId);
+      const currentList = isPinnedDrag ? [...pinnedTools] : [...visibleIds];
+
+      const oldIndex = currentList.indexOf(activeId);
+      const newIndex = currentList.indexOf(overId);
+
+      if (oldIndex === -1 || newIndex === -1) return;
+
+      const newOrder = [...currentList];
+      newOrder.splice(oldIndex, 1);
+      newOrder.splice(newIndex, 0, activeId);
+
+      if (isPinnedDrag) {
+        useToolVisibilityStore.setState({ pinnedTools: newOrder });
+      } else {
+        // Preserve hidden tools in the order list
+        reorderTools([...newOrder, ...hiddenIds]);
+      }
+    },
+    [pinnedTools, visibleIds, hiddenIds, reorderTools]
+  );
+
+  const displayTools = showHiddenTools ? [...pinned, ...visible, ...hidden] : [...pinned, ...visible];
+  const allExpanded = displayTools.length > 0 && displayTools.every((tool) => expandedTools.has(tool.id));
+  const totalCount = tools.length;
+  const hiddenCount = hidden.length;
 
   const expandCollapseAction = tools.length > 0 && (
     <div className="flex items-center gap-0.5">
@@ -77,15 +145,56 @@ export const CliToolsSection = memo(function CliToolsSection({
     </div>
   );
 
+  const renderToolItem = useCallback(
+    (tool: CliTool, options: { showPinBadge?: boolean; wrapper?: (children: React.ReactNode) => React.ReactNode } = {}) => (
+      <SidebarToolItem
+        key={tool.id}
+        tool={tool}
+        configFiles={getToolConfigFiles(tool.id)}
+        isExpanded={expandedTools.has(tool.id)}
+        isActive={activeToolId === tool.id}
+        activeConfigFileId={activeConfigFileId}
+        isPinned={pinnedTools.includes(tool.id)}
+        isHidden={hiddenTools.includes(tool.id)}
+        showPinBadge={options.showPinBadge}
+        onToggleExpanded={() => onToggleExpanded(tool.id)}
+        onTogglePin={togglePinTool}
+        onToggleHide={toggleHideTool}
+        onConfigFileSelect={onConfigFileSelect}
+        onAddConfigFile={onAddConfigFile}
+        onEditConfigFile={onEditConfigFile}
+        onDeleteConfigFile={onDeleteConfigFile}
+        isDirty={isDirty}
+        wrapper={options.wrapper}
+      />
+    ),
+    [
+      getToolConfigFiles,
+      expandedTools,
+      activeToolId,
+      activeConfigFileId,
+      pinnedTools,
+      hiddenTools,
+      onToggleExpanded,
+      togglePinTool,
+      toggleHideTool,
+      onConfigFileSelect,
+      onAddConfigFile,
+      onEditConfigFile,
+      onDeleteConfigFile,
+      isDirty,
+    ]
+  );
+
   return (
     <SidebarSection
       title="CLI Tools"
-      count={tools.length}
+      count={totalCount}
       accent="indigo"
       defaultExpanded={true}
       action={expandCollapseAction}
     >
-      {tools.length === 0 ? (
+      {displayTools.length === 0 ? (
         <div className="px-3 py-6 text-center">
           <div className="inline-flex items-center justify-center w-12 h-12 rounded-2xl 
                          bg-slate-100 dark:bg-slate-800 mb-3">
@@ -96,76 +205,65 @@ export const CliToolsSection = memo(function CliToolsSection({
           </p>
         </div>
       ) : (
-        <ul className="space-y-0.5">
-          {tools.map((tool) => {
-            const configFiles = getToolConfigFiles(tool.id);
-            const isExpanded = expandedTools.has(tool.id);
-            const isActive = activeToolId === tool.id;
-            const isChildActive = isActive && activeConfigFileId !== null;
+        <DndContext
+          sensors={sensors}
+          collisionDetection={closestCenter}
+          onDragEnd={handleDragEnd}
+        >
+          <ul className="space-y-0.5">
+            {pinned.length > 0 && (
+              <SortableContext items={pinnedIds} strategy={verticalListSortingStrategy}>
+                {pinned.map((tool) =>
+                  renderToolItem(tool, {
+                    showPinBadge: true,
+                    wrapper: (children) => (
+                      <SortableToolItem key={tool.id} id={tool.id}>
+                        {children}
+                      </SortableToolItem>
+                    ),
+                  })
+                )}
+                {visible.length > 0 && (
+                  <li className="mx-2 my-2 border-t border-slate-200/50 dark:border-slate-700/30" />
+                )}
+              </SortableContext>
+            )}
+            <SortableContext items={visibleIds} strategy={verticalListSortingStrategy}>
+              {visible.map((tool) =>
+                renderToolItem(tool, {
+                  wrapper: (children) => (
+                    <SortableToolItem key={tool.id} id={tool.id}>
+                      {children}
+                    </SortableToolItem>
+                  ),
+                })
+              )}
+            </SortableContext>
+          </ul>
 
-            return (
-              <CollapsibleTreeItem
-                key={tool.id}
-                label={tool.name}
-                icon={TOOL_ICONS[tool.id] || DEFAULT_TOOL_ICON}
-                isExpanded={isExpanded}
-                isActive={isActive && !isChildActive}
-                isChildActive={isChildActive}
-                accent="indigo"
-                onToggle={() => handleToggleExpanded(tool.id)}
-                badge={
-                  configFiles.length > 0 ? (
-                    <span 
-                      className={`px-1.5 py-0.5 text-[11px] rounded-full font-medium
-                                 transition-all duration-200
-                                 ${isActive
-                        ? `${colors.badge} ${colors.badgeText}`
-                        : 'bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 group-hover/tool:bg-slate-200 dark:group-hover/tool:bg-slate-700'
-                      }`}
-                    >
-                      {configFiles.length}
-                    </span>
-                  ) : undefined
-                }
+          {hiddenCount > 0 && (
+            <div className="mt-2 pt-2 border-t border-slate-200/50 dark:border-slate-700/30">
+              <button
+                type="button"
+                onClick={toggleShowHiddenTools}
+                className="w-full px-3 py-2 text-left flex items-center gap-2 text-xs rounded-lg
+                          text-slate-400 hover:text-slate-600 dark:text-slate-500 dark:hover:text-slate-300
+                          hover:bg-slate-100/50 dark:hover:bg-slate-800/50
+                          transition-colors duration-200"
               >
-                {configFiles.map((configFile) => (
-                  <ConfigFileItem
-                    key={configFile.id}
-                    configFile={configFile}
-                    isActive={activeToolId === tool.id && activeConfigFileId === configFile.id}
-                    hasUnsavedChanges={
-                      activeToolId === tool.id && 
-                      activeConfigFileId === configFile.id && 
-                      isDirty?.() === true
-                    }
-                    onSelect={() => onConfigFileSelect(tool.id, configFile)}
-                    onEdit={() => onEditConfigFile(tool, configFile)}
-                    onDelete={() => onDeleteConfigFile(tool.id, configFile.id)}
-                  />
-                ))}
-                
-                <button
-                  type="button"
-                  onClick={() => onAddConfigFile(tool)}
-                  className="w-full px-2.5 py-2 text-left flex items-center gap-2.5 text-xs rounded-xl
-                            text-slate-400 hover:text-indigo-600 dark:text-slate-500 dark:hover:text-indigo-400
-                            hover:bg-indigo-50/80 dark:hover:bg-indigo-900/20
-                            border border-dashed border-transparent hover:border-indigo-300 dark:hover:border-indigo-700
-                            transition-all duration-200 group/add 
-                            focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500/40"
-                >
-                  <div className="w-5 h-5 flex items-center justify-center rounded-lg 
-                                 bg-slate-100 dark:bg-slate-800 
-                                 group-hover/add:bg-indigo-100 dark:group-hover/add:bg-indigo-900/40
-                                 transition-colors duration-200">
-                    <Plus className="w-3 h-3" />
-                  </div>
-                  <span className="font-medium">Add Config</span>
-                </button>
-              </CollapsibleTreeItem>
-            );
-          })}
-        </ul>
+                <span>
+                  {showHiddenTools ? 'Hide' : 'Show'} {hiddenCount} hidden tool{hiddenCount > 1 ? 's' : ''}
+                </span>
+              </button>
+
+              {showHiddenTools && (
+                <ul className="mt-1 space-y-0.5 opacity-50">
+                  {hidden.map((tool) => renderToolItem(tool))}
+                </ul>
+              )}
+            </div>
+          )}
+        </DndContext>
       )}
     </SidebarSection>
   );

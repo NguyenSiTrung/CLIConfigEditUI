@@ -25,6 +25,9 @@ This file lists all development tracks (features, bugs, improvements) for CLI Co
 
 ## Archived Tracks
 
+### [x] tool-visibility_20251225 - Tool Visibility & Favorites (Pin, Hide, Reorder)
+*Archived: 2025-12-25 | [conductor/archive/tool-visibility_20251225/](conductor/archive/tool-visibility_20251225/)*
+
 ### [x] sidebar-expand-state_20251225 - Sidebar Expand/Collapse State Persistence
 *Archived: 2025-12-25 | [conductor/archive/sidebar-expand-state_20251225/](conductor/archive/sidebar-expand-state_20251225/)*
 

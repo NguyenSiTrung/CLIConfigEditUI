@@ -95,7 +95,9 @@ export const CollapsibleTreeItem = memo(function CollapsibleTreeItem({
             {label}
           </span>
           
-          {badge}
+          <div className="group-hover/row:hidden">
+            {badge}
+          </div>
         </button>
         
         {actions && (

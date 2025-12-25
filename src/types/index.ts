@@ -247,3 +247,28 @@ export interface McpImportResult {
 
 // Import mode for MCP servers
 export type McpImportMode = 'replace' | 'merge';
+
+// ============================================
+// Tool Visibility & Favorites Types
+// ============================================
+
+// Tool visibility state for pinning, hiding, and custom ordering
+export interface ToolVisibilityState {
+  pinnedTools: string[];      // Tool IDs that are pinned (appear at top)
+  hiddenTools: string[];      // Tool IDs that are hidden from view
+  toolOrder: string[];        // Custom order of tool IDs (for reordering)
+}
+
+// Actions for tool visibility store
+export interface ToolVisibilityActions {
+  pinTool: (toolId: string) => void;
+  unpinTool: (toolId: string) => void;
+  togglePinTool: (toolId: string) => void;
+  hideTool: (toolId: string) => void;
+  showTool: (toolId: string) => void;
+  toggleHideTool: (toolId: string) => void;
+  reorderTools: (toolIds: string[]) => void;
+  moveToolUp: (toolId: string) => void;
+  moveToolDown: (toolId: string) => void;
+  resetVisibility: () => void;
+}
