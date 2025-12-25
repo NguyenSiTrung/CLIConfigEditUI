@@ -1,5 +1,5 @@
 import { memo, useCallback } from 'react';
-import { Plus, FolderOpen } from 'lucide-react';
+import { Plus, FolderOpen, ChevronsUpDown, ChevronsDownUp } from 'lucide-react';
 import { CliTool, ConfigFile } from '@/types';
 import { TOOL_ICONS, DEFAULT_TOOL_ICON, ACCENT_COLORS } from '@/constants/tool-icons';
 import { SidebarSection } from './sidebar-section';
@@ -13,6 +13,8 @@ interface CliToolsSectionProps {
   activeConfigFileId: string | null;
   expandedTools: Set<string>;
   onToggleExpanded: (toolId: string) => void;
+  onExpandAll: () => void;
+  onCollapseAll: () => void;
   getToolConfigFiles: (toolId: string) => ConfigFile[];
   onConfigFileSelect: (toolId: string, configFile: ConfigFile) => void;
   onAddConfigFile: (tool: CliTool) => void;
@@ -28,6 +30,8 @@ export const CliToolsSection = memo(function CliToolsSection({
   activeConfigFileId,
   expandedTools,
   onToggleExpanded,
+  onExpandAll,
+  onCollapseAll,
   getToolConfigFiles,
   onConfigFileSelect,
   onAddConfigFile,
@@ -42,12 +46,44 @@ export const CliToolsSection = memo(function CliToolsSection({
     [onToggleExpanded]
   );
 
+  const allExpanded = tools.length > 0 && tools.every((tool) => expandedTools.has(tool.id));
+
+  const expandCollapseAction = tools.length > 0 && (
+    <div className="flex items-center gap-0.5">
+      <button
+        type="button"
+        onClick={onExpandAll}
+        disabled={allExpanded}
+        title="Expand all tools"
+        className="p-1.5 rounded-lg text-slate-400 hover:text-slate-600 dark:text-slate-500 dark:hover:text-slate-300
+                   hover:bg-white dark:hover:bg-slate-800 transition-colors duration-200
+                   disabled:opacity-30 disabled:cursor-not-allowed
+                   focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500/40"
+      >
+        <ChevronsDownUp className="w-3.5 h-3.5" />
+      </button>
+      <button
+        type="button"
+        onClick={onCollapseAll}
+        disabled={expandedTools.size === 0}
+        title="Collapse all tools"
+        className="p-1.5 rounded-lg text-slate-400 hover:text-slate-600 dark:text-slate-500 dark:hover:text-slate-300
+                   hover:bg-white dark:hover:bg-slate-800 transition-colors duration-200
+                   disabled:opacity-30 disabled:cursor-not-allowed
+                   focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500/40"
+      >
+        <ChevronsUpDown className="w-3.5 h-3.5" />
+      </button>
+    </div>
+  );
+
   return (
     <SidebarSection
       title="CLI Tools"
       count={tools.length}
       accent="indigo"
       defaultExpanded={true}
+      action={expandCollapseAction}
     >
       {tools.length === 0 ? (
         <div className="px-3 py-6 text-center">

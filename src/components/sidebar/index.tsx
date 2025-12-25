@@ -44,6 +44,8 @@ export function Sidebar({
   const customTools = useAppStore((state) => state.customTools);
   const expandedTools = useAppStore((state) => state.expandedTools);
   const toggleToolExpanded = useAppStore((state) => state.toggleToolExpanded);
+  const expandAllTools = useAppStore((state) => state.expandAllTools);
+  const collapseAllTools = useAppStore((state) => state.collapseAllTools);
   const toolConfigs = useAppStore((state) => state.toolConfigs);
   const behaviorSettings = useAppStore((state) => state.behaviorSettings);
   const sidebarCollapsed = useAppStore((state) => state.sidebarCollapsed);
@@ -213,6 +215,8 @@ export function Sidebar({
               activeConfigFileId={activeConfigFileId}
               expandedTools={expandedTools}
               onToggleExpanded={toggleToolExpanded}
+              onExpandAll={expandAllTools}
+              onCollapseAll={collapseAllTools}
               getToolConfigFiles={getToolConfigFiles}
               onConfigFileSelect={onConfigFileSelect}
               onAddConfigFile={onAddConfigFile}

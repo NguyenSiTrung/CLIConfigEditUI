@@ -79,6 +79,8 @@ interface AppState {
   setTheme: (theme: 'dark' | 'light' | 'system') => void;
   setResolvedTheme: (theme: 'dark' | 'light') => void;
   toggleToolExpanded: (toolId: string) => void;
+  expandAllTools: () => void;
+  collapseAllTools: () => void;
 
   // Settings actions
   updateEditorSettings: (settings: Partial<EditorSettings>) => void;
@@ -200,6 +202,14 @@ export const useAppStore = create<AppState>()(
           }
           return { expandedTools: newExpanded };
         }),
+      expandAllTools: () =>
+        set(() => {
+          const allToolIds = CLI_TOOLS.map((t) => t.id);
+          const customToolIds = get().customTools.map((t) => t.id);
+          return { expandedTools: new Set([...allToolIds, ...customToolIds]) };
+        }),
+      collapseAllTools: () =>
+        set(() => ({ expandedTools: new Set<string>() })),
 
       // Settings actions
       updateEditorSettings: (settings) =>
