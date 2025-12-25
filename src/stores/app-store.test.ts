@@ -73,8 +73,8 @@ describe('app-store expandedTools', () => {
     it('includes custom tools when expanding all', () => {
       useAppStore.setState({
         customTools: [
-          { id: 'custom-1', name: 'Custom Tool 1', configFiles: [] },
-          { id: 'custom-2', name: 'Custom Tool 2', configFiles: [] },
+          { id: 'custom-1', name: 'Custom Tool 1', configPath: '~/.config/custom1.json', configFormat: 'json' },
+          { id: 'custom-2', name: 'Custom Tool 2', configPath: '~/.config/custom2.json', configFormat: 'json' },
         ],
       });
       const { expandAllTools } = useAppStore.getState();

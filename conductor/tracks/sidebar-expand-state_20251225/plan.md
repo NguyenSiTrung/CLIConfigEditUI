@@ -5,46 +5,46 @@
 ### Overview
 Currently the state is persisted via Zustand's localStorage persist, but new tools may not respect the "collapsed by default" behavior correctly.
 
-- [ ] Task 1.1: Review and fix `expandToolsByDefault` behavior in sidebar
-  - [ ] Ensure new tools (not in `expandedTools` set) remain collapsed on load
-  - [ ] Only expand tools that were previously explicitly expanded by user
+- [x] Task 1.1: Review and fix `expandToolsByDefault` behavior in sidebar (commit: 626f9ea)
+  - [x] Ensure new tools (not in `expandedTools` set) remain collapsed on load
+  - [x] Only expand tools that were previously explicitly expanded by user
 
-- [ ] Task 1.2: Add unit tests for expand state persistence
-  - [ ] Test: persisted expanded tools restore correctly
-  - [ ] Test: new tools default to collapsed
+- [x] Task 1.2: Add unit tests for expand state persistence (commit: 5725857)
+  - [x] Test: persisted expanded tools restore correctly
+  - [x] Test: new tools default to collapsed
 
 ## Phase 2: Add Tauri Backup Storage
 
 ### Overview
 Add file-based persistence via Tauri as a backup when localStorage is unavailable.
 
-- [ ] Task 2.1: Create Rust command for sidebar state persistence
-  - [ ] Add `save_sidebar_state` Tauri command
-  - [ ] Add `load_sidebar_state` Tauri command
-  - [ ] Store in app data directory as JSON
+- [x] Task 2.1: Create Rust command for sidebar state persistence (commit: 5859b92)
+  - [x] Add `save_sidebar_state` Tauri command
+  - [x] Add `load_sidebar_state` Tauri command
+  - [x] Store in app data directory as JSON
 
-- [ ] Task 2.2: Integrate Tauri storage with Zustand store
-  - [ ] On state change, sync to Tauri storage
-  - [ ] On app load, fallback to Tauri storage if localStorage empty
-  - [ ] Handle errors gracefully
+- [x] Task 2.2: Integrate Tauri storage with Zustand store (commit: 5859b92)
+  - [x] On state change, sync to Tauri storage
+  - [x] On app load, fallback to Tauri storage if localStorage empty
+  - [x] Handle errors gracefully
 
 ## Phase 3: Add Expand All / Collapse All Buttons
 
 ### Overview
 Add convenience buttons in the sidebar header for bulk expand/collapse.
 
-- [ ] Task 3.1: Add expandAll and collapseAll actions to app-store
-  - [ ] `expandAllTools()` - adds all tool IDs to expandedTools set
-  - [ ] `collapseAllTools()` - clears expandedTools set
+- [x] Task 3.1: Add expandAll and collapseAll actions to app-store (commit: 55ea32b)
+  - [x] `expandAllTools()` - adds all tool IDs to expandedTools set
+  - [x] `collapseAllTools()` - clears expandedTools set
 
-- [ ] Task 3.2: Add UI buttons in sidebar section header
-  - [ ] Add Expand All / Collapse All icon buttons near CLI Tools section
-  - [ ] Use appropriate icons (ChevronDown/ChevronUp or similar)
-  - [ ] Add tooltip hints
+- [x] Task 3.2: Add UI buttons in sidebar section header (commit: 55ea32b)
+  - [x] Add Expand All / Collapse All icon buttons near CLI Tools section
+  - [x] Use appropriate icons (ChevronsDownUp/ChevronsUpDown)
+  - [x] Add tooltip hints
 
-- [ ] Task 3.3: Test expand/collapse all functionality
-  - [ ] Verify all tools expand/collapse
-  - [ ] Verify state persists after bulk action
+- [x] Task 3.3: Test expand/collapse all functionality (commit: 55ea32b)
+  - [x] Verify all tools expand/collapse
+  - [x] Verify state persists after bulk action
 
 ## Phase 4: Final Verification
 
@@ -54,8 +54,9 @@ Add convenience buttons in the sidebar header for bulk expand/collapse.
   - [ ] Clear localStorage, verify Tauri backup restores state
   - [ ] Add new tool, verify it appears collapsed
 
-- [ ] Task 4.2: Run all quality checks
-  - [ ] `pnpm typecheck`
-  - [ ] `pnpm lint`
-  - [ ] `pnpm test`
-  - [ ] `cargo clippy` and `cargo test`
+- [x] Task 4.2: Run all quality checks
+  - [x] `pnpm typecheck` ✓
+  - [x] `pnpm lint` ✓ (0 errors, 4 pre-existing warnings)
+  - [x] `pnpm test` ✓ (108 tests pass)
+  - [x] `cargo clippy` ✓
+  - [x] `cargo test` ✓ (28 tests pass)
