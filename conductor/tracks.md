@@ -15,10 +15,6 @@ This file lists all development tracks (features, bugs, improvements) for CLI Co
 
 ---
 
-## [~] Track: Sidebar Expand/Collapse State Persistence
-*Link: [./conductor/tracks/sidebar-expand-state_20251225/](./conductor/tracks/sidebar-expand-state_20251225/)*
-*Priority: 🟠 High*
-
 ---
 
 ## Completed Tracks
@@ -28,6 +24,9 @@ This file lists all development tracks (features, bugs, improvements) for CLI Co
 ---
 
 ## Archived Tracks
+
+### [x] sidebar-expand-state_20251225 - Sidebar Expand/Collapse State Persistence
+*Archived: 2025-12-25 | [conductor/archive/sidebar-expand-state_20251225/](conductor/archive/sidebar-expand-state_20251225/)*
 
 ### [x] palette-section-headers_20251225 - Command Palette Section Headers UI/UX Improvement
 *Archived: 2025-12-25 | [conductor/archive/palette-section-headers_20251225/](conductor/archive/palette-section-headers_20251225/)*
