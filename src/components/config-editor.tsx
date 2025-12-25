@@ -365,13 +365,6 @@ export const ConfigEditor = forwardRef<ConfigEditorHandle, ConfigEditorProps>(fu
               </span>
             </div>
           </div>
-
-          {isDirty() && (
-            <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-amber-100 dark:bg-amber-500/10 border border-amber-200 dark:border-amber-500/20">
-              <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse" />
-              <span className="text-xs font-medium text-amber-700 dark:text-amber-400">Unsaved Changes</span>
-            </div>
-          )}
         </div>
 
         <div className="flex items-center gap-2 flex-shrink-0">
@@ -452,22 +445,26 @@ export const ConfigEditor = forwardRef<ConfigEditorHandle, ConfigEditorProps>(fu
                 </button>
               </span>
 
-              <button
-                onClick={() => onSave()}
-                disabled={!isDirty()}
-                className={`btn-primary px-4 py-1.5 text-xs font-medium flex items-center gap-2 rounded-lg transition-all shadow-sm
-                           ${isDirty()
-                    ? 'bg-indigo-600 hover:bg-indigo-500 text-white shadow-indigo-500/25 hover:shadow-indigo-500/40 hover:scale-105 active:scale-95'
-                    : 'bg-slate-100 dark:bg-slate-800 text-slate-400 dark:text-slate-600 cursor-not-allowed border border-slate-200 dark:border-slate-700'}`}
-                aria-label={isDirty() ? 'Save changes' : 'No changes to save'}
-                title={`Save (${formatShortcut({ ctrl: true, key: 'S' })})`}
-              >
-                {isDirty() ? <Save className="w-3.5 h-3.5" /> : <CheckCircle2 className="w-3.5 h-3.5" />}
-                Save
-                <kbd className="ml-1 px-1.5 py-0.5 text-[10px] font-medium bg-white/20 rounded opacity-75">
-                  {formatShortcut({ ctrl: true, key: 'S' })}
-                </kbd>
-              </button>
+              {isDirty() ? (
+                <button
+                  onClick={() => onSave()}
+                  className="btn-primary px-4 py-1.5 text-xs font-medium flex items-center gap-2 rounded-lg transition-all shadow-sm
+                             bg-indigo-600 hover:bg-indigo-500 text-white shadow-indigo-500/25 hover:shadow-indigo-500/40 hover:scale-105 active:scale-95"
+                  aria-label="Save changes"
+                  title={`Save (${formatShortcut({ ctrl: true, key: 'S' })})`}
+                >
+                  <Save className="w-3.5 h-3.5" />
+                  Save
+                  <kbd className="ml-1 px-1.5 py-0.5 text-[10px] font-medium bg-white/20 rounded opacity-75">
+                    {formatShortcut({ ctrl: true, key: 'S' })}
+                  </kbd>
+                </button>
+              ) : (
+                <span className="px-3 py-1.5 text-xs font-medium flex items-center gap-1.5 text-emerald-600 dark:text-emerald-400">
+                  <CheckCircle2 className="w-3.5 h-3.5" />
+                  Saved
+                </span>
+              )}
             </>
           )}
         </div>
