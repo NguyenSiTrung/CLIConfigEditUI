@@ -540,3 +540,46 @@ fn set_json_value(root: &mut serde_json::Value, path: &str, value: serde_json::V
     
     Some(())
 }
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct SidebarState {
+    pub expanded_tools: Vec<String>,
+}
+
+fn get_sidebar_state_path() -> Option<PathBuf> {
+    dirs::data_local_dir().map(|d| d.join("cli-config-editor").join("sidebar-state.json"))
+}
+
+#[tauri::command]
+pub fn save_sidebar_state(expanded_tools: Vec<String>) -> Result<(), CommandError> {
+    let state_path = get_sidebar_state_path()
+        .ok_or_else(|| CommandError::PathResolution("Could not determine app data directory".to_string()))?;
+    
+    if let Some(parent) = state_path.parent() {
+        fs::create_dir_all(parent)?;
+    }
+    
+    let state = SidebarState { expanded_tools };
+    let content = serde_json::to_string_pretty(&state)
+        .map_err(|e| CommandError::JsonParse(e.to_string()))?;
+    
+    fs::write(&state_path, content)?;
+    Ok(())
+}
+
+#[tauri::command]
+pub fn load_sidebar_state() -> Result<SidebarState, CommandError> {
+    let state_path = get_sidebar_state_path()
+        .ok_or_else(|| CommandError::PathResolution("Could not determine app data directory".to_string()))?;
+    
+    if !state_path.exists() {
+        return Ok(SidebarState { expanded_tools: vec![] });
+    }
+    
+    let content = fs::read_to_string(&state_path)?;
+    let state: SidebarState = serde_json::from_str(&content)
+        .map_err(|e| CommandError::JsonParse(e.to_string()))?;
+    
+    Ok(state)
+}

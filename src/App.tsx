@@ -19,7 +19,7 @@ import { CommandPalette } from '@/components/command-palette';
 import { UnsavedChangesDialog, type UnsavedChangesAction } from '@/components/ui';
 import type { AppView } from '@/components';
 import { useAppStore } from '@/stores/app-store';
-import { useFileWatcher, useSystemTheme, useReducedMotion, useRecentFiles, useUpdateChecker } from '@/hooks';
+import { useFileWatcher, useSystemTheme, useReducedMotion, useRecentFiles, useUpdateChecker, useSidebarStateSync } from '@/hooks';
 import { invoke } from '@tauri-apps/api/core';
 import { ConfigFormat, CustomTool, CliTool, ConfigFile } from '@/types';
 import { IDE_PLATFORMS } from '@/utils/cli-tools';
@@ -102,6 +102,7 @@ function App() {
 
   useSystemTheme();
   useReducedMotion();
+  useSidebarStateSync();
 
   const sidebarCollapsed = useAppStore((state) => state.sidebarCollapsed);
   const setSidebarCollapsed = useAppStore((state) => state.setSidebarCollapsed);

@@ -6,6 +6,7 @@ mod versions;
 use commands::{
     check_multiple_paths, delete_file, file_exists, get_current_os, get_tools, list_backups, read_backup,
     read_file, read_json_path, read_json_prefix, resolve_path, restore_backup, write_file, write_json_path, write_json_prefix,
+    save_sidebar_state, load_sidebar_state,
 };
 use mcp::{
     get_mcp_config, save_mcp_config, set_mcp_source_mode, get_mcp_source_servers,
@@ -69,6 +70,9 @@ pub fn run() {
             sync_mcp_to_all,
             preview_mcp_config_content,
             import_mcp_config_file,
+            // Sidebar state commands
+            save_sidebar_state,
+            load_sidebar_state,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
