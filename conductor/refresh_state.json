@@ -1,20 +1,25 @@
 {
-  "last_refresh": "2025-12-22T00:00:00Z",
+  "last_refresh": "2025-12-25T00:00:00Z",
   "scope": "all",
   "changes_applied": [
     {
       "file": "tech-stack.md",
       "changes": [
-        "Added uuid crate to Backend dependencies",
-        "Updated project structure: added constants/, hooks/, versions/ directories"
+        "Added @tauri-apps/plugin-process (v2.3) to Frontend dependencies",
+        "Added @tauri-apps/plugin-updater (v2.9) to Frontend dependencies",
+        "Added tauri-plugin-updater to Tauri Plugins",
+        "Added src/test/ to project structure",
+        "Added src-tauri/src/mcp/ to project structure"
       ]
     },
     {
       "file": "product.md",
       "changes": [
-        "Added Config versioning as completed MVP feature"
+        "Added MCP sync as completed MVP feature",
+        "Added Update indicator as completed MVP feature",
+        "Added Keyboard shortcuts modal as completed MVP feature"
       ]
     }
   ],
-  "next_refresh_hint": "2025-12-24T00:00:00Z"
+  "next_refresh_hint": "2025-12-28T00:00:00Z"
 }

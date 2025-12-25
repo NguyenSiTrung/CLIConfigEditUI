@@ -1,6 +1,6 @@
 # Tech Stack
 
-> **Last Refreshed:** 2025-12-22 - Context synced with codebase
+> **Last Refreshed:** 2025-12-25 - Context synced with codebase
 
 ## Overview
 
@@ -17,6 +17,8 @@ CLI Config Editor is a Tauri v2 desktop application with a Rust backend and Reac
 | Monaco Editor | 4.6 | Code editor (VS Code engine) |
 | Zustand | 5.0 | State management with persistence |
 | Lucide React | 0.561 | Icon library |
+| Tauri Plugin Process | 2.3 | Process management |
+| Tauri Plugin Updater | 2.9 | In-app update checks |
 
 ### Key Patterns
 
@@ -57,6 +59,7 @@ interface AppState {
 
 - `tauri-plugin-dialog` - Native file picker dialogs
 - `tauri-plugin-fs` - File system operations
+- `tauri-plugin-updater` - In-app update checks
 
 ### Key Patterns
 
@@ -105,6 +108,7 @@ src/                    # Frontend (TypeScript + React)
 ├── constants/          # App constants and CLI tool definitions
 ├── hooks/              # Custom React hooks
 ├── stores/             # Zustand stores
+├── test/               # Test setup and utilities
 ├── types/              # TypeScript types
 └── utils/              # Utilities
 
@@ -112,6 +116,7 @@ src-tauri/              # Backend (Rust)
 ├── src/
 │   ├── commands/       # Tauri IPC commands
 │   ├── config/         # CLI tool definitions
+│   ├── mcp/            # MCP sync module
 │   ├── versions/       # Config versioning module
 │   └── lib.rs          # App entry point
 ├── capabilities/       # Tauri v2 permissions

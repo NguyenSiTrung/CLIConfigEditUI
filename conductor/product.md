@@ -1,6 +1,6 @@
 # Product: CLI Config Editor
 
-> **Last Refreshed:** 2025-12-22 - Context synced with codebase
+> **Last Refreshed:** 2025-12-25 - Context synced with codebase
 
 ## Vision
 
@@ -46,6 +46,9 @@ CLI Config Editor provides a single, intuitive interface to:
 | Keyboard shortcuts | Ctrl+S to save, etc. | ✅ |
 | Backup system | Auto-backup before overwriting | ✅ |
 | Config versioning | Save/restore named versions of configs | ✅ |
+| MCP sync | Sync MCP server configs across tools | ✅ |
+| Update indicator | In-app update availability check | ✅ |
+| Keyboard shortcuts modal | Discoverable shortcuts with categories | ✅ |
 
 ## Future Roadmap
 
