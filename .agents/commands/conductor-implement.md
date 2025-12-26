@@ -86,6 +86,16 @@ Implement track: $ARGUMENTS
      - `conductor/workflow.md`
    - **Error Handling:** If any read fails, STOP and inform user
 
+3a. **Beads Context (Optional):**
+   - Check if `conductor/beads.json` exists with `enabled: true`
+   - If enabled:
+     - Read `conductor/tracks/<track_id>/metadata.json` for `beads_epic` field
+     - If `beads_epic` exists:
+       - Run `bd ready --epic <beads_epic>` to show tasks with no blockers
+       - Display: "📊 **Beads Status:** X tasks ready, Y blocked"
+       - Use Beads ready list to suggest next task
+   - **CRITICAL:** Beads integration is graceful - any `bd` command failure should NOT halt implementation
+
 4. **Check and Load Resume State:**
 
    **Check for:** `conductor/tracks/<track_id>/implement_state.json`
@@ -115,7 +125,11 @@ Implement track: $ARGUMENTS
    b. **Iterate Through Tasks:** Loop through each task in `plan.md` one by one.
 
    c. **For Each Task:**
-      - **i. Defer to Workflow:** `workflow.md` is the **single source of truth** for task lifecycle. Follow its "Task Workflow" section for implementation, testing, and committing.
+          - **i. Defer to Workflow:** `workflow.md` is the **single source of truth** for task lifecycle. Follow its "Task Workflow" section for implementation, testing, and committing.
+          - **i-a. Beads Task Start (If Enabled):** After marking task `[~]` in progress:
+            - If task has a corresponding `beads_task_id` in metadata, run `bd update <task_id> --status in-progress`
+          - **i-b. Beads Task Complete (If Enabled):** After marking task `[x]` complete:
+            - Run `bd update <task_id> --status done`
       - **ii. Update Implementation State:** After marking task in progress:
         - Set `current_phase` to current phase name
         - Set `current_phase_index` to current phase number (zero-based)

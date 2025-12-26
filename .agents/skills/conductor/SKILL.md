@@ -11,6 +11,7 @@ description: |
   - User mentions documentation is outdated or wants to sync context with codebase changes
   
   Interoperable with Gemini CLI extension and Claude Code commands.
+  Integrates with Beads for persistent task memory across sessions.
 ---
 
 # Conductor: Context-Driven Development
@@ -37,6 +38,19 @@ For active tracks, also load:
 - `conductor/tracks/<track_id>/spec.md`
 - `conductor/tracks/<track_id>/plan.md`
 
+## Beads Integration
+
+If `.beads/` directory exists alongside `conductor/`, also check:
+1. `conductor/beads.json` - Integration config
+2. Run `bd ready` to get tasks with no blockers
+3. Use `bd show <epic>` for current track context
+
+When Beads is enabled:
+- Tracks become Beads epics
+- Tasks sync to Beads for persistent memory
+- Use `bd ready` instead of manual task selection
+- Notes survive context compaction
+
 ## Proactive Behaviors
 
 1. **On new session**: Check for in-progress tracks, offer to resume
@@ -44,6 +58,7 @@ For active tracks, also load:
 3. **On blocked detection**: Alert user and suggest alternatives
 4. **On all tasks complete**: Congratulate and offer archive/cleanup
 5. **On stale context detected**: If setup >2 days old or significant codebase changes detected, suggest `/conductor-refresh`
+6. **On Beads available**: If `bd` CLI detected during setup, offer integration
 
 ## Intent Mapping
 
@@ -67,3 +82,4 @@ For active tracks, also load:
 
 - **Detailed workflows**: [references/workflows.md](references/workflows.md) - Step-by-step command execution
 - **Directory structure**: [references/structure.md](references/structure.md) - File layout and status markers
+- **Beads integration**: [references/beads-integration.md](references/beads-integration.md)

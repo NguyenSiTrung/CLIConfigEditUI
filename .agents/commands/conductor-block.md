@@ -16,5 +16,12 @@ Ask for the blocking reason.
 ## 3. Update Plan
 Change `[~]` to `[!]` and append `[BLOCKED: reason]`
 
-## 4. Confirm
+## 4. Sync with Beads (if enabled)
+- Check if `conductor/beads.json` exists and `enabled: true`
+- If enabled and task has `beads_task_id` in track metadata:
+  - Run `bd update <task_id> --status blocked --note "<reason>"`
+  - If blocker is another task, create dependency: `bd dep add <blocked_task> <blocker_task>`
+- If Beads not enabled, skip silently
+
+## 5. Confirm
 Announce task is blocked.

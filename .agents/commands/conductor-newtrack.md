@@ -192,3 +192,43 @@ Create a new track for: $ARGUMENTS
 
 10. **Announce Completion:**
     > "New track '<track_id>' has been created and added to the tracks file. Run `/conductor-implement` to start."
+
+---
+
+### 2.5 BEADS INTEGRATION (Optional)
+
+**PROTOCOL: Sync track with Beads for persistent task memory.**
+
+1. **Check Beads Config:**
+   - Read `conductor/beads.json`
+   - If file doesn't exist or `enabled: false`, skip this section
+
+2. **Create Epic for Track:**
+   - Map priority: critical=0, high=1, medium=2, low=3
+   - Run: `bd create "<track_id>: <description>" -p <priority_number> --type epic`
+   - Store returned epic ID (e.g., `bd-a3f8`)
+
+3. **Create Tasks for Each Phase:**
+   - Parse `plan.md` for phases and tasks
+   - For each phase: `bd create "<phase_name>" -P <epic_id>`
+   - For each task in phase: `bd create "<task_description>" -P <phase_task_id>`
+
+4. **Set Up Dependencies:**
+   - Phase 2 blocked by Phase 1: `bd dep add <phase2_id> <phase1_id>`
+   - Continue for all phases
+
+5. **Update Metadata:**
+   - Add to `conductor/tracks/<track_id>/metadata.json`:
+     ```json
+     {
+       "beads_epic": "bd-a3f8",
+       "beads_tasks": {
+         "phase1": "bd-a3f8.1",
+         "phase1_task1": "bd-a3f8.1.1"
+       }
+     }
+     ```
+
+6. **Announce:** "Track synced to Beads as epic <epic_id>."
+
+**CRITICAL:** If any `bd` command fails, log warning but do NOT halt track creation.

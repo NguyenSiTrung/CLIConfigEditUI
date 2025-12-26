@@ -177,3 +177,15 @@ Revert Conductor work: $ARGUMENTS
 4. **Announce Completion:**
    > "Revert complete. [Target] has been reverted. Plan is synchronized."
    > "Status markers reset to pending. [X] commits reverted."
+
+---
+
+## 6.0 BEADS SYNC (Optional)
+
+**PROTOCOL: Sync revert action with Beads if enabled.**
+
+1. **Check Beads Config:** Read `conductor/beads.json`
+2. **If enabled:**
+   - Reopen reverted tasks: `bd reopen <task_id> --reason "Reverted"`
+   - Add note: `bd note <epic_id> "REVERT: <summary>"`
+3. **For track revert:** Close or reopen entire epic

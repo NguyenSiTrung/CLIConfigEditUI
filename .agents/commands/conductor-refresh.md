@@ -50,3 +50,25 @@ Create/update `conductor/refresh_state.json` with timestamp and changes.
 git add conductor/
 git commit -m "conductor(refresh): Sync context with codebase"
 ```
+
+---
+
+## 9. BEADS DRIFT CHECK (Optional)
+
+**PROTOCOL: Include Beads status in drift analysis if enabled.**
+
+1. **Check Beads Config:**
+   - Read `conductor/beads.json`
+   - If not enabled, skip this section
+
+2. **Analyze Beads vs Conductor Drift:**
+   - Tasks done in Beads but `[ ]` in plan.md
+   - Tasks `[x]` in plan.md but open in Beads
+   - Orphaned Beads tasks
+
+3. **Offer Sync Options:**
+   > A) Sync Beads → Conductor (trust Beads)
+   > B) Sync Conductor → Beads (trust plan.md)
+   > C) Skip
+
+**CRITICAL:** If `bd` fails, log warning but continue.

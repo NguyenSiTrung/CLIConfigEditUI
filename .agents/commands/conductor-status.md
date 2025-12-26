@@ -85,3 +85,44 @@ Based on status:
 - If no tracks: "Run `/conductor-newtrack` to create your first track"
 - If track in progress: "Run `/conductor-implement` to continue"
 - If all complete: "All tracks complete! Run `/conductor-newtrack` for new work"
+
+---
+
+## 6. BEADS STATUS (Optional)
+
+**PROTOCOL: Show Beads task status if enabled.**
+
+1. **Check Beads Config:**
+   - Read `conductor/beads.json`
+   - If file doesn't exist or `enabled: false`, skip this section
+
+2. **Gather Beads Status:**
+   - Run `bd ready` to get tasks with no blockers
+   - For active track with `beads_epic` in metadata, run `bd show <epic_id>`
+
+3. **Present Beads Status:**
+   ```
+   ### Beads Task Status
+
+   **Ready to Work (no blockers):**
+   - bd-a3f8.1.2 P1 "Implement auth middleware"
+   - bd-a3f8.2.1 P2 "Write API tests"
+
+   **In Progress:**
+   - bd-a3f8.1.1 [active] "Setup database schema"
+
+   **Blocked:**
+   - bd-a3f8.3.1 ⤷ Waiting on: bd-a3f8.2.1
+   ```
+
+4. **Dependency Graph (if complex):**
+   ```
+   ### Dependency Graph
+   bd-a3f8 (Epic: auth_20241226)
+   ├── bd-a3f8.1 ✓ Phase 1
+   │   ├── bd-a3f8.1.1 ✓
+   │   └── bd-a3f8.1.2 ~
+   └── bd-a3f8.2 ○ Phase 2 (blocked)
+   ```
+
+**CRITICAL:** If `bd` commands fail, log warning but continue with regular status.

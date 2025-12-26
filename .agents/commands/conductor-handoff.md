@@ -92,3 +92,24 @@ Display:
 - At phase boundaries with significant remaining work
 - When transferring work to a different session/agent
 - After 5+ tasks completed without a checkpoint
+
+---
+
+## 9. BEADS HANDOFF SYNC (Optional)
+
+**PROTOCOL: Save handoff context to Beads for compaction-proof resumability.**
+
+1. **Check Beads Config:**
+   - Read `conductor/beads.json`
+   - If not enabled, skip this section
+
+2. **Save Context to Beads:**
+   - `bd note <epic_id> "HANDOFF Section <N>: <progress>% complete. Current: <phase>. Next: <action>"`
+   - Update current task: `bd update <task_id> --notes "HANDOFF: <key context for resume>"`
+
+3. **Format for Compaction Recovery:**
+   Notes should be self-contained - no conversation context assumed.
+
+**Benefit:** Beads notes survive context compaction, enabling seamless session resume.
+
+**CRITICAL:** If `bd` fails, log warning but continue with markdown handoff.

@@ -252,6 +252,43 @@ Present to user:
 
 ---
 
+### 2.7 BEADS INTEGRATION (Optional)
+
+**PROTOCOL: Offer Beads integration for persistent task memory.**
+
+1. **Check for Beads CLI:**
+   - Run `bd --version` to detect if Beads is installed
+   - If command fails or not found, skip to Section 3.0 (no Beads available)
+
+2. **If Beads Available, Ask User:**
+   > "Beads detected. Would you like to enable Beads integration for persistent task memory?"
+   > A) Yes - Full integration (commits .beads/ to repo)
+   > B) Stealth mode - Local only (use `bd init --stealth`)
+   > C) No - Skip Beads integration
+   >
+   > Please respond with A, B, or C.
+
+3. **If A or B Selected:**
+   - Run `bd init` (for A) or `bd init --stealth` (for B)
+   - Create `conductor/beads.json`:
+     ```json
+     {
+       "enabled": true,
+       "mode": "normal|stealth",
+       "sync": "bidirectional",
+       "epicPrefix": "conductor",
+       "autoCreateTasks": true,
+       "autoSyncOnComplete": true,
+       "compactOnArchive": true
+     }
+     ```
+   - Announce: "Beads integration enabled in [normal/stealth] mode."
+
+4. **If C Selected or Beads Not Available:**
+   - Skip silently, continue to Section 3.0
+
+---
+
 ## 3.0 PHASE 2: INITIAL PLAN AND TRACK GENERATION
 
 ### 3.1 Generate Product Requirements (Greenfield Only)

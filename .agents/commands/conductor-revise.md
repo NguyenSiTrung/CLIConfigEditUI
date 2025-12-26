@@ -40,3 +40,23 @@ git commit -m "conductor(revise): Update spec/plan for <track_id>"
 
 ## 7. Announce
 Report what was revised and suggest `/conductor-implement` to continue.
+
+---
+
+## 8. BEADS SYNC (Optional)
+
+**PROTOCOL: Sync revisions with Beads if enabled.**
+
+1. **Check Beads Config:**
+   - Read `conductor/beads.json`
+   - If not enabled, skip this section
+
+2. **Sync Task Changes:**
+   - NEW tasks: `bd create "<task>" -P <phase_id>`
+   - REMOVED tasks: `bd close <task_id> --reason "Removed in revision"`
+   - MODIFIED tasks: `bd update <task_id> --notes "Revised: <change>"`
+
+3. **Add Revision Note:**
+   - `bd note <epic_id> "Revision: <summary>"`
+
+**CRITICAL:** If `bd` fails, log warning but continue.

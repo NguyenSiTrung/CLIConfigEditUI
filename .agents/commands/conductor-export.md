@@ -25,3 +25,15 @@ Create markdown with:
 
 ## 4. Output
 Save and confirm.
+
+---
+
+## 5. BEADS STATISTICS (Optional)
+
+**PROTOCOL: Include Beads stats in export if enabled.**
+
+1. **Check Beads Config:** Read `conductor/beads.json`
+2. **If enabled:** Run `bd stats` and add to export:
+   - Total issues, completion rate
+   - Task distribution by status
+3. **If disabled:** Skip section

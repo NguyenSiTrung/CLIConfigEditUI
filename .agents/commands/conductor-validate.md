@@ -52,3 +52,18 @@ Offer to fix auto-fixable issues:
 - Missing metadata fields
 - Status mismatches
 - Orphan cleanup
+
+---
+
+## 8. BEADS VALIDATION (Optional)
+
+**PROTOCOL: Include Beads consistency checks if enabled.**
+
+1. **Check Beads Config:** Read `conductor/beads.json`
+2. **If enabled, verify:**
+   - Beads CLI available
+   - Task status sync between Beads and plan.md
+   - No orphan epics/tasks
+   - Epic links valid in metadata.json
+3. **Add to Report:** Beads integration section with sync status
+4. **Auto-Fix:** Offer to sync status markers between systems

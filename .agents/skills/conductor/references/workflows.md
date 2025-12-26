@@ -1116,11 +1116,76 @@ Announce: "You've completed significant work. Consider running `/conductor-hando
 
 ---
 
+## Beads Integration
+
+Conductor integrates with [Beads](https://github.com/lispysnake/beads) for enhanced task tracking and dependency management.
+
+### Detection
+
+```bash
+# Check if Beads is available
+bd --version
+
+# Check if integration is enabled
+cat conductor/beads.json | jq '.enabled'
+```
+
+### Key Beads Commands
+
+| Command | Purpose |
+|---------|---------|
+| `bd init [--stealth]` | Initialize Beads (stealth mode for existing projects) |
+| `bd create "<title>" -P <parent> -p <priority>` | Create epic or task under parent |
+| `bd dep add <child> <parent>` | Set dependency (parent blocks child) |
+| `bd ready [--epic <id>]` | List tasks with no blockers |
+| `bd update <id> --status <status>` | Update task status |
+| `bd done <id> --note "<message>"` | Complete task with commit note |
+| `bd show <id>` | View task details and dependencies |
+| `bd compact [<id>]` | Compact completed tasks to reduce clutter |
+
+### Workflow Integration Points
+
+| Conductor Workflow | Beads Action |
+|--------------------|--------------|
+| **Setup** | `bd init` to initialize Beads tracking |
+| **New Track** | Create epic for track, tasks for plan items |
+| **Implement** | `bd ready` for task selection, sync status on progress |
+| **Block** | `bd update <id> --status blocked` with reason |
+| **Complete Task** | `bd done <id> --note "commit: <sha>"` |
+| **Archive** | `bd compact` to clean up completed tasks |
+
+### Sync Behavior
+
+When Beads is enabled:
+1. **Task creation**: Plan tasks auto-create Beads tasks with dependencies
+2. **Status sync**: `[~]` → `in_progress`, `[x]` → `done`, `[!]` → `blocked`
+3. **Priority mapping**: Phase 1 tasks get higher priority
+4. **Commit linking**: Task completion notes include commit SHA
+
+### Configuration
+
+`conductor/beads.json`:
+```json
+{
+  "enabled": true,
+  "auto_sync": true,
+  "epic_prefix": "track",
+  "priority_mapping": {
+    "phase_1": 3,
+    "phase_2": 2,
+    "default": 1
+  }
+}
+```
+
+---
+
 ## State Files Reference
 
 | File | Purpose |
 |------|---------|
 | `conductor/setup_state.json` | Track setup progress for resume |
+| `conductor/beads.json` | Beads integration config |
 | `conductor/product.md` | Product vision, users, goals |
 | `conductor/tech-stack.md` | Technology choices |
 | `conductor/workflow.md` | Development workflow (TDD, commits) |

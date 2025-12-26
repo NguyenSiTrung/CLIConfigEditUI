@@ -27,3 +27,16 @@ Update `implement_state.json` with new task index.
 
 ## 5. Announce
 Confirm skip and show next task.
+
+---
+
+## 6. BEADS SYNC (Optional)
+
+**PROTOCOL: Sync skip action with Beads if enabled.**
+
+1. **Check Beads Config:** Read `conductor/beads.json`
+2. **If enabled:**
+   - "No longer needed": `bd close <task_id> --reason "Skipped"`
+   - "Will complete later": `bd update <task_id> --status open`
+   - "Blocked": `bd update <task_id> --status blocked`
+3. **Update next task:** `bd update <next_task_id> --status in_progress`
