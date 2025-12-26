@@ -11,8 +11,6 @@ pub enum CommandError {
     ConfigNotFound(String),
     #[error("IO error: {0}")]
     Io(#[from] std::io::Error),
-    #[error("Permission denied: {0}")]
-    PermissionDenied(String),
     #[error("Failed to resolve path: {0}")]
     PathResolution(String),
     #[error("JSON parse error: {0}")]
@@ -41,7 +39,6 @@ impl Serialize for CommandError {
                     ("Io", e.to_string())
                 }
             }
-            CommandError::PermissionDenied(msg) => ("PermissionDenied", msg.clone()),
             CommandError::PathResolution(msg) => ("PathResolution", msg.clone()),
             CommandError::JsonParse(msg) => ("JsonParse", msg.clone()),
             CommandError::JsonPathNotFound(msg) => ("JsonPathNotFound", msg.clone()),

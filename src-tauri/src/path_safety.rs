@@ -142,11 +142,6 @@ pub fn get_path_safety_level(path: &Path) -> PathSafetyLevel {
     PathSafetyLevel::Warn
 }
 
-/// Check if a path is considered safe (no warning needed)
-pub fn is_safe_path(path: &Path) -> bool {
-    get_path_safety_level(path) == PathSafetyLevel::Safe
-}
-
 #[cfg(test)]
 mod tests {
     use super::*;
