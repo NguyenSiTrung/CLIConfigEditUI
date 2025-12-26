@@ -15,9 +15,6 @@ This file lists all development tracks (features, bugs, improvements) for CLI Co
 
 ---
 
-## [ ] Track: Sidebar Drag-and-Drop Reordering
-*Link: [./conductor/tracks/sidebar-dnd_20251225/](./conductor/tracks/sidebar-dnd_20251225/)*
-
 ---
 
 ## Completed Tracks
@@ -27,6 +24,9 @@ This file lists all development tracks (features, bugs, improvements) for CLI Co
 ---
 
 ## Archived Tracks
+
+### [x] sidebar-dnd_20251225 - Sidebar Drag-and-Drop Reordering
+*Archived: 2025-12-26 | [conductor/archive/sidebar-dnd_20251225/](conductor/archive/sidebar-dnd_20251225/)*
 
 ### [x] tool-visibility_20251225 - Tool Visibility & Favorites (Pin, Hide, Reorder)
 *Archived: 2025-12-25 | [conductor/archive/tool-visibility_20251225/](conductor/archive/tool-visibility_20251225/)*

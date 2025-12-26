@@ -21,6 +21,7 @@ interface ToolVisibilityStore extends ToolVisibilityStoreState, ToolVisibilityAc
   isPinned: (toolId: string) => boolean;
   isHidden: (toolId: string) => boolean;
   getSortedTools: <T extends ToolWithId>(tools: T[]) => SortedToolsResult<T>;
+  getSortedCustomTools: <T extends ToolWithId>(tools: T[]) => T[];
 }
 
 export const useToolVisibilityStore = create<ToolVisibilityStore>()(
@@ -29,6 +30,7 @@ export const useToolVisibilityStore = create<ToolVisibilityStore>()(
       pinnedTools: [],
       hiddenTools: [],
       toolOrder: [],
+      customToolOrder: [],
       showHiddenTools: false,
 
       pinTool: (toolId: string) =>
@@ -82,6 +84,11 @@ export const useToolVisibilityStore = create<ToolVisibilityStore>()(
           toolOrder: toolIds,
         })),
 
+      reorderCustomTools: (toolIds: string[]) =>
+        set(() => ({
+          customToolOrder: toolIds,
+        })),
+
       moveToolUp: (toolId: string) =>
         set((state) => {
           const index = state.toolOrder.indexOf(toolId);
@@ -105,6 +112,7 @@ export const useToolVisibilityStore = create<ToolVisibilityStore>()(
           pinnedTools: [],
           hiddenTools: [],
           toolOrder: [],
+          customToolOrder: [],
           showHiddenTools: false,
         })),
 
@@ -162,6 +170,24 @@ export const useToolVisibilityStore = create<ToolVisibilityStore>()(
 
         return { pinned, visible, hidden };
       },
+
+      getSortedCustomTools: <T extends ToolWithId>(tools: T[]): T[] => {
+        const { customToolOrder } = get();
+        
+        if (customToolOrder.length === 0) {
+          return tools;
+        }
+
+        const orderMap = new Map(customToolOrder.map((id, idx) => [id, idx]));
+        return [...tools].sort((a, b) => {
+          const aIdx = orderMap.get(a.id);
+          const bIdx = orderMap.get(b.id);
+          if (aIdx !== undefined && bIdx !== undefined) return aIdx - bIdx;
+          if (aIdx !== undefined) return -1;
+          if (bIdx !== undefined) return 1;
+          return 0;
+        });
+      },
     }),
     {
       name: 'cli-config-tool-visibility',
@@ -169,6 +195,7 @@ export const useToolVisibilityStore = create<ToolVisibilityStore>()(
         pinnedTools: state.pinnedTools,
         hiddenTools: state.hiddenTools,
         toolOrder: state.toolOrder,
+        customToolOrder: state.customToolOrder,
         showHiddenTools: state.showHiddenTools,
       }),
     }

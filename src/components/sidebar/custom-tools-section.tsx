@@ -1,12 +1,28 @@
-import { memo, useCallback } from 'react';
+import { memo, useCallback, useMemo } from 'react';
 import { Plus, Sparkles } from 'lucide-react';
+import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  type DragEndEvent,
+} from '@dnd-kit/core';
+import {
+  SortableContext,
+  sortableKeyboardCoordinates,
+  verticalListSortingStrategy,
+} from '@dnd-kit/sortable';
 import { CustomTool, ConfigFile } from '@/types';
 import { ACCENT_COLORS } from '@/constants/tool-icons';
 import { SidebarSection } from './sidebar-section';
 import { CollapsibleTreeItem } from './collapsible-tree-item';
 import { ConfigFileItem } from './config-file-item';
 import { ToolActionsMenu } from './tool-actions-menu';
+import { SortableToolItem } from './sortable-tool-item';
 import { useAppStore } from '@/stores/app-store';
+import { useToolVisibilityStore } from '@/stores/tool-visibility-store';
 
 interface CustomToolsSectionProps {
   tools: CustomTool[];
@@ -45,6 +61,46 @@ export const CustomToolsSection = memo(function CustomToolsSection({
 }: CustomToolsSectionProps) {
   const colors = ACCENT_COLORS.violet;
   const confirmBeforeDelete = useAppStore((state) => state.behaviorSettings.confirmBeforeDelete);
+  const getSortedCustomTools = useToolVisibilityStore((state) => state.getSortedCustomTools);
+  const reorderCustomTools = useToolVisibilityStore((state) => state.reorderCustomTools);
+  useToolVisibilityStore((state) => state.customToolOrder);
+
+  const sortedTools = getSortedCustomTools(tools);
+  const toolIds = useMemo(() => sortedTools.map((t) => t.id), [sortedTools]);
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 8,
+      },
+    }),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
+
+  const handleDragEnd = useCallback(
+    (event: DragEndEvent) => {
+      const { active, over } = event;
+      if (!over || active.id === over.id) return;
+
+      const activeId = String(active.id);
+      const overId = String(over.id);
+
+      const currentList = [...toolIds];
+      const oldIndex = currentList.indexOf(activeId);
+      const newIndex = currentList.indexOf(overId);
+
+      if (oldIndex === -1 || newIndex === -1) return;
+
+      const newOrder = [...currentList];
+      newOrder.splice(oldIndex, 1);
+      newOrder.splice(newIndex, 0, activeId);
+
+      reorderCustomTools(newOrder);
+    },
+    [toolIds, reorderCustomTools]
+  );
 
   const handleToggleExpanded = useCallback(
     (toolId: string) => onToggleExpanded(toolId),
@@ -58,7 +114,7 @@ export const CustomToolsSection = memo(function CustomToolsSection({
       accent="violet"
       defaultExpanded={true}
     >
-      {tools.length === 0 ? (
+      {sortedTools.length === 0 ? (
         <div className="px-3 py-6 text-center">
           <div className="inline-flex items-center justify-center w-12 h-12 rounded-2xl 
                          bg-violet-100/50 dark:bg-violet-900/20 mb-3">
@@ -83,113 +139,122 @@ export const CustomToolsSection = memo(function CustomToolsSection({
           )}
         </div>
       ) : (
-        <ul className="space-y-0.5">
-          {tools.map((tool) => {
-            const configFiles = getToolConfigFiles(tool.id);
-            const isExpanded = expandedTools.has(tool.id);
-            const isActive = activeToolId === tool.id;
-            const isChildActive = isActive && activeConfigFileId !== null;
+        <DndContext
+          sensors={sensors}
+          collisionDetection={closestCenter}
+          onDragEnd={handleDragEnd}
+        >
+          <SortableContext items={toolIds} strategy={verticalListSortingStrategy}>
+            <ul className="space-y-0.5">
+              {sortedTools.map((tool) => {
+                const configFiles = getToolConfigFiles(tool.id);
+                const isExpanded = expandedTools.has(tool.id);
+                const isActive = activeToolId === tool.id;
+                const isChildActive = isActive && activeConfigFileId !== null;
 
-            return (
-              <CollapsibleTreeItem
-                key={tool.id}
-                label={tool.name}
-                icon={
-                  tool.icon ? (
-                    <span className="text-base">{tool.icon}</span>
-                  ) : (
-                    <Sparkles className="w-4 h-4" />
-                  )
-                }
-                isExpanded={isExpanded}
-                isActive={isActive && !isChildActive}
-                isChildActive={isChildActive}
-                accent="violet"
-                onToggle={() => handleToggleExpanded(tool.id)}
-                badge={
-                  configFiles.length > 0 ? (
-                    <span 
-                      className={`px-1.5 py-0.5 text-[11px] rounded-full font-medium
-                                 transition-all duration-200
-                                 ${isActive
-                        ? `${colors.badge} ${colors.badgeText}`
-                        : 'bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 group-hover/tool:bg-slate-200 dark:group-hover/tool:bg-slate-700'
-                      }`}
+                return (
+                  <SortableToolItem key={tool.id} id={tool.id}>
+                    <CollapsibleTreeItem
+                      label={tool.name}
+                      icon={
+                        tool.icon ? (
+                          <span className="text-base">{tool.icon}</span>
+                        ) : (
+                          <Sparkles className="w-4 h-4" />
+                        )
+                      }
+                      isExpanded={isExpanded}
+                      isActive={isActive && !isChildActive}
+                      isChildActive={isChildActive}
+                      accent="violet"
+                      onToggle={() => handleToggleExpanded(tool.id)}
+                      badge={
+                        configFiles.length > 0 ? (
+                          <span 
+                            className={`px-1.5 py-0.5 text-[11px] rounded-full font-medium
+                                       transition-all duration-200
+                                       ${isActive
+                              ? `${colors.badge} ${colors.badgeText}`
+                              : 'bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 group-hover/tool:bg-slate-200 dark:group-hover/tool:bg-slate-700'
+                            }`}
+                          >
+                            {configFiles.length}
+                          </span>
+                        ) : undefined
+                      }
+                      actions={
+                        <ToolActionsMenu
+                          itemName={tool.name}
+                          confirmBeforeDelete={confirmBeforeDelete}
+                          onEdit={() => onEditTool(tool)}
+                          onDelete={() => onDeleteTool(tool.id)}
+                          onAddConfig={() => onAddConfigFile(tool)}
+                        />
+                      }
                     >
-                      {configFiles.length}
-                    </span>
-                  ) : undefined
-                }
-                actions={
-                  <ToolActionsMenu
-                    itemName={tool.name}
-                    confirmBeforeDelete={confirmBeforeDelete}
-                    onEdit={() => onEditTool(tool)}
-                    onDelete={() => onDeleteTool(tool.id)}
-                    onAddConfig={() => onAddConfigFile(tool)}
-                  />
-                }
-              >
-                {configFiles.map((configFile) => (
-                  <ConfigFileItem
-                    key={configFile.id}
-                    configFile={configFile}
-                    isActive={activeToolId === tool.id && activeConfigFileId === configFile.id}
-                    hasUnsavedChanges={
-                      activeToolId === tool.id && 
-                      activeConfigFileId === configFile.id && 
-                      isDirty?.() === true
-                    }
-                    onSelect={() => onConfigFileSelect(tool.id, configFile)}
-                    onEdit={() => onEditConfigFile(tool, configFile)}
-                    onDelete={() => onDeleteConfigFile(tool.id, configFile.id)}
-                  />
-                ))}
-                
+                      {configFiles.map((configFile) => (
+                        <ConfigFileItem
+                          key={configFile.id}
+                          configFile={configFile}
+                          isActive={activeToolId === tool.id && activeConfigFileId === configFile.id}
+                          hasUnsavedChanges={
+                            activeToolId === tool.id && 
+                            activeConfigFileId === configFile.id && 
+                            isDirty?.() === true
+                          }
+                          onSelect={() => onConfigFileSelect(tool.id, configFile)}
+                          onEdit={() => onEditConfigFile(tool, configFile)}
+                          onDelete={() => onDeleteConfigFile(tool.id, configFile.id)}
+                        />
+                      ))}
+                      
+                      <button
+                        type="button"
+                        onClick={() => onAddConfigFile(tool)}
+                        className="w-full px-2.5 py-2 text-left flex items-center gap-2.5 text-xs rounded-xl
+                                  text-slate-400 hover:text-violet-600 dark:text-slate-500 dark:hover:text-violet-400
+                                  hover:bg-violet-50/80 dark:hover:bg-violet-900/20
+                                  border border-dashed border-transparent hover:border-violet-300 dark:hover:border-violet-700
+                                  transition-all duration-200 group/add 
+                                  focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500/40"
+                      >
+                        <div className="w-5 h-5 flex items-center justify-center rounded-lg 
+                                       bg-slate-100 dark:bg-slate-800 
+                                       group-hover/add:bg-violet-100 dark:group-hover/add:bg-violet-900/40
+                                       transition-colors duration-200">
+                          <Plus className="w-3 h-3" />
+                        </div>
+                        <span className="font-medium">Add Config</span>
+                      </button>
+                    </CollapsibleTreeItem>
+                  </SortableToolItem>
+                );
+              })}
+              
+              <li className="pt-2">
                 <button
                   type="button"
-                  onClick={() => onAddConfigFile(tool)}
-                  className="w-full px-2.5 py-2 text-left flex items-center gap-2.5 text-xs rounded-xl
-                            text-slate-400 hover:text-violet-600 dark:text-slate-500 dark:hover:text-violet-400
-                            hover:bg-violet-50/80 dark:hover:bg-violet-900/20
-                            border border-dashed border-transparent hover:border-violet-300 dark:hover:border-violet-700
-                            transition-all duration-200 group/add 
+                  onClick={onAddTool}
+                  className="w-full px-3 py-2.5 text-left flex items-center gap-2.5 text-xs rounded-xl
+                            text-slate-500 hover:text-violet-600 dark:text-slate-500 dark:hover:text-violet-400
+                            border-2 border-dashed border-slate-200 dark:border-slate-700 
+                            hover:border-violet-400 dark:hover:border-violet-500/50
+                            hover:bg-violet-50/50 dark:hover:bg-violet-900/10
+                            transition-all duration-200 group/add-tool
                             focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500/40"
                 >
-                  <div className="w-5 h-5 flex items-center justify-center rounded-lg 
+                  <div className="w-6 h-6 flex items-center justify-center rounded-lg 
                                  bg-slate-100 dark:bg-slate-800 
-                                 group-hover/add:bg-violet-100 dark:group-hover/add:bg-violet-900/40
+                                 group-hover/add-tool:bg-violet-100 dark:group-hover/add-tool:bg-violet-900/40
                                  transition-colors duration-200">
-                    <Plus className="w-3 h-3" />
+                    <Plus className="w-3.5 h-3.5" />
                   </div>
-                  <span className="font-medium">Add Config</span>
+                  <span className="font-medium">Add Custom Tool</span>
                 </button>
-              </CollapsibleTreeItem>
-            );
-          })}
-          
-          <li className="pt-2">
-            <button
-              type="button"
-              onClick={onAddTool}
-              className="w-full px-3 py-2.5 text-left flex items-center gap-2.5 text-xs rounded-xl
-                        text-slate-500 hover:text-violet-600 dark:text-slate-500 dark:hover:text-violet-400
-                        border-2 border-dashed border-slate-200 dark:border-slate-700 
-                        hover:border-violet-400 dark:hover:border-violet-500/50
-                        hover:bg-violet-50/50 dark:hover:bg-violet-900/10
-                        transition-all duration-200 group/add-tool
-                        focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500/40"
-            >
-              <div className="w-6 h-6 flex items-center justify-center rounded-lg 
-                             bg-slate-100 dark:bg-slate-800 
-                             group-hover/add-tool:bg-violet-100 dark:group-hover/add-tool:bg-violet-900/40
-                             transition-colors duration-200">
-                <Plus className="w-3.5 h-3.5" />
-              </div>
-              <span className="font-medium">Add Custom Tool</span>
-            </button>
-          </li>
-        </ul>
+              </li>
+            </ul>
+          </SortableContext>
+        </DndContext>
       )}
     </SidebarSection>
   );

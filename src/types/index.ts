@@ -256,7 +256,8 @@ export type McpImportMode = 'replace' | 'merge';
 export interface ToolVisibilityState {
   pinnedTools: string[];      // Tool IDs that are pinned (appear at top)
   hiddenTools: string[];      // Tool IDs that are hidden from view
-  toolOrder: string[];        // Custom order of tool IDs (for reordering)
+  toolOrder: string[];        // Custom order of CLI tool IDs (for reordering)
+  customToolOrder: string[];  // Custom order of custom tool IDs (for reordering)
 }
 
 // Actions for tool visibility store
@@ -268,6 +269,7 @@ export interface ToolVisibilityActions {
   showTool: (toolId: string) => void;
   toggleHideTool: (toolId: string) => void;
   reorderTools: (toolIds: string[]) => void;
+  reorderCustomTools: (toolIds: string[]) => void;
   moveToolUp: (toolId: string) => void;
   moveToolDown: (toolId: string) => void;
   resetVisibility: () => void;

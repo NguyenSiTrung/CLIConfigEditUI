@@ -7,6 +7,7 @@ describe('useToolVisibilityStore', () => {
       pinnedTools: [],
       hiddenTools: [],
       toolOrder: [],
+      customToolOrder: [],
       showHiddenTools: false,
     });
   });
@@ -162,6 +163,7 @@ describe('useToolVisibilityStore', () => {
         pinnedTools: ['claude-cli'],
         hiddenTools: ['aider'],
         toolOrder: ['amp', 'claude-cli'],
+        customToolOrder: ['custom-1', 'custom-2'],
         showHiddenTools: true,
       });
       
@@ -172,7 +174,56 @@ describe('useToolVisibilityStore', () => {
       expect(state.pinnedTools).toEqual([]);
       expect(state.hiddenTools).toEqual([]);
       expect(state.toolOrder).toEqual([]);
+      expect(state.customToolOrder).toEqual([]);
       expect(state.showHiddenTools).toBe(false);
+    });
+  });
+
+  describe('customToolOrder actions', () => {
+    it('should set custom tool order', () => {
+      const { reorderCustomTools } = useToolVisibilityStore.getState();
+      reorderCustomTools(['custom-b', 'custom-a', 'custom-c']);
+      
+      expect(useToolVisibilityStore.getState().customToolOrder).toEqual(['custom-b', 'custom-a', 'custom-c']);
+    });
+
+    it('should replace existing custom tool order', () => {
+      useToolVisibilityStore.setState({ customToolOrder: ['custom-a', 'custom-b'] });
+      const { reorderCustomTools } = useToolVisibilityStore.getState();
+      reorderCustomTools(['custom-c', 'custom-a']);
+      
+      expect(useToolVisibilityStore.getState().customToolOrder).toEqual(['custom-c', 'custom-a']);
+    });
+  });
+
+  describe('getSortedCustomTools', () => {
+    const mockCustomTools = [
+      { id: 'custom-a', name: 'Custom A' },
+      { id: 'custom-b', name: 'Custom B' },
+      { id: 'custom-c', name: 'Custom C' },
+    ];
+
+    it('should return tools in original order when no custom order set', () => {
+      const { getSortedCustomTools } = useToolVisibilityStore.getState();
+      const result = getSortedCustomTools(mockCustomTools);
+      
+      expect(result.map(t => t.id)).toEqual(['custom-a', 'custom-b', 'custom-c']);
+    });
+
+    it('should apply custom order to tools', () => {
+      useToolVisibilityStore.setState({ customToolOrder: ['custom-c', 'custom-a', 'custom-b'] });
+      const { getSortedCustomTools } = useToolVisibilityStore.getState();
+      const result = getSortedCustomTools(mockCustomTools);
+      
+      expect(result.map(t => t.id)).toEqual(['custom-c', 'custom-a', 'custom-b']);
+    });
+
+    it('should handle new tools not in customToolOrder', () => {
+      useToolVisibilityStore.setState({ customToolOrder: ['custom-b'] });
+      const { getSortedCustomTools } = useToolVisibilityStore.getState();
+      const result = getSortedCustomTools(mockCustomTools);
+      
+      expect(result.map(t => t.id)).toEqual(['custom-b', 'custom-a', 'custom-c']);
     });
   });
 
