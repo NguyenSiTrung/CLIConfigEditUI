@@ -1,6 +1,6 @@
 # Product: CLI Config Editor
 
-> **Last Refreshed:** 2025-12-25 - Context synced with codebase
+> **Last Refreshed:** 2025-12-26 - Context synced with codebase
 
 ## Vision
 
@@ -49,6 +49,8 @@ CLI Config Editor provides a single, intuitive interface to:
 | MCP sync | Sync MCP server configs across tools | ✅ |
 | Update indicator | In-app update availability check | ✅ |
 | Keyboard shortcuts modal | Discoverable shortcuts with categories | ✅ |
+| Tool visibility | Pin, hide, and reorder tools in sidebar | ✅ |
+| Sidebar drag-and-drop | Reorder custom tools via drag-and-drop | ✅ |
 
 ## Future Roadmap
 

@@ -1,25 +1,22 @@
 {
-  "last_refresh": "2025-12-25T00:00:00Z",
+  "last_refresh": "2025-12-26T00:00:00Z",
   "scope": "all",
   "changes_applied": [
     {
       "file": "tech-stack.md",
       "changes": [
-        "Added @tauri-apps/plugin-process (v2.3) to Frontend dependencies",
-        "Added @tauri-apps/plugin-updater (v2.9) to Frontend dependencies",
-        "Added tauri-plugin-updater to Tauri Plugins",
-        "Added src/test/ to project structure",
-        "Added src-tauri/src/mcp/ to project structure"
+        "Added @dnd-kit/core (v6.3) for drag-and-drop foundation",
+        "Added @dnd-kit/sortable (v10.0) for sortable list primitives",
+        "Added @dnd-kit/utilities (v3.2) for DnD utility functions"
       ]
     },
     {
       "file": "product.md",
       "changes": [
-        "Added MCP sync as completed MVP feature",
-        "Added Update indicator as completed MVP feature",
-        "Added Keyboard shortcuts modal as completed MVP feature"
+        "Added Tool visibility (pin, hide, reorder) as completed MVP feature",
+        "Added Sidebar drag-and-drop reordering as completed MVP feature"
       ]
     }
   ],
-  "next_refresh_hint": "2025-12-28T00:00:00Z"
+  "next_refresh_hint": "2025-12-29T00:00:00Z"
 }
