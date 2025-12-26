@@ -25,6 +25,9 @@ This file lists all development tracks (features, bugs, improvements) for CLI Co
 
 ## Archived Tracks
 
+### [x] quality-safety_20251226 - Codebase Quality & Safety Improvements
+*Archived: 2025-12-26 | [conductor/archive/quality-safety_20251226/](conductor/archive/quality-safety_20251226/)*
+
 ### [x] sidebar-dnd_20251225 - Sidebar Drag-and-Drop Reordering
 *Archived: 2025-12-26 | [conductor/archive/sidebar-dnd_20251225/](conductor/archive/sidebar-dnd_20251225/)*
 

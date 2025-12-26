@@ -3,13 +3,16 @@ import type * as Monaco from 'monaco-editor';
 import { useAppStore } from '@/stores/app-store';
 import { useVersionsStore } from '@/stores/versions-store';
 import { ConfigFormat } from '@/types';
+import { useShallow } from 'zustand/react/shallow';
 import { WelcomeScreen } from './welcome-screen';
 import { BackupModal } from './backup-modal';
 import { VersionsTab } from './versions-tab';
+import { EditorErrorBanner } from './editor-error-banner';
 import { OnboardingTooltip, Modal, Button } from './ui';
 import { useState, useEffect, useCallback, useRef, useMemo, useImperativeHandle, forwardRef } from 'react';
 import { invoke } from '@tauri-apps/api/core';
 import { formatShortcut } from '@/hooks/use-keyboard-shortcut';
+import { getFileName } from '@/utils/path';
 import {
   Save,
   AlignLeft,
@@ -68,23 +71,26 @@ export const ConfigEditor = forwardRef<ConfigEditorHandle, ConfigEditorProps>(fu
   onReloadFile,
   onDismissExternalChange,
 }, ref) {
-  const {
-    editorContent,
-    setEditorContent,
-    setOriginalContent,
-    currentFormat,
-    currentFilePath,
-    activeToolId,
-    activeConfigFileId,
-    isDirty,
-    isLoading,
-    error,
-    fileNotFound,
-    theme,
-    editorSettings,
-    sidebarCollapsed,
-    backupSettings,
-  } = useAppStore();
+  // Granular selectors to reduce re-renders
+  const editorContent = useAppStore((state) => state.editorContent);
+  const setEditorContent = useAppStore((state) => state.setEditorContent);
+  const setOriginalContent = useAppStore((state) => state.setOriginalContent);
+  const currentFormat = useAppStore((state) => state.currentFormat);
+  const currentFilePath = useAppStore((state) => state.currentFilePath);
+  const activeToolId = useAppStore((state) => state.activeToolId);
+  const activeConfigFileId = useAppStore((state) => state.activeConfigFileId);
+  const isDirty = useAppStore((state) => state.isDirty);
+  const isLoading = useAppStore((state) => state.isLoading);
+  const error = useAppStore((state) => state.error);
+  const fileNotFound = useAppStore((state) => state.fileNotFound);
+  const fileReadError = useAppStore((state) => state.fileReadError);
+  const clearFileReadError = useAppStore((state) => state.clearFileReadError);
+  const theme = useAppStore((state) => state.theme);
+  const sidebarCollapsed = useAppStore((state) => state.sidebarCollapsed);
+  
+  // Use useShallow for objects to prevent unnecessary re-renders
+  const editorSettings = useAppStore(useShallow((state) => state.editorSettings));
+  const backupSettings = useAppStore(useShallow((state) => state.backupSettings));
   
   const { setCurrentConfigId } = useVersionsStore();
 
@@ -98,14 +104,38 @@ export const ConfigEditor = forwardRef<ConfigEditorHandle, ConfigEditorProps>(fu
   const editorRef = useRef<Monaco.editor.IStandaloneCodeEditor | null>(null);
   const monacoRef = useRef<typeof Monaco | null>(null);
 
+  // Cursor position update throttling
+  const cursorPositionTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const cursorListenerRef = useRef<Monaco.IDisposable | null>(null);
+
   const handleEditorMount: OnMount = (editor, monaco) => {
     editorRef.current = editor;
     monacoRef.current = monaco;
     
-    editor.onDidChangeCursorPosition((e) => {
-      setCursorPosition({ line: e.position.lineNumber, column: e.position.column });
+    // Throttle cursor position updates to 100ms
+    cursorListenerRef.current = editor.onDidChangeCursorPosition((e) => {
+      if (cursorPositionTimeoutRef.current) {
+        clearTimeout(cursorPositionTimeoutRef.current);
+      }
+      cursorPositionTimeoutRef.current = setTimeout(() => {
+        setCursorPosition({ line: e.position.lineNumber, column: e.position.column });
+      }, 100);
     });
   };
+
+  // Cleanup Monaco event listeners
+  useEffect(() => {
+    return () => {
+      if (cursorListenerRef.current) {
+        cursorListenerRef.current.dispose();
+        cursorListenerRef.current = null;
+      }
+      if (cursorPositionTimeoutRef.current) {
+        clearTimeout(cursorPositionTimeoutRef.current);
+        cursorPositionTimeoutRef.current = null;
+      }
+    };
+  }, []);
 
   // Expose triggerFind to parent via ref
   useImperativeHandle(ref, () => ({
@@ -117,7 +147,7 @@ export const ConfigEditor = forwardRef<ConfigEditorHandle, ConfigEditorProps>(fu
     },
   }), []);
 
-  // Validate JSON and set Monaco markers for parse errors
+  // Debounced JSON validation (500ms) to reduce validation frequency during typing
   useEffect(() => {
     if (!editorRef.current || !monacoRef.current || currentFormat !== 'json') {
       return;
@@ -128,55 +158,60 @@ export const ConfigEditor = forwardRef<ConfigEditorHandle, ConfigEditorProps>(fu
     
     const monaco = monacoRef.current;
     
-    try {
-      JSON.parse(editorContent);
-      // Clear markers on successful parse
-      monaco.editor.setModelMarkers(model, 'json-validation', []);
-    } catch (err) {
-      if (err instanceof SyntaxError) {
-        // Parse error message to extract position
-        const message = err.message;
-        const posMatch = message.match(/position (\d+)/i);
-        const lineColMatch = message.match(/line (\d+) column (\d+)/i);
-        
-        let startLineNumber = 1;
-        let startColumn = 1;
-        let endLineNumber = 1;
-        let endColumn = 1;
-        
-        if (lineColMatch) {
-          startLineNumber = parseInt(lineColMatch[1], 10);
-          startColumn = parseInt(lineColMatch[2], 10);
-          endLineNumber = startLineNumber;
-          endColumn = startColumn + 1;
-        } else if (posMatch) {
-          const position = parseInt(posMatch[0].replace('position ', ''), 10);
-          const pos = model.getPositionAt(position);
-          startLineNumber = pos.lineNumber;
-          startColumn = pos.column;
-          endLineNumber = pos.lineNumber;
-          endColumn = pos.column + 1;
-        } else {
-          // Default to last character if we can't parse position
-          const lineCount = model.getLineCount();
-          startLineNumber = lineCount;
-          startColumn = 1;
-          endLineNumber = lineCount;
-          endColumn = model.getLineMaxColumn(lineCount);
+    const validateJson = () => {
+      const currentModel = editorRef.current?.getModel();
+      if (!currentModel) return;
+      
+      try {
+        JSON.parse(editorContent);
+        monaco.editor.setModelMarkers(currentModel, 'json-validation', []);
+      } catch (err) {
+        if (err instanceof SyntaxError) {
+          const message = err.message;
+          const posMatch = message.match(/position (\d+)/i);
+          const lineColMatch = message.match(/line (\d+) column (\d+)/i);
+          
+          let startLineNumber = 1;
+          let startColumn = 1;
+          let endLineNumber = 1;
+          let endColumn = 1;
+          
+          if (lineColMatch) {
+            startLineNumber = parseInt(lineColMatch[1], 10);
+            startColumn = parseInt(lineColMatch[2], 10);
+            endLineNumber = startLineNumber;
+            endColumn = startColumn + 1;
+          } else if (posMatch) {
+            const position = parseInt(posMatch[0].replace('position ', ''), 10);
+            const pos = currentModel.getPositionAt(position);
+            startLineNumber = pos.lineNumber;
+            startColumn = pos.column;
+            endLineNumber = pos.lineNumber;
+            endColumn = pos.column + 1;
+          } else {
+            const lineCount = currentModel.getLineCount();
+            startLineNumber = lineCount;
+            startColumn = 1;
+            endLineNumber = lineCount;
+            endColumn = currentModel.getLineMaxColumn(lineCount);
+          }
+          
+          monaco.editor.setModelMarkers(currentModel, 'json-validation', [
+            {
+              severity: monaco.MarkerSeverity.Error,
+              message: message.replace(/^JSON\.parse: /, '').replace(/^Unexpected token.*/, 'Syntax error'),
+              startLineNumber,
+              startColumn,
+              endLineNumber,
+              endColumn,
+            },
+          ]);
         }
-        
-        monaco.editor.setModelMarkers(model, 'json-validation', [
-          {
-            severity: monaco.MarkerSeverity.Error,
-            message: message.replace(/^JSON\.parse: /, '').replace(/^Unexpected token.*/, 'Syntax error'),
-            startLineNumber,
-            startColumn,
-            endLineNumber,
-            endColumn,
-          },
-        ]);
       }
-    }
+    };
+    
+    const debounceTimer = setTimeout(validateJson, 500);
+    return () => clearTimeout(debounceTimer);
   }, [editorContent, currentFormat]);
 
   // Sync versions store with current config file
@@ -361,7 +396,7 @@ export const ConfigEditor = forwardRef<ConfigEditorHandle, ConfigEditorProps>(fu
             <div className="flex flex-col">
               <span className="text-xs font-semibold dark:text-slate-400 text-slate-500 uppercase tracking-widest">{formatInfo.label}</span>
               <span className="text-sm font-medium dark:text-slate-200 text-slate-700 truncate max-w-[400px]" title={currentFilePath || ''}>
-                {currentFilePath?.split('/').pop()}
+                {getFileName(currentFilePath)}
               </span>
             </div>
           </div>
@@ -448,10 +483,13 @@ export const ConfigEditor = forwardRef<ConfigEditorHandle, ConfigEditorProps>(fu
               {isDirty() ? (
                 <button
                   onClick={() => onSave()}
-                  className="btn-primary px-4 py-1.5 text-xs font-medium flex items-center gap-2 rounded-lg transition-all shadow-sm
-                             bg-indigo-600 hover:bg-indigo-500 text-white shadow-indigo-500/25 hover:shadow-indigo-500/40 hover:scale-105 active:scale-95"
+                  disabled={!!fileReadError}
+                  className={`btn-primary px-4 py-1.5 text-xs font-medium flex items-center gap-2 rounded-lg transition-all shadow-sm
+                             ${fileReadError 
+                               ? 'bg-slate-400 cursor-not-allowed opacity-60' 
+                               : 'bg-indigo-600 hover:bg-indigo-500 text-white shadow-indigo-500/25 hover:shadow-indigo-500/40 hover:scale-105 active:scale-95'}`}
                   aria-label="Save changes"
-                  title={`Save (${formatShortcut({ ctrl: true, key: 'S' })})`}
+                  title={fileReadError ? 'Cannot save: file has errors' : `Save (${formatShortcut({ ctrl: true, key: 'S' })})`}
                 >
                   <Save className="w-3.5 h-3.5" />
                   Save
@@ -494,6 +532,12 @@ export const ConfigEditor = forwardRef<ConfigEditorHandle, ConfigEditorProps>(fu
             </div>
           )}
           <div className="flex-1 relative">
+            {fileReadError && (
+              <EditorErrorBanner
+                error={fileReadError}
+                onDismiss={clearFileReadError}
+              />
+            )}
             <Editor
               height="100%"
               language={FORMAT_TO_LANGUAGE[currentFormat]}

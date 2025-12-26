@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { CliTool, ConfigFile, ConfigFormat, CustomTool, ToolConfigFiles } from '@/types';
+import { BackendError, CliTool, ConfigFile, ConfigFormat, CustomTool, ToolConfigFiles } from '@/types';
 import { CLI_TOOLS } from '@/utils/cli-tools';
 
 interface EditorSettings {
@@ -51,6 +51,7 @@ interface AppState {
   sidebarWidth: number;
   isLoading: boolean;
   error: string | null;
+  fileReadError: BackendError | null;  // Parse/permission errors that need user acknowledgment
   theme: 'dark' | 'light' | 'system';
   resolvedTheme: 'dark' | 'light';
 
@@ -75,6 +76,8 @@ interface AppState {
   setError: (error: string | null) => void;
   fileNotFound: boolean;
   setFileNotFound: (notFound: boolean) => void;
+  setFileReadError: (error: BackendError | null) => void;
+  clearFileReadError: () => void;
   toggleTheme: () => void;
   setTheme: (theme: 'dark' | 'light' | 'system') => void;
   setResolvedTheme: (theme: 'dark' | 'light') => void;
@@ -127,6 +130,7 @@ export const useAppStore = create<AppState>()(
       isLoading: false,
       error: null,
       fileNotFound: false,
+      fileReadError: null,
       theme: 'dark',
       resolvedTheme: 'dark',
 
@@ -140,7 +144,7 @@ export const useAppStore = create<AppState>()(
         minimap: false,
         formatOnSave: false,
         autoSave: false,
-        autoSaveDelay: 2000,
+        autoSaveDelay: 3000,
       },
       backupSettings: {
         enabled: true,
@@ -168,6 +172,8 @@ export const useAppStore = create<AppState>()(
       setLoading: (loading) => set({ isLoading: loading }),
       setError: (error) => set({ error }),
       setFileNotFound: (notFound) => set({ fileNotFound: notFound }),
+      setFileReadError: (error) => set({ fileReadError: error }),
+      clearFileReadError: () => set({ fileReadError: null }),
       toggleTheme: () =>
         set((state) => {
           const themes: Array<'dark' | 'light' | 'system'> = ['dark', 'light', 'system'];
@@ -213,13 +219,26 @@ export const useAppStore = create<AppState>()(
 
       // Settings actions
       updateEditorSettings: (settings) =>
-        set((state) => ({
-          editorSettings: { ...state.editorSettings, ...settings },
-        })),
+        set((state) => {
+          const newSettings = { ...state.editorSettings, ...settings };
+          // Enforce minimum auto-save delay of 3000ms
+          if (newSettings.autoSaveDelay < 3000) {
+            newSettings.autoSaveDelay = 3000;
+          }
+          return { editorSettings: newSettings };
+        }),
       updateBackupSettings: (settings) =>
-        set((state) => ({
-          backupSettings: { ...state.backupSettings, ...settings },
-        })),
+        set((state) => {
+          const newSettings = { ...state.backupSettings, ...settings };
+          // Cap maxBackups at 20 to match listing limit
+          if (newSettings.maxBackups > 20) {
+            newSettings.maxBackups = 20;
+          }
+          if (newSettings.maxBackups < 1) {
+            newSettings.maxBackups = 1;
+          }
+          return { backupSettings: newSettings };
+        }),
       updateBehaviorSettings: (settings) =>
         set((state) => ({
           behaviorSettings: { ...state.behaviorSettings, ...settings },
@@ -235,7 +254,7 @@ export const useAppStore = create<AppState>()(
             minimap: false,
             formatOnSave: false,
             autoSave: false,
-            autoSaveDelay: 2000,
+            autoSaveDelay: 3000,
           },
           backupSettings: {
             enabled: true,

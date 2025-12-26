@@ -274,3 +274,59 @@ export interface ToolVisibilityActions {
   moveToolDown: (toolId: string) => void;
   resetVisibility: () => void;
 }
+
+// ============================================
+// Backend Error Types
+// ============================================
+
+// Error types returned from Rust backend
+export type BackendErrorType = 
+  | 'ConfigNotFound'
+  | 'Io'
+  | 'PermissionDenied'
+  | 'PathResolution'
+  | 'JsonParse'
+  | 'JsonPathNotFound';
+
+// Structured error response from backend
+export interface BackendError {
+  error_type: BackendErrorType;
+  message: string;
+}
+
+// Helper to parse backend errors from Tauri invoke
+export function parseBackendError(error: unknown): BackendError | null {
+  if (typeof error === 'object' && error !== null) {
+    const err = error as Record<string, unknown>;
+    if (typeof err.error_type === 'string' && typeof err.message === 'string') {
+      return {
+        error_type: err.error_type as BackendErrorType,
+        message: err.message,
+      };
+    }
+  }
+  return null;
+}
+
+// Check if error is a "file not found" type (safe to create new file)
+export function isFileNotFoundError(error: BackendError | null): boolean {
+  return error?.error_type === 'ConfigNotFound';
+}
+
+// Check if error is a parse/read error (should show error banner)
+export function isFileReadError(error: BackendError | null): boolean {
+  if (!error) return false;
+  return ['JsonParse', 'PermissionDenied', 'Io'].includes(error.error_type);
+}
+
+// ============================================
+// Path Safety Types (from Rust backend)
+// ============================================
+
+export type PathSafetyLevel = 'safe' | 'warn' | 'block';
+
+export interface PathSafetyResult {
+  path: string;
+  resolvedPath: string;
+  safetyLevel: PathSafetyLevel;
+}

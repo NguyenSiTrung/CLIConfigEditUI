@@ -11,6 +11,8 @@ pub enum CommandError {
     ConfigNotFound(String),
     #[error("IO error: {0}")]
     Io(#[from] std::io::Error),
+    #[error("Permission denied: {0}")]
+    PermissionDenied(String),
     #[error("Failed to resolve path: {0}")]
     PathResolution(String),
     #[error("JSON parse error: {0}")]
@@ -19,12 +21,37 @@ pub enum CommandError {
     JsonPathNotFound(String),
 }
 
+#[derive(Serialize)]
+struct ErrorResponse {
+    error_type: String,
+    message: String,
+}
+
 impl Serialize for CommandError {
     fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
     where
         S: serde::Serializer,
     {
-        serializer.serialize_str(&self.to_string())
+        let (error_type, message) = match self {
+            CommandError::ConfigNotFound(msg) => ("ConfigNotFound", msg.clone()),
+            CommandError::Io(e) => {
+                if e.kind() == std::io::ErrorKind::PermissionDenied {
+                    ("PermissionDenied", e.to_string())
+                } else {
+                    ("Io", e.to_string())
+                }
+            }
+            CommandError::PermissionDenied(msg) => ("PermissionDenied", msg.clone()),
+            CommandError::PathResolution(msg) => ("PathResolution", msg.clone()),
+            CommandError::JsonParse(msg) => ("JsonParse", msg.clone()),
+            CommandError::JsonPathNotFound(msg) => ("JsonPathNotFound", msg.clone()),
+        };
+        
+        let response = ErrorResponse {
+            error_type: error_type.to_string(),
+            message,
+        };
+        response.serialize(serializer)
     }
 }
 
@@ -111,7 +138,7 @@ pub fn write_file(path: String, content: String, backup_settings: Option<BackupS
     // Create backup if enabled and file exists
     let settings = backup_settings.unwrap_or(BackupSettings { enabled: true, max_backups: 1 });
     if settings.enabled && expanded.exists() && settings.max_backups > 0 {
-        create_backup(&expanded, settings.max_backups)?;
+        do_create_backup(&expanded, settings.max_backups)?;
     }
 
     // Write atomically via temp file
@@ -122,7 +149,10 @@ pub fn write_file(path: String, content: String, backup_settings: Option<BackupS
     Ok(())
 }
 
-fn create_backup(file_path: &PathBuf, max_backups: u32) -> Result<(), std::io::Error> {
+fn do_create_backup(file_path: &PathBuf, max_backups: u32) -> Result<(), std::io::Error> {
+    // Cap max_backups at 20 to match listing limit
+    let max_backups = max_backups.min(20);
+    
     let parent = file_path.parent().unwrap_or(file_path);
     let file_name = file_path.file_name().unwrap_or_default().to_string_lossy();
     
@@ -285,39 +315,11 @@ pub fn restore_backup(original_path: String, backup_path: String, create_backup:
     
     // Optionally create a backup of current file before restoring
     if create_backup && original.exists() {
-        create_backup_fn(&original, 1)?;
+        do_create_backup(&original, 1)?;
     }
     
     // Write the backup content to original
     fs::write(&original, content)?;
-    
-    Ok(())
-}
-
-fn create_backup_fn(file_path: &PathBuf, max_backups: u32) -> Result<(), std::io::Error> {
-    let parent = file_path.parent().unwrap_or(file_path);
-    let file_name = file_path.file_name().unwrap_or_default().to_string_lossy();
-    
-    if max_backups == 1 {
-        let backup_path = file_path.with_extension("bak");
-        fs::copy(file_path, &backup_path)?;
-    } else {
-        for i in (1..max_backups).rev() {
-            let old_backup = parent.join(format!("{}.bak.{}", file_name, i));
-            let new_backup = parent.join(format!("{}.bak.{}", file_name, i + 1));
-            if old_backup.exists() {
-                fs::rename(&old_backup, &new_backup)?;
-            }
-        }
-        
-        let first_backup = file_path.with_extension("bak");
-        if first_backup.exists() {
-            let second_backup = parent.join(format!("{}.bak.1", file_name));
-            fs::rename(&first_backup, &second_backup)?;
-        }
-        
-        fs::copy(file_path, &first_backup)?;
-    }
     
     Ok(())
 }
@@ -413,7 +415,7 @@ pub fn write_json_path(
     // Create backup if enabled and file exists
     let settings = backup_settings.unwrap_or(BackupSettings { enabled: true, max_backups: 1 });
     if settings.enabled && expanded.exists() && settings.max_backups > 0 {
-        create_backup(&expanded, settings.max_backups)?;
+        do_create_backup(&expanded, settings.max_backups)?;
     }
 
     // Write atomically via temp file
@@ -478,7 +480,7 @@ pub fn write_json_prefix(
     // Create backup if enabled and file exists
     let settings = backup_settings.unwrap_or(BackupSettings { enabled: true, max_backups: 1 });
     if settings.enabled && expanded.exists() && settings.max_backups > 0 {
-        create_backup(&expanded, settings.max_backups)?;
+        do_create_backup(&expanded, settings.max_backups)?;
     }
 
     // Write atomically via temp file
@@ -582,4 +584,32 @@ pub fn load_sidebar_state() -> Result<SidebarState, CommandError> {
         .map_err(|e| CommandError::JsonParse(e.to_string()))?;
     
     Ok(state)
+}
+
+#[derive(Debug, Clone, serde::Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct PathSafetyResult {
+    pub path: String,
+    pub resolved_path: String,
+    pub safety_level: crate::path_safety::PathSafetyLevel,
+}
+
+#[tauri::command]
+pub fn check_path_safety(path: String) -> PathSafetyResult {
+    let resolved = expand_path(&path);
+    let resolved_path = resolved
+        .as_ref()
+        .map(|p| p.to_string_lossy().to_string())
+        .unwrap_or_else(|| path.clone());
+    
+    let safety_level = resolved
+        .as_ref()
+        .map(|p| crate::path_safety::get_path_safety_level(p))
+        .unwrap_or(crate::path_safety::PathSafetyLevel::Warn);
+    
+    PathSafetyResult {
+        path,
+        resolved_path,
+        safety_level,
+    }
 }

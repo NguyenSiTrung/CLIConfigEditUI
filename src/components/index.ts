@@ -18,3 +18,4 @@ export { VersionDiffView } from './version-diff-view';
 export { McpSettingsPanel } from './mcp';
 export { KeyboardShortcutsModal } from './keyboard-shortcuts-modal';
 export { UpdateModal, UpdateBadge } from './update-modal';
+export { EditorErrorBanner } from './editor-error-banner';

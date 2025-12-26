@@ -1,10 +1,11 @@
 mod commands;
 mod config;
 mod mcp;
+mod path_safety;
 mod versions;
 
 use commands::{
-    check_multiple_paths, delete_file, file_exists, get_current_os, get_tools, list_backups, read_backup,
+    check_multiple_paths, check_path_safety, delete_file, file_exists, get_current_os, get_tools, list_backups, read_backup,
     read_file, read_json_path, read_json_prefix, resolve_path, restore_backup, write_file, write_json_path, write_json_prefix,
     save_sidebar_state, load_sidebar_state,
 };
@@ -73,6 +74,8 @@ pub fn run() {
             // Sidebar state commands
             save_sidebar_state,
             load_sidebar_state,
+            // Path safety commands
+            check_path_safety,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

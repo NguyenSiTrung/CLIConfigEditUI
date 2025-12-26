@@ -2,6 +2,7 @@ import { useState, useMemo } from 'react';
 import { McpServer, McpImportMode, McpDetectedFormat } from '@/types';
 import { Modal, Button } from '@/components/ui';
 import { FileJson, Check, AlertTriangle, ChevronDown, ChevronUp } from 'lucide-react';
+import { getFileName } from '@/utils/path';
 
 interface ImportServerItem {
   server: McpServer;
@@ -100,7 +101,7 @@ export function McpImportPreviewModal({
 
   const truncatePath = (path: string, maxLength: number = 50) => {
     if (path.length <= maxLength) return path;
-    const filename = path.split('/').pop() || path;
+    const filename = getFileName(path) || path;
     if (filename.length >= maxLength - 3) {
       return '...' + filename.slice(-(maxLength - 3));
     }

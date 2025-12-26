@@ -27,7 +27,8 @@ export { Toggle, type ToggleProps } from './toggle';
 export { SectionHeader, type SectionHeaderProps } from './section-header';
 export { ConfirmDialog, type ConfirmDialogProps } from './confirm-dialog';
 export { UnsavedChangesDialog, type UnsavedChangesDialogProps, type UnsavedChangesAction } from './unsaved-changes-dialog';
-export { OnboardingTooltip, resetOnboardingHints } from './onboarding-tooltip';
+export { OnboardingTooltip } from './onboarding-tooltip';
+export { resetOnboardingHints } from '@/utils/onboarding-hints';
 export { 
   Skeleton, 
   SkeletonText, 

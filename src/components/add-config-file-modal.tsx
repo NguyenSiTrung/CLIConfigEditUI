@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
-import { ConfigFormat, CliTool, CustomTool, SuggestedConfig } from '@/types';
-import { FolderOpen, Sparkles, Check } from 'lucide-react';
+import { ConfigFormat, CliTool, CustomTool, SuggestedConfig, PathSafetyResult } from '@/types';
+import { FolderOpen, Sparkles, Check, AlertTriangle } from 'lucide-react';
 import { open } from '@tauri-apps/plugin-dialog';
 import { invoke } from '@tauri-apps/api/core';
 import { Modal, Button, Input } from '@/components/ui';
@@ -35,6 +35,9 @@ export function AddConfigFileModal({ isOpen, tool, onClose, onAdd }: AddConfigFi
   const [jsonPath, setJsonPath] = useState<string | undefined>(undefined);
   const [suggestions, setSuggestions] = useState<SuggestionWithStatus[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(true);
+  
+  const [showPathWarning, setShowPathWarning] = useState(false);
+  const [pendingSubmit, setPendingSubmit] = useState<{ label: string; path: string; format: ConfigFormat; jsonPath?: string } | null>(null);
 
   useEffect(() => {
     if (isOpen && tool && 'suggestedConfigs' in tool && tool.suggestedConfigs) {
@@ -67,19 +70,53 @@ export function AddConfigFileModal({ isOpen, tool, onClose, onAdd }: AddConfigFi
 
   if (!tool) return null;
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!label.trim() || !path.trim()) return;
 
-    onAdd({
+    const configData = {
       label: label.trim(),
       path: path.trim(),
       format,
       jsonPath,
-    });
+    };
 
+    try {
+      const safetyResult = await invoke<PathSafetyResult>('check_path_safety', { path: path.trim() });
+      
+      if (safetyResult.safetyLevel === 'warn') {
+        setPendingSubmit(configData);
+        setShowPathWarning(true);
+        return;
+      }
+      
+      if (safetyResult.safetyLevel === 'block') {
+        setPendingSubmit(configData);
+        setShowPathWarning(true);
+        return;
+      }
+    } catch (err) {
+      console.error('Failed to check path safety:', err);
+    }
+
+    onAdd(configData);
     resetForm();
     onClose();
+  };
+
+  const handleConfirmPathWarning = () => {
+    if (pendingSubmit) {
+      onAdd(pendingSubmit);
+      resetForm();
+      setShowPathWarning(false);
+      setPendingSubmit(null);
+      onClose();
+    }
+  };
+
+  const handleCancelPathWarning = () => {
+    setShowPathWarning(false);
+    setPendingSubmit(null);
   };
 
   const handleSelectSuggestion = (suggestion: SuggestionWithStatus) => {
@@ -96,6 +133,8 @@ export function AddConfigFileModal({ isOpen, tool, onClose, onAdd }: AddConfigFi
     setFormat('json');
     setJsonPath(undefined);
     setShowSuggestions(true);
+    setShowPathWarning(false);
+    setPendingSubmit(null);
   };
 
   const handleBrowseFile = async () => {
@@ -274,6 +313,41 @@ export function AddConfigFileModal({ isOpen, tool, onClose, onAdd }: AddConfigFi
           </div>
         </div>
       </form>
+
+      {/* Path Safety Warning Modal */}
+      <Modal
+        isOpen={showPathWarning}
+        onClose={handleCancelPathWarning}
+        title="Unusual File Location"
+        size="sm"
+        footer={
+          <>
+            <Button variant="ghost" onClick={handleCancelPathWarning}>
+              Cancel
+            </Button>
+            <Button variant="danger" onClick={handleConfirmPathWarning}>
+              Add Anyway
+            </Button>
+          </>
+        }
+      >
+        <div className="flex items-start gap-3">
+          <div className="flex-shrink-0 p-2 rounded-lg bg-amber-100 dark:bg-amber-500/15">
+            <AlertTriangle className="w-5 h-5 text-amber-600 dark:text-amber-400" />
+          </div>
+          <div className="space-y-2">
+            <p className="text-sm text-slate-700 dark:text-slate-300">
+              This file path is in an unusual location that isn't a standard config directory.
+            </p>
+            <div className="p-2 rounded-md bg-slate-100 dark:bg-slate-800 font-mono text-xs text-slate-600 dark:text-slate-400 break-all">
+              {pendingSubmit?.path}
+            </div>
+            <p className="text-xs text-slate-500 dark:text-slate-400">
+              Are you sure you want to add this config file?
+            </p>
+          </div>
+        </div>
+      </Modal>
     </Modal>
   );
 }

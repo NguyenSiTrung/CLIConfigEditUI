@@ -19,10 +19,12 @@ import { CommandPalette } from '@/components/command-palette';
 import { UnsavedChangesDialog, type UnsavedChangesAction } from '@/components/ui';
 import type { AppView } from '@/components';
 import { useAppStore } from '@/stores/app-store';
+import { useShallow } from 'zustand/react/shallow';
 import { useFileWatcher, useSystemTheme, useReducedMotion, useRecentFiles, useUpdateChecker, useSidebarStateSync } from '@/hooks';
 import { invoke } from '@tauri-apps/api/core';
-import { ConfigFormat, CustomTool, CliTool, ConfigFile } from '@/types';
+import { ConfigFormat, CustomTool, CliTool, ConfigFile, parseBackendError, isFileNotFoundError, isFileReadError } from '@/types';
 import { IDE_PLATFORMS } from '@/utils/cli-tools';
+import { getFileName } from '@/utils/path';
 
 function getDefaultContent(format: ConfigFormat): string {
   switch (format) {
@@ -59,35 +61,40 @@ function App() {
   const pendingNavigationRef = useRef<(() => Promise<void>) | null>(null);
   const configEditorRef = useRef<ConfigEditorHandle>(null);
 
-  const {
-    setActiveToolId,
-    setActiveConfigFileId,
-    setEditorContent,
-    setOriginalContent,
-    setCurrentFilePath,
-    setCurrentFormat,
-    setCurrentJsonPath,
-    setCurrentJsonPrefix,
-    setLoading,
-    setError,
-    setFileNotFound,
-    editorContent,
-    currentFilePath,
-    currentJsonPath,
-    currentJsonPrefix,
-    addCustomTool,
-    updateCustomTool,
-    removeCustomTool,
-    customTools,
-    activeToolId,
-    activeConfigFileId,
-    isDirty,
-    addConfigFile,
-    updateConfigFile,
-    removeConfigFile,
-    toggleToolExpanded,
-    getAllTools,
-  } = useAppStore();
+  // Granular selectors for actions (these are stable references)
+  const setActiveToolId = useAppStore((state) => state.setActiveToolId);
+  const setActiveConfigFileId = useAppStore((state) => state.setActiveConfigFileId);
+  const setEditorContent = useAppStore((state) => state.setEditorContent);
+  const setOriginalContent = useAppStore((state) => state.setOriginalContent);
+  const setCurrentFilePath = useAppStore((state) => state.setCurrentFilePath);
+  const setCurrentFormat = useAppStore((state) => state.setCurrentFormat);
+  const setCurrentJsonPath = useAppStore((state) => state.setCurrentJsonPath);
+  const setCurrentJsonPrefix = useAppStore((state) => state.setCurrentJsonPrefix);
+  const setLoading = useAppStore((state) => state.setLoading);
+  const setError = useAppStore((state) => state.setError);
+  const setFileNotFound = useAppStore((state) => state.setFileNotFound);
+  const setFileReadError = useAppStore((state) => state.setFileReadError);
+  const clearFileReadError = useAppStore((state) => state.clearFileReadError);
+  const addCustomTool = useAppStore((state) => state.addCustomTool);
+  const updateCustomTool = useAppStore((state) => state.updateCustomTool);
+  const removeCustomTool = useAppStore((state) => state.removeCustomTool);
+  const addConfigFile = useAppStore((state) => state.addConfigFile);
+  const updateConfigFile = useAppStore((state) => state.updateConfigFile);
+  const removeConfigFile = useAppStore((state) => state.removeConfigFile);
+  const toggleToolExpanded = useAppStore((state) => state.toggleToolExpanded);
+  const getAllTools = useAppStore((state) => state.getAllTools);
+  const isDirty = useAppStore((state) => state.isDirty);
+  
+  // Granular selectors for state values
+  const editorContent = useAppStore((state) => state.editorContent);
+  const currentFilePath = useAppStore((state) => state.currentFilePath);
+  const currentJsonPath = useAppStore((state) => state.currentJsonPath);
+  const currentJsonPrefix = useAppStore((state) => state.currentJsonPrefix);
+  const activeToolId = useAppStore((state) => state.activeToolId);
+  const activeConfigFileId = useAppStore((state) => state.activeConfigFileId);
+  
+  // Use useShallow for array/object state
+  const customTools = useAppStore(useShallow((state) => state.customTools));
 
   const { recentFiles, addRecentFile, clearRecentFiles } = useRecentFiles();
 
@@ -193,6 +200,7 @@ function App() {
       setLoading(true);
       setError(null);
       setFileNotFound(false);
+      clearFileReadError();
 
       // Get tool name for recent files tracking
       const allTools = getAllTools();
@@ -224,16 +232,38 @@ function App() {
           configLabel: configFile.label,
           path: configFile.path,
         });
-      } catch {
-        const defaultContent = configFile.jsonPath ? '{}' : getDefaultContent(configFile.format);
-        setEditorContent(defaultContent);
-        setOriginalContent(defaultContent);
-        setCurrentFilePath(configFile.path);
-        setCurrentFormat(configFile.format);
-        setCurrentJsonPath(configFile.jsonPath || null);
-        setFileNotFound(true);
+      } catch (err) {
+        const backendError = parseBackendError(err);
+        
+        if (isFileNotFoundError(backendError)) {
+          // File doesn't exist - show default content for new file
+          const defaultContent = configFile.jsonPath ? '{}' : getDefaultContent(configFile.format);
+          setEditorContent(defaultContent);
+          setOriginalContent(defaultContent);
+          setCurrentFilePath(configFile.path);
+          setCurrentFormat(configFile.format);
+          setCurrentJsonPath(configFile.jsonPath || null);
+          setFileNotFound(true);
+        } else if (isFileReadError(backendError)) {
+          // Parse/permission error - show error banner, block editing
+          setEditorContent('');
+          setOriginalContent('');
+          setCurrentFilePath(configFile.path);
+          setCurrentFormat(configFile.format);
+          setCurrentJsonPath(configFile.jsonPath || null);
+          setFileReadError(backendError);
+        } else {
+          // Unknown error - treat as file not found for backward compatibility
+          const defaultContent = configFile.jsonPath ? '{}' : getDefaultContent(configFile.format);
+          setEditorContent(defaultContent);
+          setOriginalContent(defaultContent);
+          setCurrentFilePath(configFile.path);
+          setCurrentFormat(configFile.format);
+          setCurrentJsonPath(configFile.jsonPath || null);
+          setFileNotFound(true);
+        }
 
-        // Still track recent file even if it's new
+        // Still track recent file even if there's an error
         addRecentFile({
           toolId,
           toolName,
@@ -251,6 +281,8 @@ function App() {
       setLoading,
       setError,
       setFileNotFound,
+      setFileReadError,
+      clearFileReadError,
       setEditorContent,
       setOriginalContent,
       setCurrentFilePath,
@@ -296,6 +328,7 @@ function App() {
       setLoading(true);
       setError(null);
       setFileNotFound(false);
+      clearFileReadError();
 
       try {
         let content: string;
@@ -319,20 +352,51 @@ function App() {
         setCurrentFilePath(settingsPath);
         setCurrentFormat('json');
         setFileNotFound(false);
-      } catch {
-        const defaultContent = '{}';
-        setEditorContent(defaultContent);
-        setOriginalContent(defaultContent);
-        setCurrentFilePath(settingsPath);
-        setCurrentFormat('json');
-        if (settingPath) {
-          setCurrentJsonPath(settingPath);
-          setCurrentJsonPrefix(null);
+      } catch (err) {
+        const backendError = parseBackendError(err);
+        
+        if (isFileNotFoundError(backendError)) {
+          const defaultContent = '{}';
+          setEditorContent(defaultContent);
+          setOriginalContent(defaultContent);
+          setCurrentFilePath(settingsPath);
+          setCurrentFormat('json');
+          if (settingPath) {
+            setCurrentJsonPath(settingPath);
+            setCurrentJsonPrefix(null);
+          } else {
+            setCurrentJsonPath(null);
+            setCurrentJsonPrefix(prefix);
+          }
+          setFileNotFound(true);
+        } else if (isFileReadError(backendError)) {
+          setEditorContent('');
+          setOriginalContent('');
+          setCurrentFilePath(settingsPath);
+          setCurrentFormat('json');
+          if (settingPath) {
+            setCurrentJsonPath(settingPath);
+            setCurrentJsonPrefix(null);
+          } else {
+            setCurrentJsonPath(null);
+            setCurrentJsonPrefix(prefix);
+          }
+          setFileReadError(backendError);
         } else {
-          setCurrentJsonPath(null);
-          setCurrentJsonPrefix(prefix);
+          const defaultContent = '{}';
+          setEditorContent(defaultContent);
+          setOriginalContent(defaultContent);
+          setCurrentFilePath(settingsPath);
+          setCurrentFormat('json');
+          if (settingPath) {
+            setCurrentJsonPath(settingPath);
+            setCurrentJsonPrefix(null);
+          } else {
+            setCurrentJsonPath(null);
+            setCurrentJsonPrefix(prefix);
+          }
+          setFileNotFound(true);
         }
-        setFileNotFound(true);
       } finally {
         setLoading(false);
       }
@@ -343,6 +407,8 @@ function App() {
       setLoading,
       setError,
       setFileNotFound,
+      setFileReadError,
+      clearFileReadError,
       setEditorContent,
       setOriginalContent,
       setCurrentFilePath,
@@ -659,7 +725,7 @@ function App() {
         }}
         onAction={handleUnsavedChangesAction}
         isSaving={isSaving}
-        fileName={currentFilePath?.split('/').pop()}
+        fileName={getFileName(currentFilePath)}
       />
       <ToastContainer />
     </div>
