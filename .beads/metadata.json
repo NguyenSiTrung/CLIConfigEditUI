@@ -1,1 +1,4 @@
-{"version":1}
+{
+  "database": "beads.db",
+  "jsonl_export": "issues.jsonl"
+}
