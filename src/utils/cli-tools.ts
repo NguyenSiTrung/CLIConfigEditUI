@@ -431,4 +431,27 @@ export const CLI_TOOLS: CliTool[] = [
       },
     ],
   },
+  {
+    id: 'rovo-dev',
+    name: 'Rovo Dev CLI',
+    icon: '🔷',
+    docsUrl: 'https://support.atlassian.com/rovo/docs/manage-rovo-dev-cli-settings/',
+    description: "Atlassian's Rovo Dev AI coding CLI",
+    suggestedConfigs: [
+      {
+        label: 'Config',
+        path: '~/.rovodev/config.yml',
+        format: 'yaml',
+        icon: '⚙️',
+        description: 'Main settings (agent, console, logging, connections)',
+      },
+      {
+        label: 'MCP Servers',
+        path: '~/.rovodev/mcp.json',
+        format: 'json',
+        icon: '🔌',
+        description: 'MCP server configuration',
+      },
+    ],
+  },
 ];
