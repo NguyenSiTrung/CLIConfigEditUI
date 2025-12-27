@@ -203,18 +203,39 @@ Create a new track for: $ARGUMENTS
    - Read `conductor/beads.json`
    - If file doesn't exist or `enabled: false`, skip this section
 
-2. **Create Epic for Track:**
+2. **Create Epic for Track with Full Context:**
    - Map priority: critical=0, high=1, medium=2, low=3
-   - Run: `bd create "<track_id>: <description>" -p <priority_number> --type epic`
+   - Extract technical approach from `spec.md` for design field
+   - Extract acceptance criteria from `spec.md`
+   - Run:
+     ```bash
+     bd create "<track_id>: <description>" \
+       -t epic -p <priority_number> \
+       --design "<technical approach from spec>" \
+       --acceptance "<completion criteria from spec>" \
+       --assignee conductor \
+       --json
+     ```
    - Store returned epic ID (e.g., `bd-a3f8`)
 
-3. **Create Tasks for Each Phase:**
+3. **Create Tasks for Each Phase with Context:**
    - Parse `plan.md` for phases and tasks
-   - For each phase: `bd create "<phase_name>" -P <epic_id>`
-   - For each task in phase: `bd create "<task_description>" -P <phase_task_id>`
+   - For each phase:
+     ```bash
+     bd create "<phase_name>" --parent <epic_id> --json
+     ```
+   - For each task in phase:
+     ```bash
+     bd create "<task_description>" \
+       --parent <phase_id> \
+       --design "<task technical notes>" \
+       --acceptance "<task done criteria>" \
+       --json
+     ```
 
 4. **Set Up Dependencies:**
    - Phase 2 blocked by Phase 1: `bd dep add <phase2_id> <phase1_id>`
+   - Task dependencies within phases: `bd dep add <task2_id> <task1_id>`
    - Continue for all phases
 
 5. **Update Metadata:**

@@ -175,6 +175,46 @@ Present for approval, revise if needed.
    - `spec.md`
    - `plan.md`
 
+**If Beads enabled** - create epic and tasks with full context:
+```bash
+# Create epic for the track with design and acceptance criteria
+bd create "<track_description>" \
+  -t epic -p 1 \
+  --design "<technical approach from spec.md>" \
+  --acceptance "<completion criteria from spec.md>" \
+  --assignee conductor \
+  --json
+# Returns epic_id (e.g., bd-abc123)
+
+# Create tasks for each plan item with context
+bd create "<task_1_description>" \
+  -p 1 \
+  --parent <epic_id> \
+  --design "<task technical notes>" \
+  --acceptance "<task done criteria>" \
+  --json
+
+# ... for each task in plan.md
+
+# Add dependencies between tasks (task_2 needs task_1)
+bd dep add <task_2_id> <task_1_id>
+
+# Add phase dependencies (phase 2 blocked by phase 1)
+bd dep add <phase2_first_task> <phase1_last_task>
+```
+
+Update `metadata.json` to include beads mapping:
+```json
+{
+  "track_id": "...",
+  "beads_epic_id": "<epic_id>",
+  "beads_task_mapping": {
+    "Phase 1 - Task 1": "<task_1_id>",
+    "Phase 1 - Task 2": "<task_2_id>"
+  }
+}
+```
+
 ### 6. Update Tracks File
 Append to `conductor/tracks.md`:
 ```markdown
@@ -208,7 +248,29 @@ Read into context:
 - `conductor/tracks/<track_id>/plan.md`
 - `conductor/workflow.md`
 
+**If Beads enabled** - load beads context for smarter task selection:
+```bash
+# Get epic ID from metadata.json
+epic_id=$(cat conductor/tracks/<track_id>/metadata.json | grep beads_epic_id)
+
+# Read epic notes for context recovery (especially after compaction)
+bd show <epic_id>
+# Notes contain: COMPLETED, IN PROGRESS, NEXT, KEY DECISIONS
+
+# Get ready tasks (no blockers) - use for task selection
+bd ready --epic <epic_id>
+```
+
+**Beads context provides:**
+- **Last session notes**: What was completed, what's next, key decisions made
+- **Ready tasks**: Only tasks with no blockers (respects dependencies)
+- **Blocked tasks**: What's waiting on what
+
 ### 4. Resume State Management
+
+**Priority order for resume:**
+1. **If Beads enabled**: Use `bd show <epic_id>` notes for context + `bd ready` for next task
+2. **Fallback**: Use `implement_state.json` for position
 
 Check for `conductor/tracks/<track_id>/implement_state.json`:
 - If exists: Resume from saved position (phase and task within that phase)
@@ -227,10 +289,33 @@ Update state after each task. On phase completion, add phase to `completed_phase
 ### 5. Update Status
 In `conductor/tracks.md`, change `## [ ] Track:` to `## [~] Track:` for selected track.
 
+**If Beads enabled** (check availability first - see Beads Integration section):
+```bash
+bd update <epic_id> --status in_progress
+```
+
 ### 6. Execute Tasks
-For each incomplete task in plan.md:
+
+**Task Selection Strategy:**
+
+**If Beads enabled** - use dependency-aware selection:
+```bash
+# Get next ready task (no blockers)
+bd ready --epic <epic_id>
+# Returns tasks sorted by priority with no blocking dependencies
+```
+
+**If Beads NOT enabled** - use plan.md order:
+- Find first incomplete task (`[ ]` or `[~]`) in plan.md
+
+For each selected task:
 
 1. **Mark In Progress**: Change `[ ]` to `[~]`
+   
+   **If Beads enabled:**
+   ```bash
+   bd update <task_id> --status in_progress
+   ```
 
 2. **TDD Workflow** (if workflow.md specifies):
    - Write failing tests
@@ -260,11 +345,20 @@ For each incomplete task in plan.md:
        │       → Update plan.md, log in revisions.md
        │       → Then continue with updated plan
        │
+       ├─→ Discovered new work? (bug found, improvement needed, follow-up task)
+       │       → If Beads: Create with discovered-from link:
+       │         bd create "<discovered_issue>" -t bug -p 2 \
+       │           --deps discovered-from:<current_task_id> --json
+       │       → Assess: blocker or can defer?
+       │       → If blocker: pause current, work on discovered
+       │       → If deferrable: note and continue current task
+       │
        └─→ Blocked? (external dependency, need user input)
                → Mark as blocked, suggest /conductor-block
+               → If Beads: bd update <task_id> --status blocked
    ```
    
-   **Agent must announce**: "This issue reveals [spec/plan problem | implementation bug]. [Triggering revision | Fixing directly]."
+   **Agent must announce**: "This issue reveals [spec/plan problem | implementation bug | discovered work]. [Triggering revision | Fixing directly | Created follow-up task]."
 
 4. **Commit Changes**:
    ```bash
@@ -273,6 +367,11 @@ For each incomplete task in plan.md:
    ```
 
 5. **Update Plan**: Change `[~]` to `[x]`, append commit SHA (first 7 chars)
+
+   **If Beads enabled:**
+   ```bash
+   bd close <task_id> --reason "commit: <sha_7chars> - <description>"
+   ```
 
 6. **Commit Plan Update**:
    ```bash
@@ -287,11 +386,22 @@ At end of each phase:
 3. Ask for confirmation
 4. Create checkpoint commit
 
+**If Beads enabled** - update notes for compaction survival:
+```bash
+bd update <epic_id> --notes "COMPLETED: Phase N - <phase_name>
+IN PROGRESS: Phase N+1 - <next_phase>
+NEXT: <first_task_of_next_phase>"
+```
+
 ### 8. Track Completion
 When all tasks done:
 1. Update `conductor/tracks.md`: `## [~]` → `## [x]`
-2. Ask user: Archive, Delete, or Keep the track folder?
-3. Announce completion
+2. **If Beads enabled:**
+   ```bash
+   bd close <epic_id> --reason "Track complete. All tasks done."
+   ```
+3. Ask user: Archive, Delete, or Keep the track folder?
+4. Announce completion
 
 ---
 
@@ -325,6 +435,26 @@ For each track:
 
 ### Next Action
 [Next pending task]
+```
+
+**If Beads enabled** - show Beads status:
+```bash
+bd ready  # Show tasks with no blockers
+bd show <epic_id>  # Show active track's epic status
+```
+
+Present additional section:
+```
+### Beads Task Status
+
+**Ready to Work (no blockers):**
+- bd-xxx P1 "Task description"
+
+**In Progress:**
+- bd-yyy [active] "Current task"
+
+**Blocked:**
+- bd-zzz ⤷ Waiting on: bd-yyy
 ```
 
 ---
@@ -492,6 +622,14 @@ Append to `conductor/tracks/<track_id>/blockers.md` (create if needed):
 **Status:** Open
 ```
 
+**If Beads enabled:**
+```bash
+bd update <task_id> --status blocked
+bd update <task_id> --notes "BLOCKED: <reason>
+CATEGORY: <External/Technical/Resource>
+WAITING FOR: <what needs to happen to unblock>"
+```
+
 ### 6. Announce
 "Task marked as blocked. Run `/conductor-implement` when ready to resume, or `/conductor-skip` to move to next task."
 
@@ -528,6 +666,21 @@ Append to `conductor/tracks/<track_id>/skipped.md` (create if needed):
 ## [Date] - [Task]
 **Reason:** [justification]
 **Phase:** [phase name]
+```
+
+**If Beads enabled:**
+```bash
+# If "no longer needed" - close the task
+bd close <task_id> --reason "Skipped: <reason>"
+
+# If "will complete later" - reset to open
+bd update <task_id> --status open --notes "SKIPPED: <reason>. Will complete later."
+
+# If "blocked" - mark as blocked
+bd update <task_id> --status blocked --notes "SKIPPED: <reason>"
+
+# Mark next task as in progress
+bd update <next_task_id> --status in_progress
 ```
 
 ### 6. Continue or Halt
@@ -647,6 +800,23 @@ Revision #N: [brief description]
 - [key changes]"
 ```
 
+**If Beads enabled** - sync task changes:
+```bash
+# For NEW tasks - create in Beads
+bd create "<task_description>" --parent <phase_id> --json
+
+# For REMOVED tasks - close in Beads
+bd close <task_id> --reason "Removed in revision #N"
+
+# For MODIFIED tasks - add revision note
+bd update <task_id> --notes "REVISED: <what changed>"
+
+# Add revision note to epic
+bd update <epic_id> --notes "REVISION #N: <summary of changes>
+REASON: <why revision was needed>
+IMPACT: +X tasks, -Y tasks, ~Z modified"
+```
+
 ### 9. Announce
 ```
 Revision complete for track `<track_id>`:
@@ -698,6 +868,21 @@ Move archived track entries to an "Archived" section:
 git add conductor/
 git commit -m "conductor(archive): Archive completed tracks"
 ```
+
+**If Beads enabled** - compact archived track epics:
+```bash
+# For each archived track with beads_epic in metadata
+bd compact <epic_id>
+```
+
+Optionally offer project-wide compaction:
+```
+Would you like to compact all completed Beads tasks?
+A) Yes - Compact all completed tasks project-wide
+B) No - Only compact archived tracks
+```
+
+If A: Run `bd compact --all`
 
 ### 6. Announce
 "Archived [n] track(s). Track history preserved in conductor/archive/."
@@ -1078,6 +1263,18 @@ Phase: Phase 2 - Core Implementation
 Next: Session middleware"
 ```
 
+**If Beads enabled** - update epic notes for compaction survival:
+```bash
+bd update <epic_id> --notes "COMPLETED: Tasks 1-9 (45% of track)
+KEY DECISIONS: [list major decisions from handoff doc]
+IN PROGRESS: <current_task>
+NEXT: <next_task>
+HANDOFF: Section <N> saved at conductor/tracks/<track_id>/handoff_<timestamp>.md"
+
+# CRITICAL: Force sync to ensure changes reach remote immediately
+bd sync
+```
+
 ### 6. Present Summary
 
 ```
@@ -1116,21 +1313,38 @@ Announce: "You've completed significant work. Consider running `/conductor-hando
 
 ---
 
-## Beads Integration
+## Beads Integration (Optional)
 
-Conductor integrates with [Beads](https://github.com/lispysnake/beads) for enhanced task tracking and dependency management.
+Conductor integrates with [Beads](https://github.com/lispysnake/beads) for enhanced task tracking and dependency management. **Beads is completely optional** - Conductor works fully standalone.
 
-### Detection
+### CRITICAL: Availability Check
+
+**Before using ANY `bd` command, you MUST run this check:**
 
 ```bash
-# Check if Beads is available
-bd --version
+# Check if Beads is available and enabled
+BEADS_AVAILABLE=false
+if which bd > /dev/null 2>&1; then
+  if [ -f conductor/beads.json ]; then
+    if grep -q '"enabled"[[:space:]]*:[[:space:]]*true' conductor/beads.json 2>/dev/null; then
+      BEADS_AVAILABLE=true
+    fi
+  fi
+fi
 
-# Check if integration is enabled
-cat conductor/beads.json | jq '.enabled'
+# Only use bd commands if BEADS_AVAILABLE is true
 ```
 
-### Key Beads Commands
+### If Beads is NOT available:
+
+- **DO NOT run any `bd` commands** - they will fail
+- Use only `plan.md` markers (`[ ]`, `[~]`, `[x]`, `[!]`) for task tracking
+- Use `implement_state.json` for resume state
+- All Conductor workflows work normally without Beads
+
+### If Beads IS available:
+
+Run the detection check, then use bd commands:
 
 | Command | Purpose |
 |---------|---------|
@@ -1139,11 +1353,11 @@ cat conductor/beads.json | jq '.enabled'
 | `bd dep add <child> <parent>` | Set dependency (parent blocks child) |
 | `bd ready [--epic <id>]` | List tasks with no blockers |
 | `bd update <id> --status <status>` | Update task status |
-| `bd done <id> --note "<message>"` | Complete task with commit note |
+| `bd close <id> --reason "<message>"` | Complete task with summary |
 | `bd show <id>` | View task details and dependencies |
 | `bd compact [<id>]` | Compact completed tasks to reduce clutter |
 
-### Workflow Integration Points
+### Workflow Integration Points (only when Beads enabled)
 
 | Conductor Workflow | Beads Action |
 |--------------------|--------------|
@@ -1151,12 +1365,11 @@ cat conductor/beads.json | jq '.enabled'
 | **New Track** | Create epic for track, tasks for plan items |
 | **Implement** | `bd ready` for task selection, sync status on progress |
 | **Block** | `bd update <id> --status blocked` with reason |
-| **Complete Task** | `bd done <id> --note "commit: <sha>"` |
+| **Complete Task** | `bd close <id> --reason "commit: <sha>"` |
 | **Archive** | `bd compact` to clean up completed tasks |
 
-### Sync Behavior
+### Sync Behavior (only when Beads enabled)
 
-When Beads is enabled:
 1. **Task creation**: Plan tasks auto-create Beads tasks with dependencies
 2. **Status sync**: `[~]` → `in_progress`, `[x]` → `done`, `[!]` → `blocked`
 3. **Priority mapping**: Phase 1 tasks get higher priority
@@ -1177,6 +1390,13 @@ When Beads is enabled:
   }
 }
 ```
+
+### Graceful Degradation
+
+If a `bd` command fails unexpectedly:
+1. Log a warning but continue
+2. Fall back to plan.md-only tracking
+3. Do not block the workflow
 
 ---
 

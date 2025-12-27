@@ -52,11 +52,22 @@ Report what was revised and suggest `/conductor-implement` to continue.
    - If not enabled, skip this section
 
 2. **Sync Task Changes:**
-   - NEW tasks: `bd create "<task>" -P <phase_id>`
-   - REMOVED tasks: `bd close <task_id> --reason "Removed in revision"`
-   - MODIFIED tasks: `bd update <task_id> --notes "Revised: <change>"`
+   - NEW tasks: 
+     ```bash
+     bd create "<task>" --parent <phase_id> \
+       --design "<task technical notes>" \
+       --acceptance "<task done criteria>" \
+       --json
+     ```
+   - REMOVED tasks: `bd close <task_id> --reason "Removed in revision #N: <reason>"`
+   - MODIFIED tasks: `bd update <task_id> --notes "REVISED: <what changed and why>"`
 
-3. **Add Revision Note:**
-   - `bd note <epic_id> "Revision: <summary>"`
+3. **Add Revision Note to Epic:**
+   ```bash
+   bd update <epic_id> --notes "REVISION #N: <summary of changes>
+   REASON: <why revision was needed>
+   IMPACT: +X tasks added, -Y tasks removed, ~Z modified
+   KEY DECISION: <if any major decisions made during revision>"
+   ```
 
 **CRITICAL:** If `bd` fails, log warning but continue.

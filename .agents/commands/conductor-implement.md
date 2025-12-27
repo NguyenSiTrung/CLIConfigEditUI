@@ -127,9 +127,9 @@ Implement track: $ARGUMENTS
    c. **For Each Task:**
           - **i. Defer to Workflow:** `workflow.md` is the **single source of truth** for task lifecycle. Follow its "Task Workflow" section for implementation, testing, and committing.
           - **i-a. Beads Task Start (If Enabled):** After marking task `[~]` in progress:
-            - If task has a corresponding `beads_task_id` in metadata, run `bd update <task_id> --status in-progress`
+            - If task has a corresponding `beads_task_id` in metadata, run `bd update <task_id> --status in-progress --assignee conductor`
           - **i-b. Beads Task Complete (If Enabled):** After marking task `[x]` complete:
-            - Run `bd update <task_id> --status done`
+            - Run `bd close <task_id> --reason "commit: <sha_7chars> - <description>"`
       - **ii. Update Implementation State:** After marking task in progress:
         - Set `current_phase` to current phase name
         - Set `current_phase_index` to current phase number (zero-based)
@@ -141,6 +141,13 @@ Implement track: $ARGUMENTS
         - Reset `current_task_index` to 0
         - Increment `current_phase_index`
         - Update `current_phase` to next phase name
+        - **If Beads enabled:** Update epic notes for compaction survival:
+          ```bash
+          bd update <epic_id> --notes "COMPLETED: Phase N - <phase_name>
+          IN PROGRESS: Phase N+1 - <next_phase>
+          NEXT: <first_task_of_next_phase>
+          KEY DECISIONS: <major decisions made this phase>"
+          ```
 
    d. **Handle Blocked Tasks:**
        - If task marked `[!]`:
@@ -162,9 +169,10 @@ Implement track: $ARGUMENTS
       | **Implementation Bug** | Typo, logic error, missing import, test assertion wrong | Fix directly and continue |
       | **Spec Issue** | Requirement wrong, missing, impossible, edge case not covered | Trigger Revise workflow for spec → update spec.md → log in revisions.md → then fix |
       | **Plan Issue** | Missing task, wrong order, task too big/small, dependency missing | Trigger Revise workflow for plan → update plan.md → log in revisions.md → continue |
+      | **Discovered Work** | Bug found, improvement needed, follow-up task | If Beads: `bd create "<issue>" --deps discovered-from:<current_task_id> --json` |
       | **Blocked** | External dependency, need user input, waiting on API | Mark as blocked, suggest `/conductor-block` |
       
-      **Agent MUST announce:** "This issue reveals [spec/plan problem | implementation bug]. [Triggering revision | Fixing directly]."
+      **Agent MUST announce:** "This issue reveals [spec/plan problem | implementation bug | discovered work]. [Triggering revision | Fixing directly | Created follow-up task]."
       
       **For Spec/Plan Issues:**
       1. Create/append to `conductor/tracks/<track_id>/revisions.md` with:

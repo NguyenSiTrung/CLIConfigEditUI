@@ -38,14 +38,32 @@ For active tracks, also load:
 - `conductor/tracks/<track_id>/spec.md`
 - `conductor/tracks/<track_id>/plan.md`
 
-## Beads Integration
+## Beads Integration (Optional)
 
-If `.beads/` directory exists alongside `conductor/`, also check:
-1. `conductor/beads.json` - Integration config
-2. Run `bd ready` to get tasks with no blockers
-3. Use `bd show <epic>` for current track context
+Beads integration is **completely optional**. Conductor works standalone without Beads.
 
-When Beads is enabled:
+### Detection (MUST check before using bd commands)
+
+Before using ANY `bd` command, you MUST verify:
+1. `bd` CLI is installed: `which bd` returns a path
+2. `conductor/beads.json` exists AND has `"enabled": true`
+
+```bash
+# Check availability - run this before any bd command
+if which bd > /dev/null 2>&1 && [ -f conductor/beads.json ]; then
+  BEADS_ENABLED=$(cat conductor/beads.json | grep -o '"enabled"[[:space:]]*:[[:space:]]*true' || echo "")
+  if [ -n "$BEADS_ENABLED" ]; then
+    # Beads is available and enabled - use bd commands
+  fi
+fi
+```
+
+### If Beads is NOT available:
+- **DO NOT** run any `bd` commands
+- Use only plan.md markers for task tracking
+- All conductor commands work normally without Beads
+
+### If Beads IS available:
 - Tracks become Beads epics
 - Tasks sync to Beads for persistent memory
 - Use `bd ready` instead of manual task selection

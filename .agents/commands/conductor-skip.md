@@ -36,7 +36,11 @@ Confirm skip and show next task.
 
 1. **Check Beads Config:** Read `conductor/beads.json`
 2. **If enabled:**
-   - "No longer needed": `bd close <task_id> --reason "Skipped"`
-   - "Will complete later": `bd update <task_id> --status open`
-   - "Blocked": `bd update <task_id> --status blocked`
-3. **Update next task:** `bd update <next_task_id> --status in_progress`
+   - "No longer needed": `bd close <task_id> --reason "Skipped: <reason>"`
+   - "Will complete later": 
+     ```bash
+     bd update <task_id> --status open
+     bd update <task_id> --notes "SKIPPED: <reason>. Will complete later."
+     ```
+   - "Blocked": `bd update <task_id> --status blocked --notes "SKIPPED: <reason>"`
+3. **Update next task:** `bd update <next_task_id> --status in_progress --assignee conductor`

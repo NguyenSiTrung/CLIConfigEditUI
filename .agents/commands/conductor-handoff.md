@@ -103,12 +103,25 @@ Display:
    - Read `conductor/beads.json`
    - If not enabled, skip this section
 
-2. **Save Context to Beads:**
-   - `bd note <epic_id> "HANDOFF Section <N>: <progress>% complete. Current: <phase>. Next: <action>"`
-   - Update current task: `bd update <task_id> --notes "HANDOFF: <key context for resume>"`
+2. **Save Context to Beads with Full Structure:**
+   ```bash
+   bd update <epic_id> --notes "COMPLETED: Tasks 1-N (<progress>% of track)
+   KEY DECISIONS: [list major decisions from this section]
+   IN PROGRESS: <current_task>
+   NEXT: <next_task>
+   BLOCKER: <if any>
+   DISCOVERED: <new issues found, with beads IDs>
+   HANDOFF: Section <N> saved at conductor/tracks/<track_id>/handoff_<timestamp>.md"
+   ```
 
 3. **Format for Compaction Recovery:**
    Notes should be self-contained - no conversation context assumed.
+   Include technical specifics, not vague progress.
+
+4. **CRITICAL: Force Sync to Remote:**
+   ```bash
+   bd sync  # Ensures changes reach remote immediately
+   ```
 
 **Benefit:** Beads notes survive context compaction, enabling seamless session resume.
 

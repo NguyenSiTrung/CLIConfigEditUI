@@ -19,7 +19,14 @@ Change `[~]` to `[!]` and append `[BLOCKED: reason]`
 ## 4. Sync with Beads (if enabled)
 - Check if `conductor/beads.json` exists and `enabled: true`
 - If enabled and task has `beads_task_id` in track metadata:
-  - Run `bd update <task_id> --status blocked --note "<reason>"`
+  - Run:
+    ```bash
+    bd update <task_id> --status blocked
+    bd update <task_id> --notes "BLOCKED: <reason>
+    CATEGORY: <External/Technical/Resource>
+    WAITING FOR: <what needs to happen to unblock>
+    DISCOVERED: <if blocking issue is new, create with discovered-from>"
+    ```
   - If blocker is another task, create dependency: `bd dep add <blocked_task> <blocker_task>`
 - If Beads not enabled, skip silently
 

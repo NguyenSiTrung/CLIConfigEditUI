@@ -97,12 +97,22 @@ Based on status:
    - If file doesn't exist or `enabled: false`, skip this section
 
 2. **Gather Beads Status:**
-   - Run `bd ready` to get tasks with no blockers
-   - For active track with `beads_epic` in metadata, run `bd show <epic_id>`
+   - Run `bd ready --json` to get tasks with no blockers
+   - For active track with `beads_epic` in metadata:
+     - Run `bd show <epic_id> --json` to get full context
+     - Read epic notes for last session context (COMPLETED, IN PROGRESS, NEXT)
+     - Read design field for technical approach
+     - Read acceptance field for completion criteria
 
 3. **Present Beads Status:**
    ```
    ### Beads Task Status
+
+   **Last Session Context (from epic notes):**
+   - COMPLETED: <from notes>
+   - IN PROGRESS: <from notes>
+   - NEXT: <from notes>
+   - KEY DECISIONS: <from notes>
 
    **Ready to Work (no blockers):**
    - bd-a3f8.1.2 P1 "Implement auth middleware"
@@ -113,6 +123,9 @@ Based on status:
 
    **Blocked:**
    - bd-a3f8.3.1 ⤷ Waiting on: bd-a3f8.2.1
+
+   **Discovered During Work:**
+   - bd-xyz (discovered-from: bd-a3f8.1.1) "Found race condition"
    ```
 
 4. **Dependency Graph (if complex):**
