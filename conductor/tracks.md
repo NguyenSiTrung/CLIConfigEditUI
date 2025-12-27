@@ -13,8 +13,7 @@ This file lists all development tracks (features, bugs, improvements) for CLI Co
 
 ## Active Tracks
 
-### [~] rovo-dev-cli_20251227 - Add Rovo Dev CLI Predefined Tool Support
-*Priority: 🟠 High | [conductor/tracks/rovo-dev-cli_20251227/](conductor/tracks/rovo-dev-cli_20251227/)*
+*No active tracks.*
 
 ---
 
@@ -25,6 +24,9 @@ This file lists all development tracks (features, bugs, improvements) for CLI Co
 ---
 
 ## Archived Tracks
+
+### [x] rovo-dev-cli_20251227 - Add Rovo Dev CLI Predefined Tool Support
+*Archived: 2025-12-27 | [conductor/archive/rovo-dev-cli_20251227/](conductor/archive/rovo-dev-cli_20251227/)*
 
 ### [x] ui-ux-polish_20251227 - Comprehensive UI/UX Improvements
 *Archived: 2025-12-27 | [conductor/archive/ui-ux-polish_20251227/](conductor/archive/ui-ux-polish_20251227/)*
