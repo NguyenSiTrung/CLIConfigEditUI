@@ -1,5 +1,5 @@
 import { McpToolStatus, McpSyncStatus } from '@/types';
-import { Check, AlertTriangle, RefreshCw, XCircle, Minus, ToggleLeft, ToggleRight } from 'lucide-react';
+import { Check, AlertTriangle, RefreshCw, XCircle, Minus, ToggleLeft, ToggleRight, Terminal } from 'lucide-react';
 
 interface McpToolStatusListProps {
   toolStatuses: McpToolStatus[];
@@ -50,6 +50,20 @@ export function McpToolStatusList({
   onSyncTool,
   isSyncing,
 }: McpToolStatusListProps) {
+  if (toolStatuses.length === 0) {
+    return (
+      <div className="text-center py-8 border-2 border-dashed border-slate-200 dark:border-slate-700 rounded-lg">
+        <div className="inline-flex items-center justify-center w-14 h-14 rounded-xl bg-slate-100 dark:bg-slate-800 mb-4">
+          <Terminal className="w-7 h-7 text-slate-400 dark:text-slate-500" />
+        </div>
+        <p className="text-sm font-medium text-slate-600 dark:text-slate-300 mb-1">No target tools detected</p>
+        <p className="text-xs text-slate-400 dark:text-slate-500 max-w-[280px] mx-auto">
+          Install AI coding CLI tools like Claude CLI, Amp, or Cursor to sync MCP server configurations.
+        </p>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-2" role="list">
       {toolStatuses.map((status) => {

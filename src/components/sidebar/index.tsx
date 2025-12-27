@@ -92,6 +92,23 @@ export function Sidebar({
     });
   }, [behaviorSettings.expandToolsByDefault, customTools, expandedTools, toggleToolExpanded]);
 
+  const handleResizeKeyDown = useCallback((e: React.KeyboardEvent) => {
+    const STEP = 20;
+    let newWidth = sidebarWidth;
+    
+    if (e.key === 'ArrowLeft') {
+      e.preventDefault();
+      newWidth = Math.max(MIN_WIDTH, sidebarWidth - STEP);
+    } else if (e.key === 'ArrowRight') {
+      e.preventDefault();
+      newWidth = Math.min(MAX_WIDTH, sidebarWidth + STEP);
+    } else {
+      return;
+    }
+    
+    setSidebarWidth(newWidth);
+  }, [sidebarWidth, setSidebarWidth]);
+
   const handleMouseDown = useCallback((e: React.MouseEvent) => {
     e.preventDefault();
     setIsResizing(true);
@@ -257,16 +274,23 @@ export function Sidebar({
       {/* Resize handle - wider hit area (6px) with narrow visual indicator */}
       <div
         onMouseDown={handleMouseDown}
+        onKeyDown={handleResizeKeyDown}
+        tabIndex={0}
         className={`absolute right-0 top-0 bottom-0 w-1.5 cursor-col-resize group
-                   transition-colors duration-150`}
-        title="Drag to resize"
+                   transition-colors duration-150
+                   focus-visible:outline-none`}
+        title="Drag to resize (or use arrow keys)"
         role="separator"
         aria-orientation="vertical"
         aria-label="Resize sidebar"
+        aria-valuenow={sidebarWidth}
+        aria-valuemin={MIN_WIDTH}
+        aria-valuemax={MAX_WIDTH}
       >
         <div 
           className={`absolute right-0 top-0 bottom-0 w-0.5 
                      group-hover:bg-indigo-500/50 group-active:bg-indigo-500/70
+                     group-focus-visible:bg-indigo-500/70
                      transition-colors duration-150
                      ${isResizing ? 'bg-indigo-500/70' : 'bg-transparent'}`}
         />

@@ -15,6 +15,9 @@ This file lists all development tracks (features, bugs, improvements) for CLI Co
 
 ---
 
+## [~] Track: Comprehensive UI/UX Improvements
+*Link: [./conductor/tracks/ui-ux-polish_20251227/](./conductor/tracks/ui-ux-polish_20251227/)*
+
 ---
 
 ## Completed Tracks

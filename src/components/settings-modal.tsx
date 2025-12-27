@@ -48,8 +48,8 @@ export function SettingsModal({ isOpen, onClose, onOpenKeyboardShortcuts }: Sett
     }
 
     setActiveTab(tabs[newIndex].id);
-    const tabButtons = document.querySelectorAll('[role="tab"]');
-    (tabButtons[newIndex] as HTMLElement)?.focus();
+    const tabButton = document.getElementById(`settings-tab-${tabs[newIndex].id}`);
+    tabButton?.focus();
   };
 
   const tabs: { id: SettingsTab; label: string; icon: React.ReactNode }[] = [
@@ -105,6 +105,7 @@ export function SettingsModal({ isOpen, onClose, onOpenKeyboardShortcuts }: Sett
         {tabs.map((tab, index) => (
           <button
             key={tab.id}
+            id={`settings-tab-${tab.id}`}
             role="tab"
             aria-selected={activeTab === tab.id}
             aria-controls={`settings-panel-${tab.id}`}
@@ -123,7 +124,7 @@ export function SettingsModal({ isOpen, onClose, onOpenKeyboardShortcuts }: Sett
         ))}
       </div>
 
-      <div className="space-y-6" role="tabpanel" id={`settings-panel-${activeTab}`} aria-labelledby={activeTab}>
+      <div className="space-y-6" role="tabpanel" id={`settings-panel-${activeTab}`} aria-labelledby={`settings-tab-${activeTab}`}>
         {activeTab === 'appearance' && (
           <div>
             <label className="block text-sm font-medium dark:text-gray-300 text-slate-700 mb-3">

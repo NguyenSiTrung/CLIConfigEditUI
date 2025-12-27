@@ -42,7 +42,20 @@ export function Modal({
   useEffect(() => {
     if (isOpen) {
       previousActiveElement.current = document.activeElement as HTMLElement;
-      modalRef.current?.focus();
+      
+      // Focus the first focusable element in the modal, or the modal itself
+      requestAnimationFrame(() => {
+        const focusableElements = modalRef.current?.querySelectorAll<HTMLElement>(
+          'button, [href], input:not([type="hidden"]), select, textarea, [tabindex]:not([tabindex="-1"])'
+        );
+        const firstFocusable = focusableElements?.[0];
+        if (firstFocusable) {
+          firstFocusable.focus();
+        } else {
+          modalRef.current?.focus();
+        }
+      });
+      
       document.body.style.overflow = 'hidden';
     } else {
       document.body.style.overflow = '';

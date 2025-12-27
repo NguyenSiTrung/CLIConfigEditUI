@@ -1,6 +1,6 @@
 import { Settings, Moon, Sun, Terminal, Sparkles, Minus, Square, X, Server, Search } from 'lucide-react';
 import { useAppStore } from '@/stores/app-store';
-import { useEffect } from 'react';
+import { useEffect, useCallback, useMemo } from 'react';
 import { getCurrentWindow } from '@tauri-apps/api/window';
 import { APP_VERSION } from '@/constants/design-tokens';
 import { formatShortcut } from '@/hooks/use-keyboard-shortcut';
@@ -45,6 +45,38 @@ export function Header({ onSettingsClick, currentView = 'editor', onViewChange, 
     await appWindow.startDragging();
   };
 
+  const views = useMemo(() => [
+    { id: 'editor' as AppView, label: 'Configs', icon: <Terminal className="w-3.5 h-3.5" /> },
+    { id: 'mcp' as AppView, label: 'MCP Sync', icon: <Server className="w-3.5 h-3.5" /> },
+  ], []);
+
+  const handleViewTabKeyDown = useCallback((e: React.KeyboardEvent) => {
+    if (!onViewChange) return;
+    
+    const currentIndex = views.findIndex(v => v.id === currentView);
+    let newIndex = currentIndex;
+
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+      e.preventDefault();
+      newIndex = (currentIndex + 1) % views.length;
+    } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+      e.preventDefault();
+      newIndex = (currentIndex - 1 + views.length) % views.length;
+    } else if (e.key === 'Home') {
+      e.preventDefault();
+      newIndex = 0;
+    } else if (e.key === 'End') {
+      e.preventDefault();
+      newIndex = views.length - 1;
+    } else {
+      return;
+    }
+
+    onViewChange(views[newIndex].id);
+    const tabButton = document.getElementById(`view-tab-${views[newIndex].id}`);
+    tabButton?.focus();
+  }, [currentView, onViewChange, views]);
+
   return (
     <header
       className="titlebar h-12 flex items-center justify-between select-none
@@ -77,33 +109,31 @@ export function Header({ onSettingsClick, currentView = 'editor', onViewChange, 
       </div>
 
       {/* Center - View tabs */}
-      <div className="flex-1 flex items-center justify-center gap-1">
-        <button
-          onClick={() => onViewChange?.('editor')}
-          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
-            currentView === 'editor'
-              ? 'bg-indigo-100 dark:bg-indigo-500/20 text-indigo-700 dark:text-indigo-300'
-              : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-white/5'
-          }`}
-          aria-label="Switch to Configs view"
-          aria-pressed={currentView === 'editor'}
-        >
-          <Terminal className="w-3.5 h-3.5" />
-          Configs
-        </button>
-        <button
-          onClick={() => onViewChange?.('mcp')}
-          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
-            currentView === 'mcp'
-              ? 'bg-indigo-100 dark:bg-indigo-500/20 text-indigo-700 dark:text-indigo-300'
-              : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-white/5'
-          }`}
-          aria-label="Switch to MCP Sync view"
-          aria-pressed={currentView === 'mcp'}
-        >
-          <Server className="w-3.5 h-3.5" />
-          MCP Sync
-        </button>
+      <div 
+        className="flex-1 flex items-center justify-center gap-1"
+        role="tablist"
+        aria-label="Main views"
+      >
+        {views.map((view) => (
+          <button
+            key={view.id}
+            id={`view-tab-${view.id}`}
+            role="tab"
+            aria-selected={currentView === view.id}
+            aria-controls={`view-panel-${view.id}`}
+            tabIndex={currentView === view.id ? 0 : -1}
+            onClick={() => onViewChange?.(view.id)}
+            onKeyDown={handleViewTabKeyDown}
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
+              currentView === view.id
+                ? 'bg-indigo-100 dark:bg-indigo-500/20 text-indigo-700 dark:text-indigo-300'
+                : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-white/5'
+            }`}
+          >
+            {view.icon}
+            {view.label}
+          </button>
+        ))}
       </div>
 
       {/* Right side - Actions and window controls */}

@@ -114,12 +114,36 @@ function App() {
   const sidebarCollapsed = useAppStore((state) => state.sidebarCollapsed);
   const setSidebarCollapsed = useAppStore((state) => state.setSidebarCollapsed);
 
-  // Global keyboard shortcuts
+  // Use refs to read current state in keyboard handler without re-registering
+  const sidebarCollapsedRef = useRef(sidebarCollapsed);
+  const currentViewRef = useRef(currentView);
+  
+  useEffect(() => {
+    sidebarCollapsedRef.current = sidebarCollapsed;
+  }, [sidebarCollapsed]);
+  
+  useEffect(() => {
+    currentViewRef.current = currentView;
+  }, [currentView]);
+
+  // Global keyboard shortcuts (stable handler - doesn't re-register on state changes)
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
+      // Skip if event was already handled
+      if (e.defaultPrevented) return;
+      
+      // Skip when focus is in an input element
+      const activeElement = document.activeElement;
+      const isInputFocused = activeElement instanceof HTMLInputElement ||
+                              activeElement instanceof HTMLTextAreaElement ||
+                              activeElement?.getAttribute('contenteditable') === 'true';
+      
+      // Skip when focus is inside Monaco editor (except for certain global shortcuts)
+      const isMonacoFocused = activeElement?.closest('.monaco-editor') !== null;
+      
       const isMod = e.metaKey || e.ctrlKey;
       
-      // Ctrl/Cmd+K - Command palette
+      // Ctrl/Cmd+K - Command palette (always works - global shortcut)
       if (isMod && e.key === 'k') {
         e.preventDefault();
         setIsQuickOpenMode(false);
@@ -127,7 +151,7 @@ function App() {
         return;
       }
       
-      // Ctrl/Cmd+P - Quick Open (file picker)
+      // Ctrl/Cmd+P - Quick Open (file picker) (always works - global shortcut)
       if (isMod && e.key === 'p') {
         e.preventDefault();
         setIsQuickOpenMode(true);
@@ -135,30 +159,33 @@ function App() {
         return;
       }
       
-      // Ctrl/Cmd+, - Settings
-      if (isMod && e.key === ',') {
+      // Skip remaining shortcuts when focus is in input elements
+      if (isInputFocused) return;
+      
+      // Ctrl/Cmd+, - Settings (skip in Monaco to not interfere with editor)
+      if (isMod && e.key === ',' && !isMonacoFocused) {
         e.preventDefault();
         setIsSettingsOpen(true);
         return;
       }
       
-      // Ctrl/Cmd+B - Toggle sidebar
-      if (isMod && e.key === 'b' && !e.shiftKey) {
+      // Ctrl/Cmd+B - Toggle sidebar (skip in Monaco to not interfere with editor)
+      if (isMod && e.key === 'b' && !e.shiftKey && !isMonacoFocused) {
         e.preventDefault();
-        setSidebarCollapsed(!sidebarCollapsed);
+        setSidebarCollapsed(!sidebarCollapsedRef.current);
         return;
       }
       
-      // Ctrl/Cmd+Shift+M - Toggle MCP panel
-      if (isMod && e.shiftKey && e.key.toLowerCase() === 'm') {
+      // Ctrl/Cmd+Shift+M - Toggle MCP panel (skip in Monaco)
+      if (isMod && e.shiftKey && e.key.toLowerCase() === 'm' && !isMonacoFocused) {
         e.preventDefault();
-        setCurrentView(currentView === 'mcp' ? 'editor' : 'mcp');
+        setCurrentView(currentViewRef.current === 'mcp' ? 'editor' : 'mcp');
         return;
       }
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [sidebarCollapsed, setSidebarCollapsed, currentView]);
+  }, [setSidebarCollapsed]);
 
   const handleExternalChange = useCallback(() => {
     setExternalChangeDetected(true);

@@ -148,8 +148,20 @@ export const ConfigEditor = forwardRef<ConfigEditorHandle, ConfigEditorProps>(fu
   }), []);
 
   // Debounced JSON validation (500ms) to reduce validation frequency during typing
+  // Skip validation for large files (>1MB) to prevent performance issues
   useEffect(() => {
+    const LARGE_FILE_THRESHOLD = 1024 * 1024; // 1MB
+    
     if (!editorRef.current || !monacoRef.current || currentFormat !== 'json') {
+      return;
+    }
+    
+    // Skip validation for large files
+    if (editorContent.length > LARGE_FILE_THRESHOLD) {
+      const model = editorRef.current.getModel();
+      if (model) {
+        monacoRef.current.editor.setModelMarkers(model, 'json-validation', []);
+      }
       return;
     }
     
@@ -239,11 +251,13 @@ export const ConfigEditor = forwardRef<ConfigEditorHandle, ConfigEditorProps>(fu
     return () => clearTimeout(timer);
   }, [checkBackups]);
 
-  // Trigger resize when sidebar collapses/expands to fix Monaco layout
+  // Trigger Monaco layout when sidebar collapses/expands
   useEffect(() => {
     // Small delay to let the CSS transition complete
     const timer = setTimeout(() => {
-      window.dispatchEvent(new Event('resize'));
+      requestAnimationFrame(() => {
+        editorRef.current?.layout();
+      });
     }, 350);
     return () => clearTimeout(timer);
   }, [sidebarCollapsed]);
