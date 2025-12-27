@@ -618,5 +618,22 @@ pub fn get_cli_tools() -> Vec<CliTool> {
                 },
             ]),
         },
+        CliTool {
+            id: "letta-code".to_string(),
+            name: "Letta Code".to_string(),
+            icon: Some("🧠".to_string()),
+            docs_url: Some("https://docs.letta.com/letta-code".to_string()),
+            description: Some("Memory-first, model-agnostic coding agent".to_string()),
+            suggested_configs: Some(vec![
+                SuggestedConfig {
+                    label: "Settings".to_string(),
+                    path: "~/.letta/settings.json".to_string(),
+                    format: ConfigFormat::Json,
+                    icon: Some("⚙️".to_string()),
+                    description: Some("Main configuration file".to_string()),
+                    json_path: None,
+                },
+            ]),
+        },
     ]
 }

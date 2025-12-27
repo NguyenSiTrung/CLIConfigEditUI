@@ -13,7 +13,8 @@ This file lists all development tracks (features, bugs, improvements) for CLI Co
 
 ## Active Tracks
 
-*No active tracks.*
+### [~] letta-code_20251227 - Add Letta Code CLI Predefined Tool
+*Link: [./conductor/tracks/letta-code_20251227/](./conductor/tracks/letta-code_20251227/)*
 
 ---
 

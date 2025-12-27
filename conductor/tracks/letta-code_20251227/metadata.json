@@ -1,0 +1,12 @@
+{
+  "track_id": "letta-code_20251227",
+  "type": "feature",
+  "status": "new",
+  "priority": "high",
+  "depends_on": [],
+  "estimated_hours": null,
+  "created_at": "2025-12-27T12:00:00Z",
+  "updated_at": "2025-12-27T12:00:00Z",
+  "description": "Add Letta Code CLI as a predefined tool with global settings.json configuration",
+  "beads_epic": "CLIConfigEditUI-ike"
+}

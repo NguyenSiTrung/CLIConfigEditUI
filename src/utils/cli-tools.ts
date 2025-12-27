@@ -485,4 +485,20 @@ export const CLI_TOOLS: CliTool[] = [
       },
     ],
   },
+  {
+    id: 'letta-code',
+    name: 'Letta Code',
+    icon: '🧠',
+    docsUrl: 'https://docs.letta.com/letta-code',
+    description: 'Memory-first, model-agnostic coding agent',
+    suggestedConfigs: [
+      {
+        label: 'Settings',
+        path: '~/.letta/settings.json',
+        format: 'json',
+        icon: '⚙️',
+        description: 'Main configuration file',
+      },
+    ],
+  },
 ];
