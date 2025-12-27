@@ -13,9 +13,7 @@ This file lists all development tracks (features, bugs, improvements) for CLI Co
 
 ## Active Tracks
 
-### [x] kilo-code-cli_20251227 - Add Kilo Code CLI Predefined Tool
-*Link: [./conductor/tracks/kilo-code-cli_20251227/](./conductor/tracks/kilo-code-cli_20251227/)*
-*Priority: 🟠 High*
+*No active tracks.*
 
 ---
 
@@ -26,6 +24,9 @@ This file lists all development tracks (features, bugs, improvements) for CLI Co
 ---
 
 ## Archived Tracks
+
+### [x] kilo-code-cli_20251227 - Add Kilo Code CLI Predefined Tool
+*Archived: 2025-12-27 | [conductor/archive/kilo-code-cli_20251227/](conductor/archive/kilo-code-cli_20251227/)*
 
 ### [x] letta-code_20251227 - Add Letta Code CLI Predefined Tool
 *Archived: 2025-12-27 | [conductor/archive/letta-code_20251227/](conductor/archive/letta-code_20251227/)*
