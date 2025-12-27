@@ -15,11 +15,6 @@ This file lists all development tracks (features, bugs, improvements) for CLI Co
 
 ---
 
-## [~] Track: Comprehensive UI/UX Improvements
-*Link: [./conductor/tracks/ui-ux-polish_20251227/](./conductor/tracks/ui-ux-polish_20251227/)*
-
----
-
 ## Completed Tracks
 
 *No completed tracks pending archive.*
@@ -27,6 +22,9 @@ This file lists all development tracks (features, bugs, improvements) for CLI Co
 ---
 
 ## Archived Tracks
+
+### [x] ui-ux-polish_20251227 - Comprehensive UI/UX Improvements
+*Archived: 2025-12-27 | [conductor/archive/ui-ux-polish_20251227/](conductor/archive/ui-ux-polish_20251227/)*
 
 ### [x] quality-safety_20251226 - Codebase Quality & Safety Improvements
 *Archived: 2025-12-26 | [conductor/archive/quality-safety_20251226/](conductor/archive/quality-safety_20251226/)*

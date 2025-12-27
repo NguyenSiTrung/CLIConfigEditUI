@@ -12,7 +12,7 @@ import { OnboardingTooltip, Modal, Button } from './ui';
 import { useState, useEffect, useCallback, useRef, useMemo, useImperativeHandle, forwardRef } from 'react';
 import { invoke } from '@tauri-apps/api/core';
 import { formatShortcut } from '@/hooks/use-keyboard-shortcut';
-import { getFileName } from '@/utils/path';
+import { getFileName, truncatePath } from '@/utils/path';
 import {
   Save,
   AlignLeft,
@@ -26,6 +26,9 @@ import {
   Layers,
   FilePlus,
   Settings,
+  Keyboard,
+  Copy,
+  Check,
 } from 'lucide-react';
 
 const FORMAT_TO_LANGUAGE: Record<ConfigFormat, string> = {
@@ -50,6 +53,7 @@ interface ConfigEditorProps {
   onAddCustomTool: () => void;
   onOpenSettings?: () => void;
   onSwitchToMcp?: () => void;
+  onOpenKeyboardShortcuts?: () => void;
   externalChangeDetected?: boolean;
   onReloadFile?: () => void;
   onDismissExternalChange?: () => void;
@@ -67,6 +71,7 @@ export const ConfigEditor = forwardRef<ConfigEditorHandle, ConfigEditorProps>(fu
   onAddCustomTool,
   onOpenSettings,
   onSwitchToMcp,
+  onOpenKeyboardShortcuts,
   externalChangeDetected,
   onReloadFile,
   onDismissExternalChange,
@@ -99,6 +104,7 @@ export const ConfigEditor = forwardRef<ConfigEditorHandle, ConfigEditorProps>(fu
   const [activeTab, setActiveTab] = useState<EditorTab>('editor');
   const [showReloadWarning, setShowReloadWarning] = useState(false);
   const [cursorPosition, setCursorPosition] = useState<{ line: number; column: number }>({ line: 1, column: 1 });
+  const [pathCopied, setPathCopied] = useState(false);
   
   // Monaco editor refs for JSON validation markers
   const editorRef = useRef<Monaco.editor.IStandaloneCodeEditor | null>(null);
@@ -329,13 +335,32 @@ export const ConfigEditor = forwardRef<ConfigEditorHandle, ConfigEditorProps>(fu
     onReloadFile?.();
   }, [onReloadFile]);
 
+  const handleCopyPath = useCallback(async () => {
+    if (!currentFilePath) return;
+    try {
+      await navigator.clipboard.writeText(currentFilePath);
+      setPathCopied(true);
+      setTimeout(() => setPathCopied(false), 2000);
+    } catch {
+      // Fallback for older browsers
+      const textArea = document.createElement('textarea');
+      textArea.value = currentFilePath;
+      document.body.appendChild(textArea);
+      textArea.select();
+      document.execCommand('copy');
+      document.body.removeChild(textArea);
+      setPathCopied(true);
+      setTimeout(() => setPathCopied(false), 2000);
+    }
+  }, [currentFilePath]);
+
   // Memoized calculations - must be before early returns
   const lineCount = useMemo(() => editorContent.split('\n').length, [editorContent]);
   const byteSize = useMemo(() => new Blob([editorContent]).size, [editorContent]);
   const formatInfo = FORMAT_LABELS[currentFormat];
 
   if (!activeToolId) {
-    return <WelcomeScreen onAddCustomTool={onAddCustomTool} onOpenSettings={onOpenSettings} onSwitchToMcp={onSwitchToMcp} />;
+    return <WelcomeScreen onAddCustomTool={onAddCustomTool} onOpenSettings={onOpenSettings} onSwitchToMcp={onSwitchToMcp} onOpenKeyboardShortcuts={onOpenKeyboardShortcuts} />;
   }
 
   if (isLoading) {
@@ -583,11 +608,28 @@ export const ConfigEditor = forwardRef<ConfigEditorHandle, ConfigEditorProps>(fu
           <div className="px-5 py-2 text-xs font-medium text-slate-600 dark:text-slate-400 
                           border-t border-slate-200/80 dark:border-white/5 bg-slate-50 dark:bg-slate-900/80
                           flex items-center justify-between select-none">
-            <div className="flex items-center gap-6">
-              <span className="flex items-center gap-1.5 hover:text-slate-700 dark:hover:text-slate-200 transition-colors cursor-help" title="Path">
+            <div className="flex items-center gap-4">
+              <div className="flex items-center gap-1.5 group">
                 <span className="w-1.5 h-1.5 rounded-full bg-slate-400 dark:bg-slate-500"></span>
-                {currentFilePath}
-              </span>
+                <span 
+                  className="hover:text-slate-700 dark:hover:text-slate-200 transition-colors cursor-help max-w-[300px] truncate" 
+                  title={currentFilePath || ''}
+                >
+                  {truncatePath(currentFilePath, 50)}
+                </span>
+                <button
+                  onClick={handleCopyPath}
+                  className="p-0.5 rounded hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors opacity-0 group-hover:opacity-100"
+                  title={pathCopied ? 'Copied!' : 'Copy path'}
+                  aria-label="Copy file path"
+                >
+                  {pathCopied ? (
+                    <Check className="w-3 h-3 text-emerald-500" />
+                  ) : (
+                    <Copy className="w-3 h-3" />
+                  )}
+                </button>
+              </div>
               {editorSettings.autoSave && (
                 <span 
                   className="flex items-center gap-1.5 text-emerald-600 dark:text-emerald-400"
@@ -612,7 +654,7 @@ export const ConfigEditor = forwardRef<ConfigEditorHandle, ConfigEditorProps>(fu
                 </button>
               )}
             </div>
-            <div className="flex items-center gap-6">
+            <div className="flex items-center gap-4">
               <span className="flex items-center gap-1.5">
                 Ln {cursorPosition.line}, Col {cursorPosition.column}
               </span>
@@ -622,8 +664,18 @@ export const ConfigEditor = forwardRef<ConfigEditorHandle, ConfigEditorProps>(fu
               <span className="flex items-center gap-1.5">
                 {formatBytes(byteSize)}
               </span>
-              <span className="uppercase opacity-70">UTF-8</span>
-              <span className="uppercase opacity-70">{currentFormat}</span>
+              <span className="uppercase text-slate-500 dark:text-slate-500">UTF-8</span>
+              <span className="uppercase text-slate-500 dark:text-slate-500">{currentFormat}</span>
+              {onOpenKeyboardShortcuts && (
+                <button
+                  onClick={onOpenKeyboardShortcuts}
+                  className="p-1 rounded hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors"
+                  title="Keyboard Shortcuts"
+                  aria-label="Open keyboard shortcuts"
+                >
+                  <Keyboard className="w-3.5 h-3.5" />
+                </button>
+              )}
             </div>
           </div>
         </>

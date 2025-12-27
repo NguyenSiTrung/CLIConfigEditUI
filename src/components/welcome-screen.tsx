@@ -1,13 +1,14 @@
-import { Terminal, Wrench, FolderOpen, Zap, Sparkles, ChevronRight, Scan, Settings, Server, Layers, Shield, ArrowRight } from 'lucide-react';
+import { Terminal, Wrench, FolderOpen, Zap, Sparkles, ChevronRight, Scan, Settings, Server, Layers, Shield, ArrowRight, Keyboard } from 'lucide-react';
 import { Button } from '@/components/ui';
 
 interface WelcomeScreenProps {
   onAddCustomTool: () => void;
   onOpenSettings?: () => void;
   onSwitchToMcp?: () => void;
+  onOpenKeyboardShortcuts?: () => void;
 }
 
-export function WelcomeScreen({ onAddCustomTool, onOpenSettings, onSwitchToMcp }: WelcomeScreenProps) {
+export function WelcomeScreen({ onAddCustomTool, onOpenSettings, onSwitchToMcp, onOpenKeyboardShortcuts }: WelcomeScreenProps) {
   return (
     <div className="flex-1 flex flex-col items-center min-w-0 bg-white dark:bg-[#020617] relative overflow-y-auto">
       {/* Background decoration */}
@@ -63,7 +64,7 @@ export function WelcomeScreen({ onAddCustomTool, onOpenSettings, onSwitchToMcp }
         </div>
 
         {/* Feature Cards */}
-        <div className="grid grid-cols-3 gap-3 mb-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 mb-6">
           <FeatureItem
             icon={<Scan className="w-4 h-4" />}
             title="Auto Detect"
@@ -138,6 +139,20 @@ export function WelcomeScreen({ onAddCustomTool, onOpenSettings, onSwitchToMcp }
             </Button>
           )}
         </div>
+
+        {/* Footer with Keyboard Shortcuts */}
+        {onOpenKeyboardShortcuts && (
+          <div className="mt-6 pt-4 border-t border-slate-200 dark:border-white/10">
+            <button
+              onClick={onOpenKeyboardShortcuts}
+              className="flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400 
+                         hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors mx-auto"
+            >
+              <Keyboard className="w-3.5 h-3.5" />
+              Keyboard Shortcuts
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );

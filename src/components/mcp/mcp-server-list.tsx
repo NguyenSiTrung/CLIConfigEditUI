@@ -1,6 +1,6 @@
 import { McpServer } from '@/types';
-import { Edit2, Trash2, ChevronDown, ChevronUp, PowerOff, Plus, Upload, Server } from 'lucide-react';
-import { useState } from 'react';
+import { Edit2, Trash2, ChevronDown, ChevronUp, PowerOff, Plus, Upload, Server, Search, X } from 'lucide-react';
+import { useState, useMemo } from 'react';
 
 interface McpServerListProps {
   servers: McpServer[];
@@ -13,6 +13,7 @@ interface McpServerListProps {
 
 export function McpServerList({ servers, onEdit, onDelete, isEditable = true, onAddServer, onImportFromFile }: McpServerListProps) {
   const [expandedServers, setExpandedServers] = useState<Set<string>>(new Set());
+  const [searchQuery, setSearchQuery] = useState('');
 
   const toggleExpand = (name: string) => {
     const newExpanded = new Set(expandedServers);
@@ -23,6 +24,19 @@ export function McpServerList({ servers, onEdit, onDelete, isEditable = true, on
     }
     setExpandedServers(newExpanded);
   };
+
+  // Filter servers based on search query
+  const filteredServers = useMemo(() => {
+    if (!searchQuery.trim()) return servers;
+    const query = searchQuery.toLowerCase();
+    return servers.filter(server => 
+      server.name.toLowerCase().includes(query) ||
+      server.command.toLowerCase().includes(query)
+    );
+  }, [servers, searchQuery]);
+
+  // Show search when there are more than 5 servers
+  const showSearch = servers.length > 5;
 
   if (servers.length === 0) {
     return (
@@ -62,24 +76,61 @@ export function McpServerList({ servers, onEdit, onDelete, isEditable = true, on
   }
 
   return (
-    <div className="space-y-2">
-      {servers.map((server) => {
-        const isExpanded = expandedServers.has(server.name);
-        return (
-          <div
-            key={server.name}
-            className={`rounded-lg border transition-all ${
-              server.disabled
-                ? 'bg-slate-50/50 dark:bg-slate-800/30 border-slate-200/50 dark:border-white/5 opacity-60'
-                : 'bg-white dark:bg-slate-800/50 border-slate-200 dark:border-white/10'
-            }`}
-          >
-            <div className="flex items-center justify-between p-3">
-              <div className="flex items-center gap-3 flex-1 min-w-0">
-                <button
-                  onClick={() => toggleExpand(server.name)}
-                  className="p-1 rounded text-slate-400 hover:text-slate-600 dark:hover:text-slate-300
-                             focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500/40"
+    <div className="space-y-3">
+      {/* Search input - shown when more than 5 servers */}
+      {showSearch && (
+        <div className="relative">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+          <input
+            type="text"
+            placeholder="Search servers..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="w-full pl-9 pr-8 py-2 text-sm rounded-lg border border-slate-200 dark:border-slate-700 
+                       bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200
+                       placeholder:text-slate-400 dark:placeholder:text-slate-500
+                       focus:outline-none focus:ring-2 focus:ring-indigo-500/40 focus:border-indigo-500"
+          />
+          {searchQuery && (
+            <button
+              onClick={() => setSearchQuery('')}
+              className="absolute right-2 top-1/2 -translate-y-1/2 p-1 rounded text-slate-400 hover:text-slate-600 dark:hover:text-slate-300"
+              aria-label="Clear search"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          )}
+        </div>
+      )}
+
+      {/* Results count when filtering */}
+      {searchQuery && (
+        <p className="text-xs text-slate-500 dark:text-slate-400">
+          {filteredServers.length === 0 
+            ? 'No servers found' 
+            : `Showing ${filteredServers.length} of ${servers.length} servers`}
+        </p>
+      )}
+
+      {/* Server list */}
+      <div className="space-y-2">
+        {filteredServers.map((server) => {
+          const isExpanded = expandedServers.has(server.name);
+          return (
+            <div
+              key={server.name}
+              className={`rounded-lg border transition-all ${
+                server.disabled
+                  ? 'bg-slate-50/50 dark:bg-slate-800/30 border-slate-200/50 dark:border-white/5 opacity-60'
+                  : 'bg-white dark:bg-slate-800/50 border-slate-200 dark:border-white/10'
+              }`}
+            >
+              <div className="flex items-center justify-between p-3">
+                <div className="flex items-center gap-3 flex-1 min-w-0">
+                  <button
+                    onClick={() => toggleExpand(server.name)}
+                    className="p-1 rounded text-slate-400 hover:text-slate-600 dark:hover:text-slate-300
+                               focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500/40"
                   aria-label={isExpanded ? `Collapse ${server.name} details` : `Expand ${server.name} details`}
                 >
                   {isExpanded ? (
@@ -174,6 +225,7 @@ export function McpServerList({ servers, onEdit, onDelete, isEditable = true, on
           </div>
         );
       })}
+      </div>
     </div>
   );
 }

@@ -25,6 +25,7 @@ import { invoke } from '@tauri-apps/api/core';
 import { ConfigFormat, CustomTool, CliTool, ConfigFile, parseBackendError, isFileNotFoundError, isFileReadError } from '@/types';
 import { IDE_PLATFORMS } from '@/utils/cli-tools';
 import { getFileName } from '@/utils/path';
+import { formatErrorShort } from '@/utils/error-messages';
 
 function getDefaultContent(format: ConfigFormat): string {
   switch (format) {
@@ -211,7 +212,7 @@ function App() {
       setOriginalContent(content);
       toast.success('File reloaded');
     } catch (err) {
-      toast.error(`Failed to reload: ${err instanceof Error ? err.message : String(err)}`);
+      toast.error(formatErrorShort(err, 'Failed to reload'));
     }
     setExternalChangeDetected(false);
   }, [currentFilePath, currentJsonPath, setEditorContent, setOriginalContent]);
@@ -502,7 +503,7 @@ function App() {
       }
       return true;
     } catch (err) {
-      toast.error(`Failed to save: ${err instanceof Error ? err.message : String(err)}`);
+      toast.error(formatErrorShort(err, 'Failed to save'));
       return false;
     }
   }, [currentFilePath, currentJsonPath, currentJsonPrefix, editorContent, setOriginalContent, markAsInternalWrite, setError, setFileNotFound]);
@@ -675,6 +676,7 @@ function App() {
             onAddCustomTool={() => setIsAddToolModalOpen(true)}
             onOpenSettings={() => setIsSettingsOpen(true)}
             onSwitchToMcp={() => setCurrentView('mcp')}
+            onOpenKeyboardShortcuts={() => setIsKeyboardShortcutsOpen(true)}
             externalChangeDetected={externalChangeDetected}
             onReloadFile={handleReloadFile}
             onDismissExternalChange={handleDismissExternalChange}

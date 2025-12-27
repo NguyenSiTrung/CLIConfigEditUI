@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { X, Lightbulb } from 'lucide-react';
-import { getShownHints, markHintAsShown } from '@/utils/onboarding-hints';
+import { getShownHints, markHintAsShown, requestTooltipDisplay, notifyTooltipDismissed, cancelTooltipRequest } from '@/utils/onboarding-hints';
 
 interface OnboardingTooltipProps {
   id: string;
@@ -20,28 +20,36 @@ export function OnboardingTooltip({
   delay = 1500,
 }: OnboardingTooltipProps) {
   const [isVisible, setIsVisible] = useState(false);
-  const [shouldShow, setShouldShow] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
+  const hasRequestedRef = useRef(false);
 
   useEffect(() => {
     const shown = getShownHints();
-    if (!shown.has(id)) {
-      const timer = setTimeout(() => {
-        setShouldShow(true);
-      }, delay);
-      return () => clearTimeout(timer);
-    }
-  }, [id, delay]);
+    if (shown.has(id)) return;
 
-  useEffect(() => {
-    if (shouldShow) {
-      setIsVisible(true);
-    }
-  }, [shouldShow]);
+    const timer = setTimeout(() => {
+      if (hasRequestedRef.current) return;
+      hasRequestedRef.current = true;
+      
+      // Request to show via coordinator (prevents multiple tooltips)
+      requestTooltipDisplay(id, () => {
+        setIsVisible(true);
+      });
+    }, delay);
+
+    return () => {
+      clearTimeout(timer);
+      // Clean up queued request if component unmounts
+      if (hasRequestedRef.current) {
+        cancelTooltipRequest(id);
+      }
+    };
+  }, [id, delay]);
 
   const handleDismiss = () => {
     setIsVisible(false);
     markHintAsShown(id);
+    notifyTooltipDismissed(id);
   };
 
   const positionClasses = {

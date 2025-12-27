@@ -11,6 +11,7 @@ import { McpConflictResolutionModal } from './mcp-conflict-resolution-modal';
 import { McpConfigPreviewModal } from './mcp-config-preview-modal';
 import { McpImportPreviewModal } from './mcp-import-preview-modal';
 import { toast } from '@/components/toast';
+import { formatErrorShort } from '@/utils/error-messages';
 import { ConfirmDialog, McpServerListSkeleton, McpToolStatusListSkeleton } from '@/components/ui';
 import { RefreshCw, Plus, AlertCircle, Upload, Loader2, Info, ChevronDown, ChevronUp } from 'lucide-react';
 
@@ -72,7 +73,7 @@ export function McpSettingsPanel() {
       await addServer(server);
       toast.success(`Added server "${server.name}"`);
     } catch (err) {
-      toast.error(String(err));
+      toast.error(formatErrorShort(err, 'Failed to add server'));
     }
   };
 
@@ -81,7 +82,7 @@ export function McpSettingsPanel() {
       await updateServer(originalName, server);
       toast.success(`Updated server "${server.name}"`);
     } catch (err) {
-      toast.error(String(err));
+      toast.error(formatErrorShort(err, 'Failed to update server'));
     }
   };
 
@@ -96,7 +97,7 @@ export function McpSettingsPanel() {
       await removeServer(pendingDeleteServerName);
       toast.success(`Deleted server "${pendingDeleteServerName}"`);
     } catch (err) {
-      toast.error(String(err));
+      toast.error(formatErrorShort(err, 'Failed to delete server'));
     } finally {
       setIsDeleteConfirmOpen(false);
       setPendingDeleteServerName(null);
@@ -125,7 +126,7 @@ export function McpSettingsPanel() {
       setImportResult(result);
       setIsImportPreviewOpen(true);
     } catch (err) {
-      toast.error(String(err));
+      toast.error(formatErrorShort(err, 'Failed to import'));
     }
   };
 
@@ -140,7 +141,7 @@ export function McpSettingsPanel() {
       setImportResult(null);
       toast.success(`Imported ${selectedServers.length} server${selectedServers.length !== 1 ? 's' : ''} successfully`);
     } catch (err) {
-      toast.error(String(err));
+      toast.error(formatErrorShort(err, 'Failed to import'));
     }
   };
 
@@ -520,7 +521,7 @@ export function McpSettingsPanel() {
       <ConfirmDialog
         isOpen={isDeleteConfirmOpen}
         title="Delete Server"
-        message="Are you sure you want to delete this server? This cannot be undone."
+        message={`Are you sure you want to delete "${pendingDeleteServerName}"? This cannot be undone.`}
         variant="danger"
         confirmLabel="Delete"
         onConfirm={handleConfirmDelete}
