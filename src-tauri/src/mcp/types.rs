@@ -221,6 +221,13 @@ pub fn get_mcp_tool_definitions() -> Vec<McpToolInfo> {
             format: McpToolFormat::Standard,
             name: "Qwen Code".to_string(),
         },
+        McpToolInfo {
+            tool_id: "qoder-cli".to_string(),
+            config_path: "~/.qoder.json".to_string(),
+            json_path: "mcpServers".to_string(),
+            format: McpToolFormat::Standard,
+            name: "Qoder CLI".to_string(),
+        },
     ]
 }
 

@@ -454,4 +454,35 @@ export const CLI_TOOLS: CliTool[] = [
       },
     ],
   },
+  {
+    id: 'qoder-cli',
+    name: 'Qoder CLI',
+    icon: '🤖',
+    docsUrl: 'https://qoder.com',
+    description: "Qoder's AI coding CLI",
+    suggestedConfigs: [
+      {
+        label: 'Settings',
+        path: '~/.qoder/settings.json',
+        format: 'json',
+        icon: '⚙️',
+        description: 'User settings (permissions, hooks, tool configuration)',
+      },
+      {
+        label: 'Global Config',
+        path: '~/.qoder.json',
+        format: 'json',
+        icon: '📋',
+        description: 'Global configuration (auto-updates, preferences)',
+      },
+      {
+        label: 'MCP Servers',
+        path: '~/.qoder.json',
+        format: 'json',
+        icon: '🔌',
+        description: 'MCP server configuration',
+        jsonPath: 'mcpServers',
+      },
+    ],
+  },
 ];

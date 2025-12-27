@@ -13,7 +13,8 @@ This file lists all development tracks (features, bugs, improvements) for CLI Co
 
 ## Active Tracks
 
-*No active tracks.*
+### [x] Track: Add Qoder CLI Predefined Tool
+*Link: [./conductor/tracks/qoder-cli_20251227/](./conductor/tracks/qoder-cli_20251227/)*
 
 ---
 

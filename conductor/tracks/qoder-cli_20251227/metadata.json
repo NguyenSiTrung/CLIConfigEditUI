@@ -1,0 +1,17 @@
+{
+  "track_id": "qoder-cli_20251227",
+  "type": "feature",
+  "status": "new",
+  "priority": "high",
+  "depends_on": [],
+  "estimated_hours": null,
+  "created_at": "2025-12-27T00:00:00Z",
+  "updated_at": "2025-12-27T00:00:00Z",
+  "description": "Add Qoder CLI predefined tool with config and MCP settings support",
+  "beads_epic": "CLIConfigEditUI-95r",
+  "beads_tasks": {
+    "phase1": "CLIConfigEditUI-95r.1",
+    "phase2": "CLIConfigEditUI-95r.2",
+    "phase3": "CLIConfigEditUI-95r.3"
+  }
+}

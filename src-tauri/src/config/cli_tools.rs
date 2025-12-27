@@ -585,5 +585,38 @@ pub fn get_cli_tools() -> Vec<CliTool> {
                 },
             ]),
         },
+        CliTool {
+            id: "qoder-cli".to_string(),
+            name: "Qoder CLI".to_string(),
+            icon: Some("🤖".to_string()),
+            docs_url: Some("https://qoder.com".to_string()),
+            description: Some("Qoder's AI coding CLI".to_string()),
+            suggested_configs: Some(vec![
+                SuggestedConfig {
+                    label: "Settings".to_string(),
+                    path: "~/.qoder/settings.json".to_string(),
+                    format: ConfigFormat::Json,
+                    icon: Some("⚙️".to_string()),
+                    description: Some("User settings (permissions, hooks, tool configuration)".to_string()),
+                    json_path: None,
+                },
+                SuggestedConfig {
+                    label: "Global Config".to_string(),
+                    path: "~/.qoder.json".to_string(),
+                    format: ConfigFormat::Json,
+                    icon: Some("📋".to_string()),
+                    description: Some("Global configuration (auto-updates, preferences)".to_string()),
+                    json_path: None,
+                },
+                SuggestedConfig {
+                    label: "MCP Servers".to_string(),
+                    path: "~/.qoder.json".to_string(),
+                    format: ConfigFormat::Json,
+                    icon: Some("🔌".to_string()),
+                    description: Some("MCP server configuration".to_string()),
+                    json_path: Some("mcpServers".to_string()),
+                },
+            ]),
+        },
     ]
 }
