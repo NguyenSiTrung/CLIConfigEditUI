@@ -13,7 +13,9 @@ This file lists all development tracks (features, bugs, improvements) for CLI Co
 
 ## Active Tracks
 
-*No active tracks.*
+### [x] kilo-code-cli_20251227 - Add Kilo Code CLI Predefined Tool
+*Link: [./conductor/tracks/kilo-code-cli_20251227/](./conductor/tracks/kilo-code-cli_20251227/)*
+*Priority: 🟠 High*
 
 ---
 

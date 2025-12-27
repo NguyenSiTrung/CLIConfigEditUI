@@ -8,6 +8,7 @@ import {
   Folder,
   Monitor,
   Puzzle,
+  Terminal,
 } from 'lucide-react';
 
 export const TOOL_ICONS: Record<string, React.ReactNode> = {
@@ -22,6 +23,7 @@ export const TOOL_ICONS: Record<string, React.ReactNode> = {
   'auggie': <Bot className="w-4 h-4" />,
   'kiro-cli': <span className="w-4 h-4 flex items-center justify-center">🪁</span>,
   'rovo-dev': <span className="w-4 h-4 flex items-center justify-center">🔷</span>,
+  'kilo-code-cli': <Terminal className="w-4 h-4" />,
 };
 
 export const PLATFORM_ICONS: Record<string, React.ReactNode> = {

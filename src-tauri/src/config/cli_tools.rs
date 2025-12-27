@@ -635,5 +635,30 @@ pub fn get_cli_tools() -> Vec<CliTool> {
                 },
             ]),
         },
+        CliTool {
+            id: "kilo-code-cli".to_string(),
+            name: "Kilo Code CLI".to_string(),
+            icon: Some("🔷".to_string()),
+            docs_url: Some("https://kilocode.ai/docs".to_string()),
+            description: Some("AI-powered coding assistant CLI".to_string()),
+            suggested_configs: Some(vec![
+                SuggestedConfig {
+                    label: "Config".to_string(),
+                    path: "~/.kilocode/config.json".to_string(),
+                    format: ConfigFormat::Json,
+                    icon: Some("⚙️".to_string()),
+                    description: Some("CLI settings, auto-approval, providers".to_string()),
+                    json_path: None,
+                },
+                SuggestedConfig {
+                    label: "MCP Settings".to_string(),
+                    path: "~/.kilocode/mcp_settings.json".to_string(),
+                    format: ConfigFormat::Json,
+                    icon: Some("🔌".to_string()),
+                    description: Some("Global MCP server configurations".to_string()),
+                    json_path: Some("mcpServers".to_string()),
+                },
+            ]),
+        },
     ]
 }
