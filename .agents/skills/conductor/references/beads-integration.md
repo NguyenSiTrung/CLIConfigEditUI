@@ -7,7 +7,7 @@ Conductor integrates with [Beads](https://github.com/lostinspiration/beads) to p
 - **Conductor**: Human-readable specs and plans
 - **Beads**: Agent-optimized task state with dependency tracking
 
-**IMPORTANT: Beads integration is completely optional.** Conductor works fully standalone without Beads.
+**IMPORTANT: Beads integration is always attempted.** If `bd` CLI is unavailable or fails, the user is prompted to choose whether to continue without persistent task memory. Conductor still functions fully, just without cross-session state.
 
 ## CRITICAL: Availability Check
 

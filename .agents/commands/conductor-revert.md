@@ -180,12 +180,28 @@ Revert Conductor work: $ARGUMENTS
 
 ---
 
-## 6.0 BEADS SYNC (Optional)
+## 6.0 BEADS SYNC
 
-**PROTOCOL: Sync revert action with Beads if enabled.**
+**PROTOCOL: Sync revert action with Beads.**
 
-1. **Check Beads Config:** Read `conductor/beads.json`
-2. **If enabled:**
+1. **Check for Beads CLI:**
+   - Run `which bd`
+   - **If NOT found:**
+     > "⚠️ Beads CLI (`bd`) is not installed. Beads provides persistent task memory across sessions."
+     > "A) Continue without Beads sync"
+     > "B) Stop - I'll install Beads first"
+     - If A: Skip this section
+     - If B: HALT and wait for user
+
+2. **Sync Revert Actions:**
    - Reopen reverted tasks: `bd reopen <task_id> --reason "Reverted"`
    - Add note: `bd note <epic_id> "REVERT: <summary>"`
-3. **For track revert:** Close or reopen entire epic
+   - For track revert: Close or reopen entire epic
+   - **If any `bd` command fails:**
+     > "⚠️ Beads command failed: <error message>"
+     > "A) Continue without Beads sync"
+     > "B) Retry the failed command"
+     > "C) Stop - I'll fix the issue first"
+     - If A: Skip remaining Beads steps
+     - If B: Retry the command
+     - If C: HALT and wait for user

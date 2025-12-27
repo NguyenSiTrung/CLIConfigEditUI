@@ -55,15 +55,32 @@ Offer to fix auto-fixable issues:
 
 ---
 
-## 8. BEADS VALIDATION (Optional)
+## 8. BEADS VALIDATION
 
-**PROTOCOL: Include Beads consistency checks if enabled.**
+**PROTOCOL: Include Beads consistency checks.**
 
-1. **Check Beads Config:** Read `conductor/beads.json`
-2. **If enabled, verify:**
-   - Beads CLI available
+1. **Check for Beads CLI:**
+   - Run `which bd`
+   - **If NOT found:**
+     > "⚠️ Beads CLI (`bd`) is not installed. Beads provides persistent task memory across sessions."
+     > "A) Continue validation without Beads checks"
+     > "B) Stop - I'll install Beads first"
+     - If A: Skip this section
+     - If B: HALT and wait for user
+
+2. **Verify Beads Integration:**
    - Task status sync between Beads and plan.md
    - No orphan epics/tasks
    - Epic links valid in metadata.json
+   - **If any `bd` command fails:**
+     > "⚠️ Beads command failed: <error message>"
+     > "A) Continue validation without Beads checks"
+     > "B) Retry the failed command"
+     > "C) Stop - I'll fix the issue first"
+     - If A: Skip remaining Beads steps
+     - If B: Retry the command
+     - If C: HALT and wait for user
+
 3. **Add to Report:** Beads integration section with sync status
+
 4. **Auto-Fix:** Offer to sync status markers between systems

@@ -252,24 +252,36 @@ Present to user:
 
 ---
 
-### 2.7 BEADS INTEGRATION (Optional)
+### 2.7 BEADS INTEGRATION
 
-**PROTOCOL: Offer Beads integration for persistent task memory.**
+**PROTOCOL: Set up Beads integration for persistent task memory.**
 
 1. **Check for Beads CLI:**
-   - Run `bd --version` to detect if Beads is installed
-   - If command fails or not found, skip to Section 3.0 (no Beads available)
+   - Run `which bd` to detect if Beads is installed
+   - **If NOT found:**
+     > "⚠️ Beads CLI (`bd`) is not installed. Beads provides persistent task memory across sessions."
+     > "A) Continue without Beads integration"
+     > "B) Stop - I'll install Beads first"
+     - If A: Set `beads_available = false`, skip to Section 3.0
+     - If B: HALT and wait for user
 
 2. **If Beads Available, Ask User:**
-   > "Beads detected. Would you like to enable Beads integration for persistent task memory?"
-   > A) Yes - Full integration (commits .beads/ to repo)
+   > "Beads detected. Choose integration mode for persistent task memory:"
+   > A) Full integration (commits .beads/ to repo)
    > B) Stealth mode - Local only (use `bd init --stealth`)
-   > C) No - Skip Beads integration
    >
-   > Please respond with A, B, or C.
+   > Please respond with A or B.
 
-3. **If A or B Selected:**
+3. **Initialize Beads:**
    - Run `bd init` (for A) or `bd init --stealth` (for B)
+   - **If command fails:**
+     > "⚠️ Beads command failed: <error message>"
+     > "A) Continue without Beads integration"
+     > "B) Retry the failed command"
+     > "C) Stop - I'll fix the issue first"
+     - If A: Set `beads_available = false`, skip to Section 3.0
+     - If B: Retry the command
+     - If C: HALT and wait for user
    - Create `conductor/beads.json`:
      ```json
      {
@@ -283,9 +295,6 @@ Present to user:
      }
      ```
    - Announce: "Beads integration enabled in [normal/stealth] mode."
-
-4. **If C Selected or Beads Not Available:**
-   - Skip silently, continue to Section 3.0
 
 ---
 

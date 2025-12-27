@@ -53,22 +53,33 @@ git commit -m "conductor(refresh): Sync context with codebase"
 
 ---
 
-## 9. BEADS DRIFT CHECK (Optional)
+## 9. BEADS DRIFT CHECK
 
-**PROTOCOL: Include Beads status in drift analysis if enabled.**
+**PROTOCOL: Include Beads status in drift analysis.**
 
-1. **Check Beads Config:**
-   - Read `conductor/beads.json`
-   - If not enabled, skip this section
+1. **Check for Beads CLI:**
+   - Run `which bd`
+   - **If NOT found:**
+     > "⚠️ Beads CLI (`bd`) is not installed. Beads provides persistent task memory across sessions."
+     > "A) Continue refresh without Beads drift check"
+     > "B) Stop - I'll install Beads first"
+     - If A: Skip this section
+     - If B: HALT and wait for user
 
 2. **Analyze Beads vs Conductor Drift:**
    - Tasks done in Beads but `[ ]` in plan.md
    - Tasks `[x]` in plan.md but open in Beads
    - Orphaned Beads tasks
+   - **If any `bd` command fails:**
+     > "⚠️ Beads command failed: <error message>"
+     > "A) Continue refresh without Beads drift check"
+     > "B) Retry the failed command"
+     > "C) Stop - I'll fix the issue first"
+     - If A: Skip remaining Beads steps
+     - If B: Retry the command
+     - If C: HALT and wait for user
 
 3. **Offer Sync Options:**
    > A) Sync Beads → Conductor (trust Beads)
    > B) Sync Conductor → Beads (trust plan.md)
    > C) Skip
-
-**CRITICAL:** If `bd` fails, log warning but continue.

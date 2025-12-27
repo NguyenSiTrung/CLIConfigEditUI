@@ -95,13 +95,18 @@ Display:
 
 ---
 
-## 9. BEADS HANDOFF SYNC (Optional)
+## 9. BEADS HANDOFF SYNC
 
 **PROTOCOL: Save handoff context to Beads for compaction-proof resumability.**
 
-1. **Check Beads Config:**
-   - Read `conductor/beads.json`
-   - If not enabled, skip this section
+1. **Check for Beads CLI:**
+   - Run `which bd`
+   - **If NOT found:**
+     > "⚠️ Beads CLI (`bd`) is not installed. Beads provides persistent task memory across sessions."
+     > "A) Continue with markdown handoff only"
+     > "B) Stop - I'll install Beads first"
+     - If A: Skip this section
+     - If B: HALT and wait for user
 
 2. **Save Context to Beads with Full Structure:**
    ```bash
@@ -113,16 +118,22 @@ Display:
    DISCOVERED: <new issues found, with beads IDs>
    HANDOFF: Section <N> saved at conductor/tracks/<track_id>/handoff_<timestamp>.md"
    ```
+   - **If command fails:**
+     > "⚠️ Beads command failed: <error message>"
+     > "A) Continue with markdown handoff only"
+     > "B) Retry the failed command"
+     > "C) Stop - I'll fix the issue first"
+     - If A: Skip remaining Beads steps
+     - If B: Retry the command
+     - If C: HALT and wait for user
 
 3. **Format for Compaction Recovery:**
    Notes should be self-contained - no conversation context assumed.
    Include technical specifics, not vague progress.
 
-4. **CRITICAL: Force Sync to Remote:**
+4. **Force Sync to Remote:**
    ```bash
    bd sync  # Ensures changes reach remote immediately
    ```
 
 **Benefit:** Beads notes survive context compaction, enabling seamless session resume.
-
-**CRITICAL:** If `bd` fails, log warning but continue with markdown handoff.

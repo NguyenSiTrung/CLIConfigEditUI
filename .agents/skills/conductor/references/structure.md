@@ -11,7 +11,7 @@ conductor/
 ├── tracks.md               # Master track list with status markers
 ├── setup_state.json        # Setup progress tracking
 ├── refresh_state.json      # Context refresh tracking (created by /conductor-refresh)
-├── beads.json              # Beads integration config (optional, created by setup)
+├── beads.json              # Beads integration config (created by setup)
 ├── code_styleguides/       # Language-specific style guides
 ├── archive/                # Archived completed tracks
 ├── exports/                # Exported summaries
@@ -57,7 +57,7 @@ Throughout conductor files:
 | `conductor/tracks/<id>/skipped.md` | Skipped tasks log |
 | `conductor/tracks/<id>/revisions.md` | Revision history log |
 | `conductor/refresh_state.json` | Context refresh tracking |
-| `conductor/beads.json` | Beads integration config (optional) |
+| `conductor/beads.json` | Beads integration config |
 | `conductor/archive/` | Archived completed tracks |
 | `conductor/exports/` | Exported summaries |
 

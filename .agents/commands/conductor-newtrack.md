@@ -195,13 +195,18 @@ Create a new track for: $ARGUMENTS
 
 ---
 
-### 2.5 BEADS INTEGRATION (Optional)
+### 2.5 BEADS INTEGRATION
 
 **PROTOCOL: Sync track with Beads for persistent task memory.**
 
-1. **Check Beads Config:**
-   - Read `conductor/beads.json`
-   - If file doesn't exist or `enabled: false`, skip this section
+1. **Check Beads Availability:**
+   - Check if `bd` command exists: `which bd`
+   - If command not found:
+     > "⚠️ Beads CLI (`bd`) is not installed. Beads provides persistent task memory across sessions."
+     > "A) Continue without Beads integration"
+     > "B) Stop - I'll install Beads first (see: https://github.com/elimisteve/beads)"
+     - If user chooses A: Skip remaining Beads steps, continue to completion
+     - If user chooses B: HALT and wait for user to install
 
 2. **Create Epic for Track with Full Context:**
    - Map priority: critical=0, high=1, medium=2, low=3
@@ -258,6 +263,15 @@ Create a new track for: $ARGUMENTS
      - Task keys: `phase{N}_task{M}` (both 1-indexed, e.g., `phase1_task1`, `phase2_task3`)
    - Store ALL phase and task IDs returned from `bd create --json` commands
 
-6. **Announce:** "Track synced to Beads as epic <epic_id>."
+7. **Announce:** "Track synced to Beads as epic <epic_id>."
 
-**CRITICAL:** If any `bd` command fails, log warning but do NOT halt track creation.
+**ERROR HANDLING:** If any `bd` command fails during steps 2-6:
+- Announce the specific error
+- Ask user:
+  > "⚠️ Beads command failed: <error message>"
+  > "A) Continue without Beads integration - track files are already created"
+  > "B) Retry the failed command"
+  > "C) Stop - I'll fix the issue first"
+- If A: Skip remaining Beads steps, announce track created without Beads sync
+- If B: Retry the failed command
+- If C: HALT and wait for user

@@ -43,13 +43,18 @@ Report what was revised and suggest `/conductor-implement` to continue.
 
 ---
 
-## 8. BEADS SYNC (Optional)
+## 8. BEADS SYNC
 
-**PROTOCOL: Sync revisions with Beads if enabled.**
+**PROTOCOL: Sync revisions with Beads.**
 
-1. **Check Beads Config:**
-   - Read `conductor/beads.json`
-   - If not enabled, skip this section
+1. **Check for Beads CLI:**
+   - Run `which bd`
+   - **If NOT found:**
+     > "⚠️ Beads CLI (`bd`) is not installed. Beads provides persistent task memory across sessions."
+     > "A) Continue without Beads sync"
+     > "B) Stop - I'll install Beads first"
+     - If A: Skip this section
+     - If B: HALT and wait for user
 
 2. **Sync Task Changes:**
    - NEW tasks: 
@@ -61,6 +66,14 @@ Report what was revised and suggest `/conductor-implement` to continue.
      ```
    - REMOVED tasks: `bd close <task_id> --reason "Removed in revision #N: <reason>"`
    - MODIFIED tasks: `bd update <task_id> --notes "REVISED: <what changed and why>"`
+   - **If any `bd` command fails:**
+     > "⚠️ Beads command failed: <error message>"
+     > "A) Continue without Beads sync"
+     > "B) Retry the failed command"
+     > "C) Stop - I'll fix the issue first"
+     - If A: Skip remaining Beads steps
+     - If B: Retry the command
+     - If C: HALT and wait for user
 
 3. **Add Revision Note to Epic:**
    ```bash
@@ -69,5 +82,3 @@ Report what was revised and suggest `/conductor-implement` to continue.
    IMPACT: +X tasks added, -Y tasks removed, ~Z modified
    KEY DECISION: <if any major decisions made during revision>"
    ```
-
-**CRITICAL:** If `bd` fails, log warning but continue.

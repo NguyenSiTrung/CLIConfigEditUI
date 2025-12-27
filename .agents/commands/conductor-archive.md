@@ -26,17 +26,30 @@ Commit the archive operation.
 
 ---
 
-## 5. BEADS COMPACTION (Optional)
+## 5. BEADS COMPACTION
 
 **PROTOCOL: Compact Beads history for archived tracks.**
 
-1. **Check Beads Config:**
-   - Read `conductor/beads.json`
-   - If file doesn't exist or `compactOnArchive: false`, skip this section
+1. **Check for Beads CLI:**
+   - Run `which bd`
+   - **If NOT found:**
+     > "⚠️ Beads CLI (`bd`) is not installed. Beads provides persistent task memory across sessions."
+     > "A) Continue archive without Beads compaction"
+     > "B) Stop - I'll install Beads first"
+     - If A: Skip this section
+     - If B: HALT and wait for user
 
 2. **Compact Archived Track Epics:**
    - For each archived track with `beads_epic` in metadata:
      - Run `bd compact <epic_id>`
+   - **If any `bd` command fails:**
+     > "⚠️ Beads command failed: <error message>"
+     > "A) Continue archive without Beads compaction"
+     > "B) Retry the failed command"
+     > "C) Stop - I'll fix the issue first"
+     - If A: Skip remaining Beads steps
+     - If B: Retry the command
+     - If C: HALT and wait for user
    - Announce: "Compacted Beads history for archived tracks."
 
 3. **Offer Project-Wide Compaction:**
@@ -45,5 +58,3 @@ Commit the archive operation.
    > B) No - Only compact archived tracks
    
    If A: Run `bd compact --all`
-
-**CRITICAL:** If `bd` commands fail, log warning but do NOT halt archive operation.

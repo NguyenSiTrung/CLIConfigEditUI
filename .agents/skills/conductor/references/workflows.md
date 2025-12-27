@@ -1341,9 +1341,9 @@ Announce: "You've completed significant work. Consider running `/conductor-hando
 
 ---
 
-## Beads Integration (Optional)
+## Beads Integration
 
-Conductor integrates with [Beads](https://github.com/lispysnake/beads) for enhanced task tracking and dependency management. **Beads is completely optional** - Conductor works fully standalone.
+Conductor integrates with [Beads](https://github.com/lispysnake/beads) for enhanced task tracking and dependency management. **Beads integration is always attempted** - if `bd` CLI is unavailable or fails, the user can choose to continue without persistent task memory.
 
 ### CRITICAL: Availability Check
 

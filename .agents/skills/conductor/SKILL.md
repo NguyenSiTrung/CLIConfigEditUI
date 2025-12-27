@@ -38,9 +38,9 @@ For active tracks, also load:
 - `conductor/tracks/<track_id>/spec.md`
 - `conductor/tracks/<track_id>/plan.md`
 
-## Beads Integration (Optional)
+## Beads Integration
 
-Beads integration is **completely optional**. Conductor works standalone without Beads.
+Beads integration is **always attempted** for persistent task memory. If `bd` CLI is unavailable or fails, the user can choose to continue without it.
 
 ### Detection (MUST check before using bd commands)
 
