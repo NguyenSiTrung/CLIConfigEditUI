@@ -245,10 +245,18 @@ Create a new track for: $ARGUMENTS
        "beads_epic": "bd-a3f8",
        "beads_tasks": {
          "phase1": "bd-a3f8.1",
-         "phase1_task1": "bd-a3f8.1.1"
+         "phase1_task1": "bd-a3f8.1.1",
+         "phase1_task2": "bd-a3f8.1.2",
+         "phase2": "bd-a3f8.2",
+         "phase2_task1": "bd-a3f8.2.1",
+         "phase2_task2": "bd-a3f8.2.2"
        }
      }
      ```
+   - **Key naming convention:**
+     - Phase keys: `phase{N}` (1-indexed, e.g., `phase1`, `phase2`)
+     - Task keys: `phase{N}_task{M}` (both 1-indexed, e.g., `phase1_task1`, `phase2_task3`)
+   - Store ALL phase and task IDs returned from `bd create --json` commands
 
 6. **Announce:** "Track synced to Beads as epic <epic_id>."
 

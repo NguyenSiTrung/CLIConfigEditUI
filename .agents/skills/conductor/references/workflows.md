@@ -250,8 +250,11 @@ Read into context:
 
 **If Beads enabled** - load beads context for smarter task selection:
 ```bash
-# Get epic ID from metadata.json
-epic_id=$(cat conductor/tracks/<track_id>/metadata.json | grep beads_epic_id)
+# Get epic ID and task mapping from metadata.json
+epic_id=$(cat conductor/tracks/<track_id>/metadata.json | jq -r '.beads_epic')
+beads_tasks=$(cat conductor/tracks/<track_id>/metadata.json | jq '.beads_tasks')
+
+# Store beads_enabled=true for use throughout implementation
 
 # Read epic notes for context recovery (especially after compaction)
 bd show <epic_id>
@@ -261,10 +264,25 @@ bd show <epic_id>
 bd ready --epic <epic_id>
 ```
 
+**metadata.json beads_tasks mapping example:**
+```json
+{
+  "beads_epic": "bd-a3f8",
+  "beads_tasks": {
+    "phase1": "bd-a3f8.1",
+    "phase1_task1": "bd-a3f8.1.1",
+    "phase1_task2": "bd-a3f8.1.2",
+    "phase2": "bd-a3f8.2",
+    "phase2_task1": "bd-a3f8.2.1"
+  }
+}
+```
+
 **Beads context provides:**
 - **Last session notes**: What was completed, what's next, key decisions made
 - **Ready tasks**: Only tasks with no blockers (respects dependencies)
 - **Blocked tasks**: What's waiting on what
+- **Task ID mapping**: Use `beads_tasks` to lookup task IDs by key (e.g., `phase1_task1`)
 
 ### 4. Resume State Management
 
@@ -314,7 +332,14 @@ For each selected task:
    
    **If Beads enabled:**
    ```bash
-   bd update <task_id> --status in_progress
+   # Generate task key from phase and task index (e.g., phase1_task1)
+   task_key="phase${phase_index}_task${task_index}"
+   # Look up beads_task_id from beads_tasks mapping
+   beads_task_id=$(echo "$beads_tasks" | jq -r ".${task_key}")
+   # Update status if task ID found
+   if [ "$beads_task_id" != "null" ]; then
+     bd update <beads_task_id> --status in_progress
+   fi
    ```
 
 2. **TDD Workflow** (if workflow.md specifies):
@@ -370,7 +395,10 @@ For each selected task:
 
    **If Beads enabled:**
    ```bash
-   bd close <task_id> --reason "commit: <sha_7chars> - <description>"
+   # Look up beads_task_id from beads_tasks mapping (same key as step 1)
+   if [ "$beads_task_id" != "null" ]; then
+     bd close <beads_task_id> --reason "commit: <sha_7chars> - <description>"
+   fi
    ```
 
 6. **Commit Plan Update**:

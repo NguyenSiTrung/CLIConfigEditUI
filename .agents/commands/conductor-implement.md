@@ -87,14 +87,16 @@ Implement track: $ARGUMENTS
    - **Error Handling:** If any read fails, STOP and inform user
 
 3a. **Beads Context (Optional):**
-   - Check if `conductor/beads.json` exists with `enabled: true`
-   - If enabled:
-     - Read `conductor/tracks/<track_id>/metadata.json` for `beads_epic` field
-     - If `beads_epic` exists:
-       - Run `bd ready --epic <beads_epic>` to show tasks with no blockers
-       - Display: "📊 **Beads Status:** X tasks ready, Y blocked"
-       - Use Beads ready list to suggest next task
-   - **CRITICAL:** Beads integration is graceful - any `bd` command failure should NOT halt implementation
+    - Check if `conductor/beads.json` exists with `enabled: true`
+    - Store result in variable `beads_enabled` for use throughout implementation
+    - If enabled:
+      - Read `conductor/tracks/<track_id>/metadata.json` for `beads_epic` and `beads_tasks` fields
+      - Store `beads_tasks` mapping (maps plan task names to Beads IDs like `"phase1_task1": "bd-a3f8.1.1"`)
+      - If `beads_epic` exists:
+        - Run `bd ready --epic <beads_epic>` to show tasks with no blockers
+        - Display: "📊 **Beads Status:** X tasks ready, Y blocked"
+        - Use Beads ready list to suggest next task
+    - **CRITICAL:** Beads integration is graceful - any `bd` command failure should NOT halt implementation
 
 4. **Check and Load Resume State:**
 
@@ -126,10 +128,19 @@ Implement track: $ARGUMENTS
 
    c. **For Each Task:**
           - **i. Defer to Workflow:** `workflow.md` is the **single source of truth** for task lifecycle. Follow its "Task Workflow" section for implementation, testing, and committing.
-          - **i-a. Beads Task Start (If Enabled):** After marking task `[~]` in progress:
-            - If task has a corresponding `beads_task_id` in metadata, run `bd update <task_id> --status in-progress --assignee conductor`
-          - **i-b. Beads Task Complete (If Enabled):** After marking task `[x]` complete:
-            - Run `bd close <task_id> --reason "commit: <sha_7chars> - <description>"`
+           - **i-a. Beads Task Start (If Enabled):** After marking task `[~]` in progress:
+              - **ONLY if `beads_enabled` is true:**
+                - Generate task key from phase index and task index (e.g., `phase1_task1` for first task in first phase)
+                - Look up `beads_task_id` from `beads_tasks` mapping in metadata.json using task key
+                - If found, run: `bd update <beads_task_id> --status in_progress`
+                - If `bd` command fails, log warning and continue (graceful degradation)
+            - **i-b. Beads Task Complete (If Enabled):** After marking task `[x]` complete:
+              - **ONLY if `beads_enabled` is true:**
+                - Look up `beads_task_id` from `beads_tasks` mapping (same key as i-a)
+                - If found:
+                  - First add completion notes: `bd update <beads_task_id> --notes "COMPLETED: commit <sha_7chars> - <description>"`
+                  - Then close the task: `bd close <beads_task_id> --reason "Task completed"`
+                - If `bd` command fails, log warning and continue (graceful degradation)
       - **ii. Update Implementation State:** After marking task in progress:
         - Set `current_phase` to current phase name
         - Set `current_phase_index` to current phase number (zero-based)
@@ -141,7 +152,7 @@ Implement track: $ARGUMENTS
         - Reset `current_task_index` to 0
         - Increment `current_phase_index`
         - Update `current_phase` to next phase name
-        - **If Beads enabled:** Update epic notes for compaction survival:
+        - **If `beads_enabled` is true:** Update epic notes for compaction survival:
           ```bash
           bd update <epic_id> --notes "COMPLETED: Phase N - <phase_name>
           IN PROGRESS: Phase N+1 - <next_phase>

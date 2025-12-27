@@ -52,12 +52,41 @@ Each Conductor track becomes a Beads epic:
 conductor/tracks/auth_20250115/
 ├── spec.md          # Conductor: requirements
 ├── plan.md          # Conductor: task breakdown
-└── metadata.json    # Links to Beads epic ID
+└── metadata.json    # Links to Beads epic ID + task mapping
 ```
 
 ```
 .beads/epics/auth_20250115.md   # Beads: persistent state
 ```
+
+### Task ID Mapping
+
+The `metadata.json` contains a `beads_tasks` mapping that links plan tasks to Beads IDs:
+
+```json
+{
+  "track_id": "auth_20250115",
+  "beads_epic": "bd-a3f8",
+  "beads_tasks": {
+    "phase1": "bd-a3f8.1",
+    "phase1_task1": "bd-a3f8.1.1",
+    "phase1_task2": "bd-a3f8.1.2",
+    "phase2": "bd-a3f8.2",
+    "phase2_task1": "bd-a3f8.2.1"
+  }
+}
+```
+
+**Key naming convention:**
+- Phase keys: `phase{N}` (1-indexed)
+- Task keys: `phase{N}_task{M}` (both 1-indexed)
+
+**Usage during implementation:**
+1. Store `beads_enabled=true` flag when Beads is detected
+2. Load `beads_tasks` mapping from metadata.json
+3. Generate task key from current phase/task index
+4. Look up Beads ID from mapping
+5. Use Beads ID for `bd update` and `bd close` commands
 
 ### Bidirectional Sync
 
