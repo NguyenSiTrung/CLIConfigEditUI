@@ -13,8 +13,7 @@ This file lists all development tracks (features, bugs, improvements) for CLI Co
 
 ## Active Tracks
 
-### [x] Track: Add Qoder CLI Predefined Tool
-*Link: [./conductor/tracks/qoder-cli_20251227/](./conductor/tracks/qoder-cli_20251227/)*
+*No active tracks.*
 
 ---
 
@@ -25,6 +24,9 @@ This file lists all development tracks (features, bugs, improvements) for CLI Co
 ---
 
 ## Archived Tracks
+
+### [x] qoder-cli_20251227 - Add Qoder CLI Predefined Tool
+*Archived: 2025-12-27 | [conductor/archive/qoder-cli_20251227/](conductor/archive/qoder-cli_20251227/)*
 
 ### [x] rovo-dev-cli_20251227 - Add Rovo Dev CLI Predefined Tool Support
 *Archived: 2025-12-27 | [conductor/archive/rovo-dev-cli_20251227/](conductor/archive/rovo-dev-cli_20251227/)*
