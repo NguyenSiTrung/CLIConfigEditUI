@@ -13,8 +13,7 @@ This file lists all development tracks (features, bugs, improvements) for CLI Co
 
 ## Active Tracks
 
-### [~] letta-code_20251227 - Add Letta Code CLI Predefined Tool
-*Link: [./conductor/tracks/letta-code_20251227/](./conductor/tracks/letta-code_20251227/)*
+*No active tracks.*
 
 ---
 
@@ -25,6 +24,9 @@ This file lists all development tracks (features, bugs, improvements) for CLI Co
 ---
 
 ## Archived Tracks
+
+### [x] letta-code_20251227 - Add Letta Code CLI Predefined Tool
+*Archived: 2025-12-27 | [conductor/archive/letta-code_20251227/](conductor/archive/letta-code_20251227/)*
 
 ### [x] qoder-cli_20251227 - Add Qoder CLI Predefined Tool
 *Archived: 2025-12-27 | [conductor/archive/qoder-cli_20251227/](conductor/archive/qoder-cli_20251227/)*
