@@ -47,8 +47,8 @@ export const SidebarSearchBar = memo(function SidebarSearchBar({
       <div className="relative group">
         <Search 
           className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 
-                     text-slate-400 dark:text-slate-500 
-                     group-focus-within:text-indigo-500 transition-colors duration-200" 
+                     text-slate-400 dark:text-slate-400 
+                     group-focus-within:text-indigo-500 dark:group-focus-within:text-indigo-400 transition-colors duration-200" 
         />
         <input
           ref={inputRef}
@@ -60,13 +60,13 @@ export const SidebarSearchBar = memo(function SidebarSearchBar({
           aria-label="Search tools"
           spellCheck={false}
           className="w-full pl-9 pr-8 py-2.5 
-                     bg-white/80 dark:bg-slate-800/60 
-                     text-slate-800 dark:text-slate-200 
+                     bg-white/80 dark:bg-slate-700/80 
+                     text-slate-800 dark:text-slate-100 
                      rounded-xl text-sm
-                     placeholder-slate-400 dark:placeholder-slate-500 
-                     border border-slate-200/80 dark:border-slate-700/50
-                     focus:outline-none focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-500/50
-                     shadow-sm hover:shadow-md focus:shadow-md
+                     placeholder-slate-400 dark:placeholder-slate-400 
+                     border border-slate-200/80 dark:border-slate-600
+                     focus:outline-none focus:ring-2 focus:ring-indigo-500/30 dark:focus:ring-indigo-400/40 focus:border-indigo-500/50 dark:focus:border-indigo-400/60
+                     shadow-sm hover:shadow-md focus:shadow-md dark:shadow-black/20
                      transition-all duration-200 backdrop-blur-sm"
         />
         {value && (

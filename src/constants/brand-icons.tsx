@@ -123,24 +123,23 @@ export function CursorIcon({ className = 'w-4 h-4', ...props }: IconProps) {
 export function DroidIcon({ className = 'w-4 h-4', ...props }: IconProps) {
   return (
     <svg
-      viewBox="0 0 24 24"
+      viewBox="0 0 100 100"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
       className={className}
       {...props}
     >
-      <path
-        d="M6 11v6a2 2 0 002 2h8a2 2 0 002-2v-6H6z"
-        fill="#3DDC84"
-      />
-      <path
-        d="M6 11a6 6 0 1112 0H6z"
-        fill="#3DDC84"
-      />
-      <circle cx="9" cy="9" r="1" fill="#fff" />
-      <circle cx="15" cy="9" r="1" fill="#fff" />
-      <path d="M7 5L5 3M17 5l2-2" stroke="#3DDC84" strokeWidth="1.5" strokeLinecap="round" />
-      <path d="M4 13v4M20 13v4" stroke="#3DDC84" strokeWidth="2" strokeLinecap="round" />
+      <rect width="100" height="100" rx="12" fill="#000" />
+      <g stroke="currentColor" strokeWidth="2.5" fill="none" strokeLinecap="round">
+        <path d="M50 20 Q55 35 50 50 Q45 35 50 20" />
+        <path d="M50 80 Q45 65 50 50 Q55 65 50 80" />
+        <path d="M20 50 Q35 45 50 50 Q35 55 20 50" />
+        <path d="M80 50 Q65 55 50 50 Q65 45 80 50" />
+        <path d="M29 29 Q42 38 50 50 Q38 42 29 29" />
+        <path d="M71 71 Q58 62 50 50 Q62 58 71 71" />
+        <path d="M71 29 Q62 42 50 50 Q58 38 71 29" />
+        <path d="M29 71 Q38 58 50 50 Q42 62 29 71" />
+      </g>
     </svg>
   );
 }
