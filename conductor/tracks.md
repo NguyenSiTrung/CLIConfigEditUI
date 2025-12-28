@@ -13,7 +13,7 @@ This file lists all development tracks (features, bugs, improvements) for CLI Co
 
 ## Active Tracks
 
-### [~] Track: Sidebar Icon UX Improvements
+### [x] Track: Sidebar Icon UX Improvements
 *Link: [./conductor/tracks/sidebar-icons-ux_20251228/](./conductor/tracks/sidebar-icons-ux_20251228/)*
 
 ---
