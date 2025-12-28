@@ -1,6 +1,7 @@
 import { memo, useRef, useCallback, useMemo, type ReactNode } from 'react';
 import { ChevronDown } from 'lucide-react';
 import { ACCENT_COLORS, type AccentColor } from '@/constants/tool-icons';
+import { IconContainer } from '@/components/ui';
 
 interface CollapsibleTreeItemProps {
   label: string;
@@ -85,10 +86,13 @@ export const CollapsibleTreeItem = memo(function CollapsibleTreeItem({
           </span>
           
           {icon && (
-            <span className={`flex-shrink-0 transition-transform duration-200 group-hover/tool:scale-110
-                            ${isActive ? colors.badgeText : 'text-slate-500 dark:text-slate-500'}`}>
+            <IconContainer
+              active={isActive || isChildActive}
+              accent={accent}
+              className={isActive ? colors.badgeText : 'text-slate-500 dark:text-slate-500'}
+            >
               {icon}
-            </span>
+            </IconContainer>
           )}
           
           <span className="truncate flex-1" title={label}>

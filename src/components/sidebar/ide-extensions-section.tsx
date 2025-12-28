@@ -4,6 +4,7 @@ import { invoke } from '@tauri-apps/api/core';
 import { IDE_PLATFORMS, IDE_EXTENSIONS } from '@/utils/cli-tools';
 import { PLATFORM_ICONS, DEFAULT_PLATFORM_ICON, EXTENSION_ICON, ACCENT_COLORS } from '@/constants/tool-icons';
 import { SidebarSection } from './sidebar-section';
+import { IconContainer } from '@/components/ui';
 
 interface IdeExtensionsSectionProps {
   onExtensionConfigSelect?: (platformId: string, extensionId: string, settingPath: string | null) => void;
@@ -122,9 +123,9 @@ export const IdeExtensionsSection = memo(function IdeExtensionsSection({ onExten
                 >
                   <ChevronDown className="w-3.5 h-3.5 text-slate-400" />
                 </span>
-                <span className="flex-shrink-0 transition-transform duration-200 group-hover:scale-110">
+                <IconContainer active={isPlatformExpanded} accent="emerald">
                   {PLATFORM_ICONS[platform.id] || DEFAULT_PLATFORM_ICON}
-                </span>
+                </IconContainer>
                 <span className="truncate font-medium flex-1" title={platform.name}>
                   {platform.name}
                 </span>
@@ -163,7 +164,9 @@ export const IdeExtensionsSection = memo(function IdeExtensionsSection({ onExten
                           <span className={`flex-shrink-0 transition-transform duration-200 ${isExtExpanded ? 'rotate-0' : '-rotate-90'}`}>
                             <ChevronDown className="w-3 h-3 opacity-50" />
                           </span>
-                          {EXTENSION_ICON}
+                          <IconContainer size="sm" active={isExtExpanded} accent="amber">
+                            {EXTENSION_ICON}
+                          </IconContainer>
                           <span className="truncate font-medium flex-1" title={extConfig.label}>
                             {extConfig.label}
                           </span>
