@@ -83,32 +83,32 @@
 ## Phase 4: Enhanced IconPicker
 
 ### Task 4.1: Create AI Presets Data
-- [ ] Create `src/constants/icon-presets.tsx`
-- [ ] Define preset icons for: Aider, Continue, Cody, Tabnine, Codeium, Amazon Q, Sourcery, Sweep, Mentat
-- [ ] Include icon component and label for each
+- [x] Create `src/constants/icon-presets.tsx`
+- [x] Define preset icons for: Aider, Continue, Cody, Tabnine, Codeium, Amazon Q, Sourcery, Sweep, Mentat
+- [x] Include icon component and label for each
 
 ### Task 4.2: Create Lucide Icons Selection
-- [ ] Define curated list of ~40 relevant Lucide icons
-- [ ] Categories: Terminal, Code, Server, Database, Cloud, Cog, etc.
-- [ ] Create icon name to component mapping
+- [x] Define curated list of ~40 relevant Lucide icons
+- [x] Categories: Terminal, Code, Server, Database, Cloud, Cog, etc.
+- [x] Create icon name to component mapping
 
 ### Task 4.3: Expand Emoji Set
-- [ ] Expand emoji options from 18 to 50+
-- [ ] Organize into categories: Tools, Tech, Symbols, Objects, Nature
-- [ ] Create category data structure
+- [x] Expand emoji options from 18 to 50+
+- [x] Organize into categories: Tools, Tech, Symbols, Objects, Nature
+- [x] Create category data structure
 
 ### Task 4.4: Redesign IconPicker Component
-- [ ] Add tab navigation (AI Presets | Icons | Emojis)
-- [ ] Implement AI Presets tab with grid layout
-- [ ] Implement Lucide Icons tab with search and grid
-- [ ] Implement Emojis tab with category sections
-- [ ] Add search/filter functionality for icons
-- [ ] Maintain popover positioning logic
+- [x] Add tab navigation (AI Presets | Icons | Emojis)
+- [x] Implement AI Presets tab with grid layout
+- [x] Implement Lucide Icons tab with search and grid
+- [x] Implement Emojis tab with category sections
+- [x] Add search/filter functionality for icons
+- [x] Maintain popover positioning logic
 
 ### Task 4.5: Update CustomTool Type and Storage
-- [ ] Extend CustomTool type to support icon type (emoji | lucide | preset)
-- [ ] Update Zustand store serialization if needed
-- [ ] Ensure backward compatibility with existing emoji icons
+- [x] Extend CustomTool type to support icon type (emoji | lucide | preset)
+- [x] Update Zustand store serialization if needed
+- [x] Ensure backward compatibility with existing emoji icons
 
 ### Task 4.6: IconPicker Tests
 - [ ] Write tests for tab navigation

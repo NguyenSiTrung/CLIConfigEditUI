@@ -16,6 +16,7 @@ import {
 } from '@dnd-kit/sortable';
 import { CustomTool, ConfigFile } from '@/types';
 import { ACCENT_COLORS } from '@/constants/tool-icons';
+import { LUCIDE_ICON_OPTIONS } from '@/constants/icon-presets';
 import { SidebarSection } from './sidebar-section';
 import { CollapsibleTreeItem } from './collapsible-tree-item';
 import { ConfigFileItem } from './config-file-item';
@@ -23,6 +24,23 @@ import { ToolActionsMenu } from './tool-actions-menu';
 import { SortableToolItem } from './sortable-tool-item';
 import { useAppStore } from '@/stores/app-store';
 import { useToolVisibilityStore } from '@/stores/tool-visibility-store';
+
+function renderToolIcon(icon: string | undefined) {
+  if (!icon) {
+    return <Sparkles className="w-4 h-4" />;
+  }
+  
+  if (icon.startsWith('lucide:')) {
+    const iconName = icon.replace('lucide:', '');
+    const iconOpt = LUCIDE_ICON_OPTIONS.find(i => i.name === iconName);
+    if (iconOpt) {
+      const IconComponent = iconOpt.icon;
+      return <IconComponent className="w-4 h-4" />;
+    }
+  }
+  
+  return <span className="text-base leading-none">{icon}</span>;
+}
 
 interface CustomToolsSectionProps {
   tools: CustomTool[];
@@ -156,13 +174,7 @@ export const CustomToolsSection = memo(function CustomToolsSection({
                   <SortableToolItem key={tool.id} id={tool.id}>
                     <CollapsibleTreeItem
                       label={tool.name}
-                      icon={
-                        tool.icon ? (
-                          <span className="text-base">{tool.icon}</span>
-                        ) : (
-                          <Sparkles className="w-4 h-4" />
-                        )
-                      }
+                      icon={renderToolIcon(tool.icon)}
                       isExpanded={isExpanded}
                       isActive={isActive && !isChildActive}
                       isChildActive={isChildActive}
