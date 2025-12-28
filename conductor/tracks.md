@@ -13,8 +13,7 @@ This file lists all development tracks (features, bugs, improvements) for CLI Co
 
 ## Active Tracks
 
-### [x] Track: Sidebar Icon UX Improvements
-*Link: [./conductor/tracks/sidebar-icons-ux_20251228/](./conductor/tracks/sidebar-icons-ux_20251228/)*
+*No active tracks.*
 
 ---
 
@@ -25,6 +24,9 @@ This file lists all development tracks (features, bugs, improvements) for CLI Co
 ---
 
 ## Archived Tracks
+
+### [x] sidebar-icons-ux_20251228 - Sidebar Icon UX Improvements
+*Archived: 2025-12-29 | [conductor/archive/sidebar-icons-ux_20251228/](conductor/archive/sidebar-icons-ux_20251228/)*
 
 ### [x] kilo-code-cli_20251227 - Add Kilo Code CLI Predefined Tool
 *Archived: 2025-12-27 | [conductor/archive/kilo-code-cli_20251227/](conductor/archive/kilo-code-cli_20251227/)*
