@@ -1,0 +1,146 @@
+# Plan: Sidebar Icon UX Improvements
+
+## Phase 1: Icon Container Foundation
+
+### Task 1.1: Create IconContainer Component
+- [x] Create `src/components/ui/icon-container.tsx` component
+- [x] Implement props: `size`, `active`, `accent`, `children`
+- [x] Add default styling: `w-6 h-6 rounded-lg flex items-center justify-center`
+- [x] Add theme-aware backgrounds: `bg-slate-100 dark:bg-slate-800`
+- [x] Add active state styling using accent colors
+- [x] Add hover scale transform animation
+
+### Task 1.2: Unit Tests for IconContainer
+- [x] Write tests for default rendering
+- [x] Write tests for active state styling
+- [x] Write tests for different accent colors
+- [x] Write tests for dark mode class application
+
+### Task 1.3: Conductor - User Manual Verification 'Phase 1' (Protocol in workflow.md)
+
+---
+
+## Phase 2: Brand Icons Creation
+
+### Task 2.1: Create Brand Icon Components
+- [ ] Create `src/constants/brand-icons.tsx` for complex SVG icons
+- [ ] Implement Claude Code icon (Anthropic sunburst)
+- [ ] Implement Gemini CLI icon (4-pointed star gradient)
+- [ ] Implement Amp icon (lightning bolt)
+- [ ] Implement GitHub Copilot icon (glasses)
+- [ ] Implement Cursor icon (Cursor IDE logo)
+- [ ] Implement Droid icon (robot)
+- [ ] Implement Auggie icon (AI assistant)
+- [ ] Implement Rovo Dev icon (Atlassian style)
+- [ ] Implement Kilo Code CLI icon (terminal style)
+- [ ] Implement OpenCode icon (improved symbol)
+
+### Task 2.2: Create Platform Icon Components
+- [ ] Update VS Code icon with official colors
+- [ ] Create Windsurf icon (Codeium style)
+- [ ] Update Antigravity icon
+
+### Task 2.3: Update TOOL_ICONS Mapping
+- [ ] Replace generic Lucide icons with brand icons in `tool-icons.tsx`
+- [ ] Update PLATFORM_ICONS with new platform icons
+- [ ] Ensure all icons render at consistent `w-4 h-4` size
+
+### Task 2.4: Conductor - User Manual Verification 'Phase 2' (Protocol in workflow.md)
+
+---
+
+## Phase 3: Sidebar Component Integration
+
+### Task 3.1: Update CollapsibleTreeItem
+- [ ] Wrap icon prop with IconContainer component
+- [ ] Pass active state and accent to container
+- [ ] Adjust spacing/gap if needed for new container size
+
+### Task 3.2: Update SidebarToolItem
+- [ ] Integrate IconContainer for CLI tool icons
+- [ ] Verify active/hover states work correctly
+
+### Task 3.3: Update CustomToolsSection
+- [ ] Integrate IconContainer for custom tool icons
+- [ ] Handle emoji icons within container
+- [ ] Verify drag-and-drop still works
+
+### Task 3.4: Update IdeExtensionsSection
+- [ ] Integrate IconContainer for platform icons
+- [ ] Integrate IconContainer for extension icons
+- [ ] Maintain existing color coding
+
+### Task 3.5: Visual Testing
+- [ ] Verify all sections display correctly in light mode
+- [ ] Verify all sections display correctly in dark mode
+- [ ] Test active states across all tool types
+- [ ] Test hover animations
+
+### Task 3.6: Conductor - User Manual Verification 'Phase 3' (Protocol in workflow.md)
+
+---
+
+## Phase 4: Enhanced IconPicker
+
+### Task 4.1: Create AI Presets Data
+- [ ] Create `src/constants/icon-presets.tsx`
+- [ ] Define preset icons for: Aider, Continue, Cody, Tabnine, Codeium, Amazon Q, Sourcery, Sweep, Mentat
+- [ ] Include icon component and label for each
+
+### Task 4.2: Create Lucide Icons Selection
+- [ ] Define curated list of ~40 relevant Lucide icons
+- [ ] Categories: Terminal, Code, Server, Database, Cloud, Cog, etc.
+- [ ] Create icon name to component mapping
+
+### Task 4.3: Expand Emoji Set
+- [ ] Expand emoji options from 18 to 50+
+- [ ] Organize into categories: Tools, Tech, Symbols, Objects, Nature
+- [ ] Create category data structure
+
+### Task 4.4: Redesign IconPicker Component
+- [ ] Add tab navigation (AI Presets | Icons | Emojis)
+- [ ] Implement AI Presets tab with grid layout
+- [ ] Implement Lucide Icons tab with search and grid
+- [ ] Implement Emojis tab with category sections
+- [ ] Add search/filter functionality for icons
+- [ ] Maintain popover positioning logic
+
+### Task 4.5: Update CustomTool Type and Storage
+- [ ] Extend CustomTool type to support icon type (emoji | lucide | preset)
+- [ ] Update Zustand store serialization if needed
+- [ ] Ensure backward compatibility with existing emoji icons
+
+### Task 4.6: IconPicker Tests
+- [ ] Write tests for tab navigation
+- [ ] Write tests for icon selection callback
+- [ ] Write tests for search functionality
+- [ ] Write tests for backward compatibility
+
+### Task 4.7: Conductor - User Manual Verification 'Phase 4' (Protocol in workflow.md)
+
+---
+
+## Phase 5: Polish and Quality Assurance
+
+### Task 5.1: Cross-Section Consistency Review
+- [ ] Verify icon sizes consistent across all sections
+- [ ] Verify container styles match across components
+- [ ] Verify accent colors applied correctly
+
+### Task 5.2: Accessibility Audit
+- [ ] Check color contrast ratios
+- [ ] Verify focus states on IconPicker
+- [ ] Test keyboard navigation in IconPicker
+
+### Task 5.3: Performance Check
+- [ ] Verify no jank in sidebar scrolling
+- [ ] Check IconPicker render performance
+- [ ] Profile component re-renders
+
+### Task 5.4: Final Testing
+- [ ] Run `pnpm typecheck` - no errors
+- [ ] Run `pnpm lint` - no warnings
+- [ ] Run `pnpm test` - all tests pass
+- [ ] Manual testing in Tauri dev mode
+
+### Task 5.5: Conductor - User Manual Verification 'Phase 5' (Protocol in workflow.md)

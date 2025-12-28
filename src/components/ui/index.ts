@@ -37,3 +37,4 @@ export {
   McpToolStatusSkeleton, 
   McpToolStatusListSkeleton 
 } from './skeleton';
+export { IconContainer, type IconContainerProps, type IconContainerSize } from './icon-container';
