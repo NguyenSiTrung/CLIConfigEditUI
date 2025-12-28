@@ -1,24 +1,35 @@
 /* eslint-disable react-refresh/only-export-components */
 import {
-  Bot,
-  Zap,
-  Github,
-  Box,
-  Sparkles,
   Folder,
   Monitor,
   Puzzle,
-  Terminal,
 } from 'lucide-react';
+import {
+  ClaudeCodeIcon,
+  GeminiIcon,
+  AmpIcon,
+  CopilotIcon,
+  CursorIcon,
+  DroidIcon,
+  AuggieIcon,
+  RovoDevIcon,
+  KiloCodeIcon,
+  OpenCodeIcon,
+  LettaCodeIcon,
+  QoderIcon,
+  VSCodeIcon,
+  WindsurfIcon,
+  AntigravityIcon,
+} from './brand-icons';
 
 export const TOOL_ICONS: Record<string, React.ReactNode> = {
-  'claude-code': <Bot className="w-4 h-4" />,
-  'gemini-cli': <Sparkles className="w-4 h-4" />,
-  'amp': <Zap className="w-4 h-4" />,
-  'gh-copilot': <Github className="w-4 h-4" />,
-  'cursor': <Box className="w-4 h-4" />,
-  'opencode': <span className="w-4 h-4 flex items-center justify-center text-sm">⌬</span>,
-  'droid': <Bot className="w-4 h-4" />,
+  'claude-code': <ClaudeCodeIcon />,
+  'gemini-cli': <GeminiIcon />,
+  'amp': <AmpIcon />,
+  'gh-copilot': <CopilotIcon />,
+  'cursor': <CursorIcon />,
+  'opencode': <OpenCodeIcon />,
+  'droid': <DroidIcon />,
   'qwen-code': (
     <svg className="w-4 h-4" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
       <path d="M28 22 L50 10 L50 25 L62 32 L50 40 L50 50 L38 43 L25 50 L25 35 Z" fill="#5B5FE8"/>
@@ -30,7 +41,7 @@ export const TOOL_ICONS: Record<string, React.ReactNode> = {
       <path d="M50 40 L62 58 L38 58 Z" fill="white"/>
     </svg>
   ),
-  'auggie': <Bot className="w-4 h-4" />,
+  'auggie': <AuggieIcon />,
   'kiro-cli': (
     <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
       <rect width="24" height="24" rx="4" fill="#8B5CF6"/>
@@ -39,15 +50,17 @@ export const TOOL_ICONS: Record<string, React.ReactNode> = {
       <ellipse cx="14.5" cy="10" rx="1.2" ry="1.5" fill="#1F1F1F"/>
     </svg>
   ),
-  'rovo-dev': <span className="w-4 h-4 flex items-center justify-center">🔷</span>,
-  'kilo-code-cli': <Terminal className="w-4 h-4" />,
+  'rovo-dev': <RovoDevIcon />,
+  'kilo-code-cli': <KiloCodeIcon />,
+  'letta-code': <LettaCodeIcon />,
+  'qoder': <QoderIcon />,
 };
 
 export const PLATFORM_ICONS: Record<string, React.ReactNode> = {
-  'vscode': <Monitor className="w-4 h-4 text-blue-500" />,
-  'cursor': <Box className="w-4 h-4 text-purple-500" />,
-  'windsurf': <span className="w-4 h-4 flex items-center justify-center">🏄</span>,
-  'antigravity': <span className="w-4 h-4 flex items-center justify-center">🚀</span>,
+  'vscode': <VSCodeIcon />,
+  'cursor': <CursorIcon />,
+  'windsurf': <WindsurfIcon />,
+  'antigravity': <AntigravityIcon />,
 };
 
 export const DEFAULT_TOOL_ICON = <Folder className="w-4 h-4" />;

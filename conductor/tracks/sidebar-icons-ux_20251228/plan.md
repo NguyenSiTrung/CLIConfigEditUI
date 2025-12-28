@@ -23,27 +23,27 @@
 ## Phase 2: Brand Icons Creation
 
 ### Task 2.1: Create Brand Icon Components
-- [ ] Create `src/constants/brand-icons.tsx` for complex SVG icons
-- [ ] Implement Claude Code icon (Anthropic sunburst)
-- [ ] Implement Gemini CLI icon (4-pointed star gradient)
-- [ ] Implement Amp icon (lightning bolt)
-- [ ] Implement GitHub Copilot icon (glasses)
-- [ ] Implement Cursor icon (Cursor IDE logo)
-- [ ] Implement Droid icon (robot)
-- [ ] Implement Auggie icon (AI assistant)
-- [ ] Implement Rovo Dev icon (Atlassian style)
-- [ ] Implement Kilo Code CLI icon (terminal style)
-- [ ] Implement OpenCode icon (improved symbol)
+- [x] Create `src/constants/brand-icons.tsx` for complex SVG icons
+- [x] Implement Claude Code icon (Anthropic sunburst)
+- [x] Implement Gemini CLI icon (4-pointed star gradient)
+- [x] Implement Amp icon (lightning bolt)
+- [x] Implement GitHub Copilot icon (glasses)
+- [x] Implement Cursor icon (Cursor IDE logo)
+- [x] Implement Droid icon (robot)
+- [x] Implement Auggie icon (AI assistant)
+- [x] Implement Rovo Dev icon (Atlassian style)
+- [x] Implement Kilo Code CLI icon (terminal style)
+- [x] Implement OpenCode icon (improved symbol)
 
 ### Task 2.2: Create Platform Icon Components
-- [ ] Update VS Code icon with official colors
-- [ ] Create Windsurf icon (Codeium style)
-- [ ] Update Antigravity icon
+- [x] Update VS Code icon with official colors
+- [x] Create Windsurf icon (Codeium style)
+- [x] Update Antigravity icon
 
 ### Task 2.3: Update TOOL_ICONS Mapping
-- [ ] Replace generic Lucide icons with brand icons in `tool-icons.tsx`
-- [ ] Update PLATFORM_ICONS with new platform icons
-- [ ] Ensure all icons render at consistent `w-4 h-4` size
+- [x] Replace generic Lucide icons with brand icons in `tool-icons.tsx`
+- [x] Update PLATFORM_ICONS with new platform icons
+- [x] Ensure all icons render at consistent `w-4 h-4` size
 
 ### Task 2.4: Conductor - User Manual Verification 'Phase 2' (Protocol in workflow.md)
 
