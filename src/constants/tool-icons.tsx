@@ -15,7 +15,7 @@ import {
   RovoDevIcon,
   KiloCodeIcon,
   OpenCodeIcon,
-  LettaCodeIcon,
+
   QoderIcon,
   VSCodeIcon,
   WindsurfIcon,
@@ -56,7 +56,14 @@ export const TOOL_ICONS: Record<string, React.ReactNode> = {
   ),
   'rovo-dev': <RovoDevIcon />,
   'kilo-code-cli': <KiloCodeIcon />,
-  'letta-code': <LettaCodeIcon />,
+  'letta-code': (
+    <img
+      src="/letta-code.png"
+      alt="Letta Code"
+      className="w-4 h-4 object-contain"
+      loading="lazy"
+    />
+  ),
   'qoder': <QoderIcon />,
 };
 
