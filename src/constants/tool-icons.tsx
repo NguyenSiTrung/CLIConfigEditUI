@@ -14,7 +14,7 @@ import {
   AuggieIcon,
   RovoDevIcon,
   KiloCodeIcon,
-  OpenCodeIcon,
+
 
   QoderIcon,
   VSCodeIcon,
@@ -28,7 +28,14 @@ export const TOOL_ICONS: Record<string, React.ReactNode> = {
   'amp': <AmpIcon />,
   'gh-copilot': <CopilotIcon />,
   'cursor': <CursorIcon />,
-  'opencode': <OpenCodeIcon />,
+  'opencode': (
+    <img
+      src="/opencode.png"
+      alt="OpenCode"
+      className="w-4 h-4 object-contain"
+      loading="lazy"
+    />
+  ),
   'droid': (
     <img
       src="/factory-droid.png"
