@@ -50,19 +50,19 @@
 
 ## Phase 3: Utility Function Tests
 
-- [ ] Task 3.1: Test path.ts
-  - [ ] Analyze existing functions in path.ts
-  - [ ] Write tests for path normalization
-  - [ ] Test path validation functions
-  - [ ] Test edge cases (empty, special chars, Windows paths)
+- [x] Task 3.1: Test path.ts
+  - [x] Analyze existing functions in path.ts
+  - [x] Write tests for path normalization
+  - [x] Test path validation functions
+  - [x] Test edge cases (empty, special chars, Windows paths)
 
-- [ ] Task 3.2: Test error-messages.ts
-  - [ ] Analyze existing functions
-  - [ ] Write tests for error message generation
-  - [ ] Test formatting functions
-  - [ ] Test with various error types
+- [x] Task 3.2: Test error-messages.ts
+  - [x] Analyze existing functions
+  - [x] Write tests for error message generation
+  - [x] Test formatting functions
+  - [x] Test with various error types
 
-- [ ] Task: Conductor - User Manual Verification 'Phase 3' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 3' (Protocol in workflow.md)
 
 ## Phase 4: Store Tests - versions-store
 
