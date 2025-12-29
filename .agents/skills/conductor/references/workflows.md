@@ -900,7 +900,7 @@ git commit -m "conductor(archive): Archive completed tracks"
 **If Beads enabled** - compact archived track epics:
 ```bash
 # For each archived track with beads_epic in metadata
-bd compact <epic_id>
+bd compact --auto <epic_id>
 ```
 
 Optionally offer project-wide compaction:
@@ -910,7 +910,7 @@ A) Yes - Compact all completed tasks project-wide
 B) No - Only compact archived tracks
 ```
 
-If A: Run `bd compact --all`
+If A: Run `bd compact --auto --all`
 
 ### 6. Announce
 "Archived [n] track(s). Track history preserved in conductor/archive/."

@@ -41,7 +41,7 @@ Commit the archive operation.
 
 2. **Compact Archived Track Epics:**
    - For each archived track with `beads_epic` in metadata:
-     - Run `bd compact <epic_id>`
+     - Run `bd compact --auto <epic_id>`
    - **If any `bd` command fails:**
      > "⚠️ Beads command failed: <error message>"
      > "A) Continue archive without Beads compaction"
@@ -57,4 +57,4 @@ Commit the archive operation.
    > A) Yes - Compact all completed tasks project-wide
    > B) No - Only compact archived tracks
    
-   If A: Run `bd compact --all`
+   If A: Run `bd compact --auto --all`

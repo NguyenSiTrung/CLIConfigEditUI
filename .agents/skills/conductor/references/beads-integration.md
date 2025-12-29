@@ -157,7 +157,7 @@ Enable integration via `conductor/beads.json`:
 | `/conductor-status` | `bd ready`, `bd show` | Show available tasks, epic status |
 | `/conductor-block` | `bd update --status blocked` | Mark task blocked with reason |
 | `/conductor-skip` | `bd update --status skipped` | Skip task with justification |
-| `/conductor-archive` | `bd compact` | Archive completed epics |
+| `/conductor-archive` | `bd compact --auto` | Archive completed epics |
 
 ### Example Flow
 
