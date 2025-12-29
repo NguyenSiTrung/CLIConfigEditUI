@@ -8,7 +8,7 @@ import {
 
   GeminiIcon,
   AmpIcon,
-  CopilotIcon,
+
   CursorIcon,
 
   AuggieIcon,
@@ -33,7 +33,14 @@ export const TOOL_ICONS: Record<string, React.ReactNode> = {
   ),
   'gemini-cli': <GeminiIcon />,
   'amp': <AmpIcon />,
-  'gh-copilot': <CopilotIcon />,
+  'gh-copilot': (
+    <img
+      src="/github-copilot.png"
+      alt="GitHub Copilot"
+      className="w-4 h-4 object-contain"
+      loading="lazy"
+    />
+  ),
   'cursor': <CursorIcon />,
   'opencode': (
     <img
