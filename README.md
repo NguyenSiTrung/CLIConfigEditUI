@@ -9,7 +9,7 @@ A cross-platform desktop application for managing configuration files of AI Codi
 
 ## Problem
 
-AI coding assistants (Claude CLI, Aider, Continue, Amp, etc.) each store settings in different locations across your filesystem. Finding and editing these configuration files is tedious, especially when using multiple tools daily.
+AI coding assistants (Claude Code, Gemini CLI, Amp, Cursor, etc.) each store settings in different locations across your filesystem. Finding and editing these configuration files is tedious, especially when using multiple tools daily.
 
 ## Solution
 
@@ -46,21 +46,38 @@ CLI Config Editor provides a unified interface to:
 
 | Platform | Status |
 |----------|--------|
-| macOS    | ✅     |
-| Ubuntu/Linux | ✅ |
-| Windows  | ✅     |
+| macOS | ✅ Tested |
+| Ubuntu/Linux | ✅ Tested |
+| Windows | ⚠️ Supported (not tested) |
+
+> **Note:** Windows support is implemented but has not been tested. Please report any issues.
 
 ## Pre-configured CLI Tools
 
-| Tool | Config Format | Auto-detect |
+| Tool | Config Format | Description |
 |------|---------------|-------------|
-| Claude CLI | JSON | ✅ |
-| Aider | YAML | ✅ |
-| Continue | JSON | ✅ |
-| Amp | TOML/JSON | ✅ |
-| GitHub Copilot CLI | YAML | ✅ |
-| Cursor | JSON | ✅ |
-| Cody CLI | JSON | ✅ |
+| Claude Code | JSON/Markdown | Anthropic's official Claude Code CLI |
+| Gemini CLI | JSON/Markdown | Google's Gemini CLI |
+| Amp | JSON/Markdown | Sourcegraph's AI coding agent |
+| GitHub Copilot CLI | JSON | GitHub's agentic AI coding assistant |
+| Cursor | JSON | AI-first code editor |
+| OpenCode | JSON | AI coding agent by SST |
+| Factory Droid CLI | JSON | Factory's AI coding agent |
+| Qwen Code | JSON/Markdown | Alibaba's AI coding agent CLI |
+| Augment Code CLI (Auggie) | JSON | Augment Code's AI coding CLI |
+| Kiro CLI | JSON | AWS Kiro agentic coding CLI |
+| Rovo Dev CLI | YAML/JSON | Atlassian's Rovo Dev AI coding CLI |
+| Qoder CLI | JSON | Qoder's AI coding CLI |
+| Letta Code | JSON | Memory-first, model-agnostic coding agent |
+
+### IDE Platforms (Extension Settings)
+
+| Platform | Description |
+|----------|-------------|
+| VS Code | Visual Studio Code extension settings |
+| Cursor | Cursor IDE extension settings |
+| Windsurf | Codeium's AI-native IDE |
+| Antigravity | Google's agent-first development platform |
 
 ## Tech Stack
 
@@ -107,8 +124,8 @@ xcode-select --install
 
 ```bash
 # Clone the repository
-git clone https://github.com/your-username/cli-config-editor.git
-cd cli-config-editor
+git clone https://github.com/NguyenSiTrung/CLIConfigEditUI.git
+cd CLIConfigEditUI
 
 # Install dependencies
 pnpm install
@@ -212,17 +229,18 @@ Manage and synchronize MCP (Model Context Protocol) server configurations across
 | **Conflict Resolution** | Resolve conflicts when source and target have different configs for the same server |
 | **Backups** | Automatic backup before any modification |
 
-### Supported Tools
+### Supported Tools for MCP Sync
 
 | Tool | Config Path | Format |
 |------|-------------|--------|
-| Claude Code | `~/.claude.json` | Standard |
-| Gemini CLI | `~/.gemini/settings.json` | Standard |
-| Amp | `~/.config/amp/settings.json` | Standard (dotted keys) |
-| GitHub Copilot CLI | `~/.copilot/mcp-config.json` | Custom (`servers` key) |
-| OpenCode | `~/.config/opencode/opencode.json` | Custom (`mcp` structure) |
-| Factory Droid CLI | `~/.factory/mcp.json` | Standard |
-| Qwen Code | `~/.qwen/settings.json` | Standard |
+| Claude Code | `~/.claude.json` | Standard (`mcpServers`) |
+| Gemini CLI | `~/.gemini/settings.json` | Standard (`mcpServers`) |
+| Amp | `~/.config/amp/settings.json` | Standard (`amp.mcpServers`) |
+| GitHub Copilot CLI | `~/.copilot/mcp-config.json` | Copilot (`servers`) |
+| OpenCode | `~/.config/opencode/opencode.json` | OpenCode (`mcp`) |
+| Factory Droid CLI | `~/.factory/mcp.json` | Standard (`mcpServers`) |
+| Qwen Code | `~/.qwen/settings.json` | Standard (`mcpServers`) |
+| Qoder CLI | `~/.qoder.json` | Standard (`mcpServers`) |
 
 ### How to Use
 
