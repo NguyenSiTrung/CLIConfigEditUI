@@ -13,7 +13,8 @@ This file lists all development tracks (features, bugs, improvements) for CLI Co
 
 ## Active Tracks
 
-*No active tracks.*
+## [~] Track: GitHub Actions Release Build
+*Link: [./conductor/tracks/github-actions-release_20251229/](./conductor/tracks/github-actions-release_20251229/)*
 
 ---
 
