@@ -15,7 +15,7 @@ import {
   KiloCodeIcon,
 
 
-  QoderIcon,
+
   VSCodeIcon,
   WindsurfIcon,
   AntigravityIcon,
@@ -98,7 +98,14 @@ export const TOOL_ICONS: Record<string, React.ReactNode> = {
       loading="lazy"
     />
   ),
-  'qoder': <QoderIcon />,
+  'qoder-cli': (
+    <img
+      src="/qoder.png"
+      alt="Qoder"
+      className="w-4 h-4 object-contain"
+      loading="lazy"
+    />
+  ),
 };
 
 export const PLATFORM_ICONS: Record<string, React.ReactNode> = {
