@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
-import { mockInvokeSuccess, mockInvokeOnce, resetMocks } from '@/test/tauri-mocks';
+import { mockInvokeSuccess, resetMocks } from '@/test/tauri-mocks';
 import { useMcpStore } from './mcp-store';
 import type {
   McpConfig,

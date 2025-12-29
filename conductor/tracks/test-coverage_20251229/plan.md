@@ -126,14 +126,14 @@
 
 ## Phase 6: Final Verification
 
-- [ ] Task 6.1: Run all quality checks
-  - [ ] Run `pnpm test` - all tests pass
-  - [ ] Run `pnpm typecheck` - no errors
-  - [ ] Run `pnpm lint` - no warnings
+- [x] Task 6.1: Run all quality checks
+  - [x] Run `pnpm test` - all tests pass
+  - [x] Run `pnpm typecheck` - no errors
+  - [x] Run `pnpm lint` - no warnings
 
-- [ ] Task 6.2: Coverage verification
-  - [ ] Review test coverage for new files
-  - [ ] Ensure ≥80% coverage target met
-  - [ ] Document any intentionally untested code
+- [x] Task 6.2: Coverage verification
+  - [x] Review test coverage for new files
+  - [x] Ensure ≥80% coverage target met
+  - [x] Document any intentionally untested code
 
-- [ ] Task: Conductor - User Manual Verification 'Phase 6' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 6' (Protocol in workflow.md)

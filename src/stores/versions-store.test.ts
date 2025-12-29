@@ -22,15 +22,6 @@ const mockVersionMetadata2: VersionMetadata = {
   isDefault: true,
 };
 
-const mockVersionMetadata3: VersionMetadata = {
-  id: 'v3',
-  configId: 'config-1',
-  name: 'Test Version 3',
-  timestamp: 1704240000000,
-  source: 'manual',
-  isDefault: false,
-};
-
 const mockConfigVersion: ConfigVersion = {
   ...mockVersionMetadata,
   content: '{"key": "value"}',
