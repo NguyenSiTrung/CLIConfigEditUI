@@ -90,39 +90,39 @@
 
 ## Phase 5: Store Tests - mcp-store
 
-- [ ] Task 5.1: Test state management
-  - [ ] Test initial state values
-  - [ ] Test setActiveConflicts, clearActiveConflicts
-  - [ ] Test setError, clearError
+- [x] Task 5.1: Test state management
+  - [x] Test initial state values
+  - [x] Test setActiveConflicts, clearActiveConflicts
+  - [x] Test setError, clearError
 
-- [ ] Task 5.2: Test config loading operations
-  - [ ] Test loadConfig success/error
-  - [ ] Test setSourceMode success/error
-  - [ ] Test loadSourceServers success/error
-  - [ ] Test loadToolStatuses success/error
+- [x] Task 5.2: Test config loading operations
+  - [x] Test loadConfig success/error
+  - [x] Test setSourceMode success/error
+  - [x] Test loadSourceServers success/error
+  - [x] Test loadToolStatuses success/error
 
-- [ ] Task 5.3: Test server CRUD operations
-  - [ ] Test addServer success/error
-  - [ ] Test updateServer success/error
-  - [ ] Test removeServer success/error
-  - [ ] Test saveServers success/error
+- [x] Task 5.3: Test server CRUD operations
+  - [x] Test addServer success/error
+  - [x] Test updateServer success/error
+  - [x] Test removeServer success/error
+  - [x] Test saveServers success/error
 
-- [ ] Task 5.4: Test import operations
-  - [ ] Test importFromFile success/error
-  - [ ] Test executeImport with 'replace' mode
-  - [ ] Test executeImport with 'merge' mode (no conflicts)
-  - [ ] Test executeImport with 'merge' mode (with overwrites)
-  - [ ] Test executeImport with 'merge' mode (skip existing)
+- [x] Task 5.4: Test import operations
+  - [x] Test importFromFile success/error
+  - [x] Test executeImport with 'replace' mode
+  - [x] Test executeImport with 'merge' mode (no conflicts)
+  - [x] Test executeImport with 'merge' mode (with overwrites)
+  - [x] Test executeImport with 'merge' mode (skip existing)
 
-- [ ] Task 5.5: Test sync operations
-  - [ ] Test setToolEnabled success/error
-  - [ ] Test previewSync success/error
-  - [ ] Test previewSyncAll success/error
-  - [ ] Test previewConfigContent success/error
-  - [ ] Test syncToTool success/error
-  - [ ] Test syncToAll success/error
+- [x] Task 5.5: Test sync operations
+  - [x] Test setToolEnabled success/error
+  - [x] Test previewSync success/error
+  - [x] Test previewSyncAll success/error
+  - [x] Test previewConfigContent success/error
+  - [x] Test syncToTool success/error
+  - [x] Test syncToAll success/error
 
-- [ ] Task: Conductor - User Manual Verification 'Phase 5' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 5' (Protocol in workflow.md)
 
 ## Phase 6: Final Verification
 
