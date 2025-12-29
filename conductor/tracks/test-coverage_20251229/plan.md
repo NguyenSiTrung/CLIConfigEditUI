@@ -66,27 +66,27 @@
 
 ## Phase 4: Store Tests - versions-store
 
-- [ ] Task 4.1: Test state management
-  - [ ] Test initial state values
-  - [ ] Test setCurrentConfigId (triggers fetchVersions)
-  - [ ] Test toggleVersionSelection (max 2 limit)
-  - [ ] Test clearSelection, clearVersions
+- [x] Task 4.1: Test state management
+  - [x] Test initial state values
+  - [x] Test setCurrentConfigId (triggers fetchVersions)
+  - [x] Test toggleVersionSelection (max 2 limit)
+  - [x] Test clearSelection, clearVersions
 
-- [ ] Task 4.2: Test async operations with mocked Tauri
-  - [ ] Test fetchVersions success/error
-  - [ ] Test saveVersion success/error
-  - [ ] Test loadVersion success/error
-  - [ ] Test deleteVersion (removes from selection)
-  - [ ] Test updateVersion, updateVersionContent
-  - [ ] Test duplicateVersion
-  - [ ] Test setDefault
+- [x] Task 4.2: Test async operations with mocked Tauri
+  - [x] Test fetchVersions success/error
+  - [x] Test saveVersion success/error
+  - [x] Test loadVersion success/error
+  - [x] Test deleteVersion (removes from selection)
+  - [x] Test updateVersion, updateVersionContent
+  - [x] Test duplicateVersion
+  - [x] Test setDefault
 
-- [ ] Task 4.3: Test loading and error states
-  - [ ] Verify isLoading set/unset during operations
-  - [ ] Verify error state on failures
-  - [ ] Test error clearing behavior
+- [x] Task 4.3: Test loading and error states
+  - [x] Verify isLoading set/unset during operations
+  - [x] Verify error state on failures
+  - [x] Test error clearing behavior
 
-- [ ] Task: Conductor - User Manual Verification 'Phase 4' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 4' (Protocol in workflow.md)
 
 ## Phase 5: Store Tests - mcp-store
 
