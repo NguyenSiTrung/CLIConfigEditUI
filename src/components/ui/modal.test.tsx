@@ -269,10 +269,22 @@ describe('Modal', () => {
       expect(screen.getByText('My Description')).toHaveAttribute('id', 'modal-description');
     });
 
-    it('focuses modal when opened', async () => {
+    it('focuses first focusable element when opened', async () => {
       render(
-        <Modal isOpen onClose={() => {}}>
-          <p>Content</p>
+        <Modal isOpen onClose={() => {}} title="Test Title">
+          <button>First Button</button>
+        </Modal>
+      );
+      await waitFor(() => {
+        // The close button should receive focus as it's the first focusable element
+        expect(screen.getByRole('button', { name: /close modal/i })).toHaveFocus();
+      });
+    });
+
+    it('focuses modal dialog when no focusable elements exist', async () => {
+      render(
+        <Modal isOpen onClose={() => {}} showCloseButton={false}>
+          <p>Content only, no buttons</p>
         </Modal>
       );
       await waitFor(() => {
@@ -282,7 +294,7 @@ describe('Modal', () => {
   });
 
   describe('focus trap', () => {
-    it('traps focus within modal', async () => {
+    it('traps focus within modal - forward cycle', async () => {
       const user = userEvent.setup();
       render(
         <Modal isOpen onClose={() => {}} title="Title">
@@ -291,24 +303,28 @@ describe('Modal', () => {
         </Modal>
       );
 
+      // DOM order: Close button → First button → Second button
+      const closeButton = screen.getByRole('button', { name: /close modal/i });
       const firstButton = screen.getByRole('button', { name: /first/i });
       const secondButton = screen.getByRole('button', { name: /second/i });
-      const closeButton = screen.getByRole('button', { name: /close modal/i });
 
-      firstButton.focus();
+      // Start at close button (first focusable element)
+      closeButton.focus();
+      expect(closeButton).toHaveFocus();
+
+      // Tab through all elements
+      await user.tab();
       expect(firstButton).toHaveFocus();
 
       await user.tab();
       expect(secondButton).toHaveFocus();
 
+      // Tab from last element should cycle back to first
       await user.tab();
       expect(closeButton).toHaveFocus();
-
-      await user.tab();
-      expect(firstButton).toHaveFocus();
     });
 
-    it('cycles focus in reverse with shift+tab', async () => {
+    it('traps focus within modal - reverse cycle', async () => {
       const user = userEvent.setup();
       render(
         <Modal isOpen onClose={() => {}} title="Title">
@@ -317,12 +333,16 @@ describe('Modal', () => {
         </Modal>
       );
 
-      const firstButton = screen.getByRole('button', { name: /first/i });
       const closeButton = screen.getByRole('button', { name: /close modal/i });
+      const secondButton = screen.getByRole('button', { name: /second/i });
 
-      firstButton.focus();
-      await user.tab({ shift: true });
+      // Start at first element
+      closeButton.focus();
       expect(closeButton).toHaveFocus();
+
+      // Shift+Tab from first element should cycle to last
+      await user.tab({ shift: true });
+      expect(secondButton).toHaveFocus();
     });
   });
 });
