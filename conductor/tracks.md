@@ -13,8 +13,7 @@ This file lists all development tracks (features, bugs, improvements) for CLI Co
 
 ## Active Tracks
 
-## [x] Track: GitHub Actions Release Build
-*Link: [./conductor/tracks/github-actions-release_20251229/](./conductor/tracks/github-actions-release_20251229/)*
+*No active tracks.*
 
 ---
 
@@ -25,6 +24,9 @@ This file lists all development tracks (features, bugs, improvements) for CLI Co
 ---
 
 ## Archived Tracks
+
+### [x] github-actions-release_20251229 - GitHub Actions Release Build
+*Archived: 2025-12-29 | [conductor/archive/github-actions-release_20251229/](conductor/archive/github-actions-release_20251229/)*
 
 ### [x] test-coverage_20251229 - Expand Test Coverage
 *Archived: 2025-12-29 | [conductor/archive/test-coverage_20251229/](conductor/archive/test-coverage_20251229/)*
