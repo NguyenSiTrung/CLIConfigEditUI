@@ -11,7 +11,7 @@ import {
 
   CursorIcon,
 
-  AuggieIcon,
+
   RovoDevIcon,
   KiloCodeIcon,
 
@@ -66,7 +66,14 @@ export const TOOL_ICONS: Record<string, React.ReactNode> = {
       loading="lazy"
     />
   ),
-  'auggie': <AuggieIcon />,
+  'auggie': (
+    <img
+      src="/augment-code.png"
+      alt="Augment Code"
+      className="w-4 h-4 object-contain"
+      loading="lazy"
+    />
+  ),
   'kiro-cli': (
     <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
       <rect width="24" height="24" rx="4" fill="#8B5CF6" />
