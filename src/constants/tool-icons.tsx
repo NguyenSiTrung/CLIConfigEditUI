@@ -47,7 +47,14 @@ export const TOOL_ICONS: Record<string, React.ReactNode> = {
       loading="lazy"
     />
   ),
-  'cursor': <CursorIcon />,
+  'cursor': (
+    <img
+      src="/cursor.png"
+      alt="Cursor"
+      className="w-4 h-4 object-contain"
+      loading="lazy"
+    />
+  ),
   'opencode': (
     <img
       src="/opencode.png"
