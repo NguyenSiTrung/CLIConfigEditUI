@@ -47,7 +47,7 @@ export const SidebarSearchBar = memo(function SidebarSearchBar({
       <div className="relative group">
         <Search 
           className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 
-                     text-slate-400 dark:text-slate-400 
+                     text-slate-400 dark:text-slate-200 
                      group-focus-within:text-indigo-500 dark:group-focus-within:text-indigo-400 transition-colors duration-200" 
         />
         <input
