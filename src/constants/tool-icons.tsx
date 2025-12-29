@@ -5,7 +5,7 @@ import {
   Puzzle,
 } from 'lucide-react';
 import {
-  ClaudeCodeIcon,
+
   GeminiIcon,
   AmpIcon,
   CopilotIcon,
@@ -23,7 +23,14 @@ import {
 } from './brand-icons';
 
 export const TOOL_ICONS: Record<string, React.ReactNode> = {
-  'claude-code': <ClaudeCodeIcon />,
+  'claude-code': (
+    <img
+      src="/claude-code.png"
+      alt="Claude Code"
+      className="w-4 h-4 object-contain"
+      loading="lazy"
+    />
+  ),
   'gemini-cli': <GeminiIcon />,
   'amp': <AmpIcon />,
   'gh-copilot': <CopilotIcon />,

@@ -4,27 +4,7 @@ type IconProps = SVGProps<SVGSVGElement> & {
   className?: string;
 };
 
-export function ClaudeCodeIcon({ className = 'w-4 h-4', ...props }: IconProps) {
-  return (
-    <svg
-      viewBox="0 0 24 24"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-      className={className}
-      {...props}
-    >
-      <path
-        d="M12 2L4 6v6c0 5.55 3.84 10.74 8 12 4.16-1.26 8-6.45 8-12V6l-8-4z"
-        fill="#D97757"
-      />
-      <path
-        d="M12 6l-4 2v3c0 2.77 1.92 5.37 4 6 2.08-.63 4-3.23 4-6V8l-4-2z"
-        fill="#FAE8E0"
-      />
-      <circle cx="12" cy="11" r="2" fill="#D97757" />
-    </svg>
-  );
-}
+
 
 export function GeminiIcon({ className = 'w-4 h-4', ...props }: IconProps) {
   return (
