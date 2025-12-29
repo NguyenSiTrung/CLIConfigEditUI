@@ -19,14 +19,14 @@ This file lists all development tracks (features, bugs, improvements) for CLI Co
 
 ## Completed Tracks
 
-### [x] test-coverage_20251229 - Expand Test Coverage
-*Link: [./conductor/tracks/test-coverage_20251229/](./conductor/tracks/test-coverage_20251229/)*
-*Priority: 🟠 High*
-*Ready for archive*
+*No completed tracks pending archive.*
 
 ---
 
 ## Archived Tracks
+
+### [x] test-coverage_20251229 - Expand Test Coverage
+*Archived: 2025-12-29 | [conductor/archive/test-coverage_20251229/](conductor/archive/test-coverage_20251229/)*
 
 ### [x] sidebar-icons-ux_20251228 - Sidebar Icon UX Improvements
 *Archived: 2025-12-29 | [conductor/archive/sidebar-icons-ux_20251228/](conductor/archive/sidebar-icons-ux_20251228/)*
