@@ -15,38 +15,38 @@
 
 ## Phase 2: Core UI Component Tests
 
-- [ ] Task 2.1: Test skeleton.tsx
-  - [ ] Write tests for default rendering
-  - [ ] Test size variants (if applicable)
-  - [ ] Test animation/pulse classes
-  - [ ] Test custom className prop
+- [x] Task 2.1: Test skeleton.tsx (commit 91cce86)
+  - [x] Write tests for default rendering
+  - [x] Test size variants (if applicable)
+  - [x] Test animation/pulse classes
+  - [x] Test custom className prop
 
-- [ ] Task 2.2: Test section-header.tsx
-  - [ ] Write tests for title rendering
-  - [ ] Test actions slot rendering
-  - [ ] Test styling variants
-  - [ ] Test accessibility (heading levels)
+- [x] Task 2.2: Test section-header.tsx
+  - [x] Write tests for title rendering
+  - [x] Test actions slot rendering
+  - [x] Test styling variants
+  - [x] Test accessibility (heading levels)
 
-- [ ] Task 2.3: Test confirm-dialog.tsx
-  - [ ] Write tests for open/closed states
-  - [ ] Test title, description, button text props
-  - [ ] Test confirm/cancel callbacks
-  - [ ] Test keyboard interactions (ESC, Enter)
-  - [ ] Test accessibility (focus trap, ARIA)
+- [x] Task 2.3: Test confirm-dialog.tsx
+  - [x] Write tests for open/closed states
+  - [x] Test title, description, button text props
+  - [x] Test confirm/cancel callbacks
+  - [x] Test keyboard interactions (ESC, Enter)
+  - [x] Test accessibility (focus trap, ARIA)
 
-- [ ] Task 2.4: Test unsaved-changes-dialog.tsx
-  - [ ] Write tests for rendering with props
-  - [ ] Test save/discard/cancel callbacks
-  - [ ] Test conditional button visibility
-  - [ ] Test accessibility
+- [x] Task 2.4: Test unsaved-changes-dialog.tsx
+  - [x] Write tests for rendering with props
+  - [x] Test save/discard/cancel callbacks
+  - [x] Test conditional button visibility
+  - [x] Test accessibility
 
-- [ ] Task 2.5: Test onboarding-tooltip.tsx
-  - [ ] Write tests for visibility states
-  - [ ] Test positioning props
-  - [ ] Test dismiss behavior
-  - [ ] Test content rendering
+- [x] Task 2.5: Test onboarding-tooltip.tsx
+  - [x] Write tests for visibility states
+  - [x] Test positioning props
+  - [x] Test dismiss behavior
+  - [x] Test content rendering
 
-- [ ] Task: Conductor - User Manual Verification 'Phase 2' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 2' (Protocol in workflow.md)
 
 ## Phase 3: Utility Function Tests
 
