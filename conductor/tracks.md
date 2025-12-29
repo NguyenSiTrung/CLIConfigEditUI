@@ -13,15 +13,16 @@ This file lists all development tracks (features, bugs, improvements) for CLI Co
 
 ## Active Tracks
 
-### [x] test-coverage_20251229 - Expand Test Coverage
-*Link: [./conductor/tracks/test-coverage_20251229/](./conductor/tracks/test-coverage_20251229/)*
-*Priority: 🟠 High*
+*No active tracks.*
 
 ---
 
 ## Completed Tracks
 
-*No completed tracks pending archive.*
+### [x] test-coverage_20251229 - Expand Test Coverage
+*Link: [./conductor/tracks/test-coverage_20251229/](./conductor/tracks/test-coverage_20251229/)*
+*Priority: 🟠 High*
+*Ready for archive*
 
 ---
 

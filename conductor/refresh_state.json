@@ -1,22 +1,13 @@
 {
-  "last_refresh": "2025-12-26T00:00:00Z",
+  "last_refresh": "2025-12-29T00:00:00Z",
   "scope": "all",
   "changes_applied": [
     {
-      "file": "tech-stack.md",
+      "file": "tracks.md",
       "changes": [
-        "Added @dnd-kit/core (v6.3) for drag-and-drop foundation",
-        "Added @dnd-kit/sortable (v10.0) for sortable list primitives",
-        "Added @dnd-kit/utilities (v3.2) for DnD utility functions"
-      ]
-    },
-    {
-      "file": "product.md",
-      "changes": [
-        "Added Tool visibility (pin, hide, reorder) as completed MVP feature",
-        "Added Sidebar drag-and-drop reordering as completed MVP feature"
+        "Moved test-coverage_20251229 from Active to Completed (ready for archive)"
       ]
     }
   ],
-  "next_refresh_hint": "2025-12-29T00:00:00Z"
+  "next_refresh_hint": "2026-01-01T00:00:00Z"
 }
