@@ -142,6 +142,42 @@ pnpm tauri dev
 pnpm tauri build
 ```
 
+## Installing Pre-built Releases
+
+Download the latest release from [GitHub Releases](https://github.com/NguyenSiTrung/CLIConfigEditUI/releases).
+
+> **Note:** The app is not code-signed. You may need to follow platform-specific steps to run it.
+
+### macOS
+
+1. Download the `.dmg` file
+2. Open the DMG and drag the app to Applications
+3. **First launch**: Right-click the app → "Open" → Click "Open" in the dialog
+   - Or run in Terminal: `xattr -cr /Applications/CLI\ Config\ Editor.app`
+4. macOS may show "unidentified developer" warning - this is expected for unsigned apps
+
+### Linux (AppImage)
+
+```bash
+# Download the AppImage
+chmod +x cli-config-editor_*.AppImage
+
+# Run
+./cli-config-editor_*.AppImage
+```
+
+### Linux (Debian/Ubuntu)
+
+```bash
+sudo dpkg -i cli-config-editor_*.deb
+```
+
+### Windows
+
+1. Download the `.msi` or `.exe` installer
+2. Windows may show "Windows protected your PC" - click "More info" → "Run anyway"
+3. Or right-click the installer → Properties → Check "Unblock" → Apply
+
 ### Available Scripts
 
 | Command | Description |

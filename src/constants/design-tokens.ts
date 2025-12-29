@@ -22,7 +22,7 @@
  * - Common: 2 (8px), 3 (12px), 4 (16px), 6 (24px)
  */
 
-export const APP_VERSION = '1.2.0';
+export const APP_VERSION = '0.1.0';
 export const APP_NAME = 'CLI Config Editor';
 
 export const colors = {
