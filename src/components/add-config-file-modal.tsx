@@ -1,15 +1,23 @@
 import { useState, useEffect } from 'react';
-import { ConfigFormat, CliTool, CustomTool, SuggestedConfig, PathSafetyResult } from '@/types';
+import { ConfigFormat, CliTool, CustomTool, SuggestedConfig, PathSafetyResult, PathType, SshConnectionStatus } from '@/types';
 import { FolderOpen, Sparkles, Check, AlertTriangle } from 'lucide-react';
 import { open } from '@tauri-apps/plugin-dialog';
 import { invoke } from '@tauri-apps/api/core';
 import { Modal, Button, Input } from '@/components/ui';
+import { PathTypeSelector, SshPathInput } from '@/components/ssh';
 
 interface AddConfigFileModalProps {
   isOpen: boolean;
   tool: CliTool | CustomTool | null;
   onClose: () => void;
-  onAdd: (configFile: { label: string; path: string; format: ConfigFormat; jsonPath?: string }) => void;
+  onAdd: (configFile: { 
+    label: string; 
+    path: string; 
+    format: ConfigFormat; 
+    jsonPath?: string;
+    pathType?: PathType;
+    sshPath?: string;
+  }) => void;
 }
 
 const FORMAT_OPTIONS: { value: ConfigFormat; label: string; color: string }[] = [
@@ -37,7 +45,11 @@ export function AddConfigFileModal({ isOpen, tool, onClose, onAdd }: AddConfigFi
   const [showSuggestions, setShowSuggestions] = useState(true);
   
   const [showPathWarning, setShowPathWarning] = useState(false);
-  const [pendingSubmit, setPendingSubmit] = useState<{ label: string; path: string; format: ConfigFormat; jsonPath?: string } | null>(null);
+  const [pendingSubmit, setPendingSubmit] = useState<{ label: string; path: string; format: ConfigFormat; jsonPath?: string; pathType?: PathType; sshPath?: string } | null>(null);
+
+  const [pathType, setPathType] = useState<PathType>('local');
+  const [sshPath, setSshPath] = useState('');
+  const [, setSshConnectionStatus] = useState<SshConnectionStatus>('disconnected');
 
   useEffect(() => {
     if (isOpen && tool && 'suggestedConfigs' in tool && tool.suggestedConfigs) {
@@ -72,6 +84,25 @@ export function AddConfigFileModal({ isOpen, tool, onClose, onAdd }: AddConfigFi
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (pathType === 'ssh') {
+      if (!label.trim() || !sshPath.trim()) return;
+      
+      const configData = {
+        label: label.trim(),
+        path: sshPath.trim(),
+        format,
+        jsonPath,
+        pathType: 'ssh' as PathType,
+        sshPath: sshPath.trim(),
+      };
+      
+      onAdd(configData);
+      resetForm();
+      onClose();
+      return;
+    }
+    
     if (!label.trim() || !path.trim()) return;
 
     const configData = {
@@ -79,6 +110,7 @@ export function AddConfigFileModal({ isOpen, tool, onClose, onAdd }: AddConfigFi
       path: path.trim(),
       format,
       jsonPath,
+      pathType: 'local' as PathType,
     };
 
     try {
@@ -135,6 +167,9 @@ export function AddConfigFileModal({ isOpen, tool, onClose, onAdd }: AddConfigFi
     setShowSuggestions(true);
     setShowPathWarning(false);
     setPendingSubmit(null);
+    setPathType('local');
+    setSshPath('');
+    setSshConnectionStatus('disconnected');
   };
 
   const handleBrowseFile = async () => {
@@ -257,39 +292,62 @@ export function AddConfigFileModal({ isOpen, tool, onClose, onAdd }: AddConfigFi
           autoFocus={!showSuggestions || suggestions.length === 0}
         />
 
-        <div>
-          <label className="block text-sm font-medium text-slate-700 dark:text-gray-300 mb-1.5">
-            File Path *
-          </label>
-          <div className="relative">
-            <input
-              type="text"
-              value={path}
-              onChange={(e) => setPath(e.target.value)}
-              placeholder="~/.config/tool/config.json"
-              className="w-full px-3 py-2 pr-12 rounded-lg text-sm font-mono
-                         bg-white dark:bg-gray-900/50
-                         border border-slate-300 dark:border-gray-700
-                         text-slate-900 dark:text-white
-                         placeholder:text-slate-400 dark:placeholder:text-gray-500
-                         transition-colors duration-200
-                         focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 focus:ring-offset-0"
-              required
-            />
-            <button
-              type="button"
-              onClick={handleBrowseFile}
-              className="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 rounded-md 
-                         text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-200 dark:hover:bg-white/10 transition-colors"
-              title="Browse files"
-            >
-              <FolderOpen className="w-4 h-4" />
-            </button>
+        {/* Path Type Selector */}
+        <PathTypeSelector
+          value={pathType}
+          onChange={(value) => {
+            setPathType(value);
+            if (value === 'ssh') {
+              setShowSuggestions(false);
+            }
+          }}
+        />
+
+        {/* Local Path Input */}
+        {pathType === 'local' && (
+          <div>
+            <label className="block text-sm font-medium text-slate-700 dark:text-gray-300 mb-1.5">
+              File Path *
+            </label>
+            <div className="relative">
+              <input
+                type="text"
+                value={path}
+                onChange={(e) => setPath(e.target.value)}
+                placeholder="~/.config/tool/config.json"
+                className="w-full px-3 py-2 pr-12 rounded-lg text-sm font-mono
+                           bg-white dark:bg-gray-900/50
+                           border border-slate-300 dark:border-gray-700
+                           text-slate-900 dark:text-white
+                           placeholder:text-slate-400 dark:placeholder:text-gray-500
+                           transition-colors duration-200
+                           focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 focus:ring-offset-0"
+                required={pathType === 'local'}
+              />
+              <button
+                type="button"
+                onClick={handleBrowseFile}
+                className="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 rounded-md 
+                           text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-200 dark:hover:bg-white/10 transition-colors"
+                title="Browse files"
+              >
+                <FolderOpen className="w-4 h-4" />
+              </button>
+            </div>
+            <p className="mt-1.5 text-xs text-slate-500 dark:text-gray-400">
+              Use ~ for home directory. File will be created if it doesn't exist.
+            </p>
           </div>
-          <p className="mt-1.5 text-xs text-slate-500 dark:text-gray-400">
-            Use ~ for home directory. File will be created if it doesn't exist.
-          </p>
-        </div>
+        )}
+
+        {/* SSH Path Input */}
+        {pathType === 'ssh' && (
+          <SshPathInput
+            value={sshPath}
+            onChange={setSshPath}
+            onConnectionStatusChange={(status) => setSshConnectionStatus(status)}
+          />
+        )}
 
         <div>
           <label className="block text-sm font-medium text-slate-700 dark:text-gray-300 mb-1.5">

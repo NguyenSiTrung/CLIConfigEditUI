@@ -4,10 +4,12 @@ export type ConfigFormat = 'json' | 'yaml' | 'toml' | 'ini' | 'md';
 export interface ConfigFile {
   id: string;
   label: string;        // User-defined label: "Settings", "MCP", "Memory", etc.
-  path: string;         // File path
+  path: string;         // File path (local path or SSH path for remote)
   format: ConfigFormat;
   icon?: string;        // Optional icon/emoji
   jsonPath?: string;    // For partial JSON editing - dot-notation path to extract/edit (e.g., "mcpServers")
+  pathType?: PathType;  // 'local' or 'ssh' - defaults to 'local' if undefined
+  sshPath?: string;     // Full SSH path: user@host:/path (only set when pathType is 'ssh')
 }
 
 // CLI Tool metadata (no config paths - all user-managed)
@@ -329,4 +331,41 @@ export interface PathSafetyResult {
   path: string;
   resolvedPath: string;
   safetyLevel: PathSafetyLevel;
+}
+
+// ============================================
+// SSH Remote Config Types
+// ============================================
+
+// Path type for config files - local or SSH remote
+export type PathType = 'local' | 'ssh';
+
+// SSH connection status
+export type SshConnectionStatus = 'connected' | 'disconnected' | 'error' | 'checking';
+
+// SSH connection info returned from backend
+export interface SshConnectionInfo {
+  user?: string;
+  host: string;
+  port?: number;
+  path: string;
+}
+
+// SSH status result from backend
+export interface SshStatusResult {
+  status: 'connected' | 'disconnected' | 'error';
+  error?: string;
+}
+
+// Extended ConfigFile with SSH support (deprecated - use ConfigFile directly)
+export type ConfigFileWithSsh = ConfigFile;
+
+// Remote tool config - combines tool info with SSH config
+export interface RemoteToolConfig {
+  toolId: string;
+  configFileId: string;
+  sshPath: string;
+  connectionStatus: SshConnectionStatus;
+  lastError?: string;
+  lastChecked?: number;
 }

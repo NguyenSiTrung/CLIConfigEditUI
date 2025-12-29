@@ -2,6 +2,7 @@ mod commands;
 mod config;
 mod mcp;
 mod path_safety;
+mod ssh;
 mod versions;
 
 use commands::{
@@ -15,6 +16,10 @@ use mcp::{
     read_claude_mcp_servers, get_tool_mcp_servers, get_mcp_tool_statuses, set_tool_mcp_enabled,
     preview_mcp_sync, preview_mcp_sync_all, sync_mcp_to_tool, sync_mcp_to_all,
     preview_mcp_config_content, import_mcp_config_file,
+};
+use ssh::{
+    backup_remote_config, check_remote_connection, check_remote_file_exists, parse_ssh_path,
+    read_remote_config, test_ssh_host, write_remote_config,
 };
 use versions::{
     save_version, list_versions, load_version, delete_version, update_version_metadata,
@@ -76,6 +81,14 @@ pub fn run() {
             load_sidebar_state,
             // Path safety commands
             check_path_safety,
+            // SSH remote config commands
+            test_ssh_host,
+            check_remote_connection,
+            read_remote_config,
+            write_remote_config,
+            check_remote_file_exists,
+            backup_remote_config,
+            parse_ssh_path,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

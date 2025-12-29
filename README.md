@@ -46,6 +46,7 @@ CLI Config Editor provides a unified interface to:
 - ✅ **Command Palette** - Quick access to all actions (Ctrl/Cmd+K)
 - ✅ **Auto-save** - Optional automatic saving with configurable delay
 - ✅ **Reduced motion** - Accessibility option to minimize animations
+- ✅ **SSH Remote Config** - Edit config files on remote servers via SSH
 
 ## Supported Platforms
 
@@ -290,6 +291,44 @@ Manage and synchronize MCP (Model Context Protocol) server configurations across
 3. View tool sync status (green = synced, yellow = out-of-sync)
 4. Click **Sync** on individual tools or **Sync All** for batch sync
 5. Review preview and resolve any conflicts before applying
+
+## SSH Remote Config
+
+Edit config files on remote servers (VPS, cloud instances) directly via SSH.
+
+### Prerequisites
+
+- SSH access to your remote server with key-based authentication
+- Your SSH keys should be loaded in ssh-agent or configured in `~/.ssh/config`
+- The remote server must be accessible from your machine
+
+### Supported SSH Path Formats
+
+| Format | Example |
+|--------|---------|
+| User + Host | `user@hostname:/path/to/config.json` |
+| Host only (uses SSH config) | `myserver:/path/to/config.json` |
+| With port | `user@hostname:2222:/path/to/config.json` |
+| IPv6 | `user@[::1]:22:/path/to/config.json` |
+
+### Adding a Remote Config
+
+1. Click **Add Config File** for any tool
+2. Select **SSH Remote** as the Path Type
+3. Enter the SSH path (e.g., `user@server:/home/user/.config/tool/config.json`)
+4. Click **Test Connection** to verify connectivity
+5. Click **Add Config File** to save
+
+### Troubleshooting SSH Connections
+
+| Issue | Solution |
+|-------|----------|
+| "Permission denied" | Ensure your SSH key is added to the server's `~/.ssh/authorized_keys` |
+| "Connection refused" | Check if SSH service is running on the remote server |
+| "Host key verification failed" | Add the host to your known_hosts or use `StrictHostKeyChecking=accept-new` |
+| "Connection timed out" | Verify network connectivity and firewall rules |
+
+> **Note:** No passwords are stored in the application. All authentication uses your system's SSH configuration.
 
 ## Contributing
 

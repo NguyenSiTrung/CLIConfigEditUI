@@ -13,7 +13,8 @@ This file lists all development tracks (features, bugs, improvements) for CLI Co
 
 ## Active Tracks
 
-*No active tracks.*
+### [x] ssh-remote-config_20251229 - SSH Remote Config Path for Custom Tools
+*Link: [./conductor/tracks/ssh-remote-config_20251229/](./conductor/tracks/ssh-remote-config_20251229/)*
 
 ---
 

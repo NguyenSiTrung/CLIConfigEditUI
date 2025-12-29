@@ -26,6 +26,7 @@ import { ConfigFormat, CustomTool, CliTool, ConfigFile, parseBackendError, isFil
 import { IDE_PLATFORMS } from '@/utils/cli-tools';
 import { getFileName } from '@/utils/path';
 import { formatErrorShort } from '@/utils/error-messages';
+import { readRemoteConfig, writeRemoteConfig, backupRemoteConfig } from '@/utils/ssh';
 
 function getDefaultContent(format: ConfigFormat): string {
   switch (format) {
@@ -71,6 +72,8 @@ function App() {
   const setCurrentFormat = useAppStore((state) => state.setCurrentFormat);
   const setCurrentJsonPath = useAppStore((state) => state.setCurrentJsonPath);
   const setCurrentJsonPrefix = useAppStore((state) => state.setCurrentJsonPrefix);
+  const setCurrentPathType = useAppStore((state) => state.setCurrentPathType);
+  const setCurrentSshPath = useAppStore((state) => state.setCurrentSshPath);
   const setLoading = useAppStore((state) => state.setLoading);
   const setError = useAppStore((state) => state.setError);
   const setFileNotFound = useAppStore((state) => state.setFileNotFound);
@@ -91,6 +94,8 @@ function App() {
   const currentFilePath = useAppStore((state) => state.currentFilePath);
   const currentJsonPath = useAppStore((state) => state.currentJsonPath);
   const currentJsonPrefix = useAppStore((state) => state.currentJsonPrefix);
+  const currentPathType = useAppStore((state) => state.currentPathType);
+  const currentSshPath = useAppStore((state) => state.currentSshPath);
   const activeToolId = useAppStore((state) => state.activeToolId);
   const activeConfigFileId = useAppStore((state) => state.activeConfigFileId);
   
@@ -237,7 +242,11 @@ function App() {
 
       try {
         let content: string;
-        if (configFile.jsonPath) {
+        
+        // Handle SSH remote paths
+        if (configFile.pathType === 'ssh' && configFile.sshPath) {
+          content = await readRemoteConfig(configFile.sshPath);
+        } else if (configFile.jsonPath) {
           content = await invoke<string>('read_json_path', {
             path: configFile.path,
             jsonPath: configFile.jsonPath
@@ -250,6 +259,8 @@ function App() {
         setCurrentFilePath(configFile.path);
         setCurrentFormat(configFile.format);
         setCurrentJsonPath(configFile.jsonPath || null);
+        setCurrentPathType(configFile.pathType || 'local');
+        setCurrentSshPath(configFile.sshPath || null);
         setFileNotFound(false);
 
         // Track recent file
@@ -316,6 +327,8 @@ function App() {
       setCurrentFilePath,
       setCurrentFormat,
       setCurrentJsonPath,
+      setCurrentPathType,
+      setCurrentSshPath,
       getAllTools,
       addRecentFile,
     ]
@@ -465,7 +478,19 @@ function App() {
 
     try {
       markAsInternalWrite();
-      if (currentJsonPath) {
+      
+      // Handle SSH remote save
+      if (currentPathType === 'ssh' && currentSshPath) {
+        // Backup first if enabled
+        if (backupSettings.enabled) {
+          try {
+            await backupRemoteConfig(currentSshPath);
+          } catch (backupErr) {
+            console.warn('Failed to backup remote file:', backupErr);
+          }
+        }
+        await writeRemoteConfig(currentSshPath, editorContent);
+      } else if (currentJsonPath) {
         await invoke('write_json_path', {
           path: currentFilePath,
           jsonPath: currentJsonPath,
@@ -506,7 +531,7 @@ function App() {
       toast.error(formatErrorShort(err, 'Failed to save'));
       return false;
     }
-  }, [currentFilePath, currentJsonPath, currentJsonPrefix, editorContent, setOriginalContent, markAsInternalWrite, setError, setFileNotFound]);
+  }, [currentFilePath, currentJsonPath, currentJsonPrefix, currentPathType, currentSshPath, editorContent, setOriginalContent, markAsInternalWrite, setError, setFileNotFound]);
 
   const handleUnsavedChangesAction = useCallback(async (action: UnsavedChangesAction) => {
     if (action === 'cancel') {

@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { BackendError, CliTool, ConfigFile, ConfigFormat, CustomTool, ToolConfigFiles } from '@/types';
+import { BackendError, CliTool, ConfigFile, ConfigFormat, CustomTool, PathType, ToolConfigFiles } from '@/types';
 import { CLI_TOOLS } from '@/utils/cli-tools';
 
 interface EditorSettings {
@@ -43,6 +43,8 @@ interface AppState {
   currentFormat: ConfigFormat;
   currentJsonPath: string | null;  // For partial JSON editing
   currentJsonPrefix: string | null;  // For prefix-based JSON editing (e.g., "amp")
+  currentPathType: PathType;  // 'local' or 'ssh' for current file
+  currentSshPath: string | null;  // SSH path when pathType is 'ssh'
 
   // UI state
   searchQuery: string;
@@ -69,6 +71,8 @@ interface AppState {
   setCurrentFormat: (format: ConfigFormat) => void;
   setCurrentJsonPath: (jsonPath: string | null) => void;
   setCurrentJsonPrefix: (prefix: string | null) => void;
+  setCurrentPathType: (pathType: PathType) => void;
+  setCurrentSshPath: (sshPath: string | null) => void;
   setSearchQuery: (query: string) => void;
   setSidebarCollapsed: (collapsed: boolean) => void;
   setSidebarWidth: (width: number) => void;
@@ -123,6 +127,8 @@ export const useAppStore = create<AppState>()(
       currentFormat: 'json',
       currentJsonPath: null,
       currentJsonPrefix: null,
+      currentPathType: 'local',
+      currentSshPath: null,
       searchQuery: '',
       expandedTools: new Set<string>(),
       sidebarCollapsed: false,
@@ -166,6 +172,8 @@ export const useAppStore = create<AppState>()(
       setCurrentFormat: (format) => set({ currentFormat: format }),
       setCurrentJsonPath: (jsonPath) => set({ currentJsonPath: jsonPath }),
       setCurrentJsonPrefix: (prefix) => set({ currentJsonPrefix: prefix }),
+      setCurrentPathType: (pathType) => set({ currentPathType: pathType }),
+      setCurrentSshPath: (sshPath) => set({ currentSshPath: sshPath }),
       setSearchQuery: (query) => set({ searchQuery: query }),
       setSidebarCollapsed: (collapsed) => set({ sidebarCollapsed: collapsed }),
       setSidebarWidth: (width) => set({ sidebarWidth: width }),
