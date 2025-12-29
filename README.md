@@ -21,9 +21,14 @@ CLI Config Editor provides a unified interface to:
 
 ## Screenshots
 
-| Dark Theme | Light Theme |
-|------------|-------------|
-| ![Dark](docs/screenshots/dark.png) | ![Light](docs/screenshots/light.png) |
+### Main Interface (Dark Theme)
+![Main Interface](docs/screenshots/main-dark.png)
+
+### MCP Sync Settings
+![MCP Sync](docs/screenshots/mcp-sync-dark.png)
+
+### Config Editor
+![Config Editor](docs/screenshots/editor-dark.png)
 
 ## Features
 
