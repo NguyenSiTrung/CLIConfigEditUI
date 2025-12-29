@@ -40,7 +40,9 @@
 
 ## Phase 4: Verification
 
-- [ ] Task 4.1: Test workflow
-  - [ ] Push test tag (e.g., `v0.1.0-test`) to verify builds
-  - [ ] Verify artifacts appear in Actions and Releases
-  - [ ] Clean up test release if needed
+- [x] Task 4.1: Test workflow
+  - [x] Workflow file created and committed (508bd14)
+  - [x] Fixed Rust action name (ca2db5c)
+  - [x] Fixed missing icons in bundle config (0406c90)
+  - [x] Push test tag `v0.1.0-test` - builds passed on all platforms
+  - [x] Artifacts appear in Actions and Releases
