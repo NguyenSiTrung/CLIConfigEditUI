@@ -31,15 +31,12 @@ export const TOOL_ICONS: Record<string, React.ReactNode> = {
   'opencode': <OpenCodeIcon />,
   'droid': <DroidIcon />,
   'qwen-code': (
-    <svg className="w-4 h-4" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <path d="M28 22 L50 10 L50 25 L62 32 L50 40 L50 50 L38 43 L25 50 L25 35 Z" fill="#5B5FE8"/>
-      <path d="M72 22 L85 35 L75 35 L75 50 L62 43 L50 50 L50 40 L62 32 L50 25 L50 10 Z" fill="#6366F1"/>
-      <path d="M85 35 L92 55 L85 65 L75 50 L75 65 L62 58 L62 68 L50 60 L62 43 L75 50 Z" fill="#5B5FE8"/>
-      <path d="M72 78 L50 90 L50 75 L38 68 L50 60 L62 68 L62 58 L75 65 L75 50 L85 65 Z" fill="#6366F1"/>
-      <path d="M28 78 L15 65 L25 65 L25 50 L38 57 L50 50 L50 60 L38 68 L50 75 L50 90 Z" fill="#5B5FE8"/>
-      <path d="M15 35 L8 55 L15 65 L25 50 L25 65 L38 57 L38 43 L25 50 L25 35 Z" fill="#6366F1"/>
-      <path d="M50 40 L62 58 L38 58 Z" fill="white"/>
-    </svg>
+    <img
+      src="/qwen-code.png"
+      alt="Qwen Code"
+      className="w-4 h-4 object-contain"
+      loading="lazy"
+    />
   ),
   'auggie': <AuggieIcon />,
   'kiro-cli': (
