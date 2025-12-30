@@ -1,6 +1,10 @@
+#[allow(dead_code)]
 mod commands;
+#[allow(dead_code)]
 mod connection;
+#[allow(dead_code)]
 mod error;
+#[allow(dead_code)]
 mod operations;
 
 pub use commands::{
