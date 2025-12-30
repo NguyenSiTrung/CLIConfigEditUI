@@ -13,12 +13,7 @@ This file lists all development tracks (features, bugs, improvements) for CLI Co
 
 ## Active Tracks
 
-### [x] ui-ux-polish_20251230 - Comprehensive UI/UX Polish
-*Link: [./conductor/tracks/ui-ux-polish_20251230/](./conductor/tracks/ui-ux-polish_20251230/)*
-*Priority: 🟠 High | Design: Premium Dark Mode + VS Code Sensibility*
-
-### [x] ssh-remote-config_20251229 - SSH Remote Config Path for Custom Tools
-*Link: [./conductor/tracks/ssh-remote-config_20251229/](./conductor/tracks/ssh-remote-config_20251229/)*
+*No active tracks.*
 
 ---
 
@@ -29,6 +24,12 @@ This file lists all development tracks (features, bugs, improvements) for CLI Co
 ---
 
 ## Archived Tracks
+
+### [x] ui-ux-polish_20251230 - Comprehensive UI/UX Polish
+*Archived: 2025-12-30 | [conductor/archive/ui-ux-polish_20251230/](conductor/archive/ui-ux-polish_20251230/)*
+
+### [x] ssh-remote-config_20251229 - SSH Remote Config Path for Custom Tools
+*Archived: 2025-12-30 | [conductor/archive/ssh-remote-config_20251229/](conductor/archive/ssh-remote-config_20251229/)*
 
 ### [x] github-actions-release_20251229 - GitHub Actions Release Build
 *Archived: 2025-12-29 | [conductor/archive/github-actions-release_20251229/](conductor/archive/github-actions-release_20251229/)*
