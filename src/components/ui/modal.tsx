@@ -118,7 +118,7 @@ export function Modal({
   return (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center p-4
-                 bg-slate-900/40 dark:bg-black/60 backdrop-blur-sm
+                 bg-slate-900/30 dark:bg-black/60 backdrop-blur-sm
                  animate-in fade-in duration-200"
       onClick={handleBackdropClick}
       role="presentation"
@@ -134,8 +134,8 @@ export function Modal({
         className={`
           w-full ${sizeStyles[size]}
           bg-white dark:bg-slate-800
-          rounded-xl shadow-2xl
-          border border-slate-200 dark:border-slate-700/50
+          rounded-xl shadow-2xl dark:shadow-black/40
+          border border-slate-200/80 dark:border-slate-700/50
           animate-in zoom-in-95 duration-200
           flex flex-col max-h-[90vh]
           focus:outline-none

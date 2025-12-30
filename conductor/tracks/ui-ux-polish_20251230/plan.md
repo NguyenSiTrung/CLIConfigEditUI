@@ -118,31 +118,31 @@ Improve visual hierarchy and reduce density.
 
 Elevate light mode to match dark mode quality.
 
-- [ ] Task 4.1: Update global light mode styles
+- [x] Task 4.1: Update global light mode styles
   <!-- files: src/index.css -->
   - Add subtle shadows for elevation
   - Define light mode gradients
   - Adjust glass effect opacity
 
-- [ ] Task 4.2: Update Header light mode
+- [x] Task 4.2: Update Header light mode
   <!-- files: src/components/header.tsx -->
   - Proper contrast for all elements
   - Refined hover states
   - Vibrant but not harsh accents
 
-- [ ] Task 4.3: Update Sidebar light mode
+- [x] Task 4.3: Update Sidebar light mode
   <!-- files: src/components/sidebar/index.tsx, src/components/sidebar/*.tsx -->
   - Surface depth with shadows
   - Better section separation
   - Readable text hierarchy
 
-- [ ] Task 4.4: Update Editor area light mode
+- [x] Task 4.4: Update Editor area light mode
   <!-- files: src/components/config-editor.tsx -->
   - Status bar refinement
   - Tab styling adjustment
   - Banner styling (file not found, external change)
 
-- [ ] Task 4.5: Update Modal light mode styles
+- [x] Task 4.5: Update Modal light mode styles
   <!-- files: src/components/ui/modal.tsx -->
   - Proper elevation shadows
   - Border refinement
