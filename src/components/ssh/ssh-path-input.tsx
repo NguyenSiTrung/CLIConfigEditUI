@@ -95,7 +95,7 @@ export function SshPathInput({
   return (
     <div className="space-y-3">
       <div>
-        <label className="block text-sm font-medium text-slate-700 dark:text-gray-300 mb-1.5">
+        <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
           SSH Path *
         </label>
         <Input
@@ -105,15 +105,15 @@ export function SshPathInput({
           disabled={disabled}
           className="font-mono"
         />
-        <p className="mt-1.5 text-xs text-slate-500 dark:text-gray-400">
-          Format: <code className="px-1 py-0.5 bg-slate-100 dark:bg-gray-800 rounded">user@host:/path</code>,{' '}
-          <code className="px-1 py-0.5 bg-slate-100 dark:bg-gray-800 rounded">host:/path</code>, or{' '}
-          <code className="px-1 py-0.5 bg-slate-100 dark:bg-gray-800 rounded">user@host:port:/path</code>
+        <p className="mt-1.5 text-xs text-slate-500 dark:text-slate-400">
+          Format: <code className="px-1 py-0.5 bg-slate-100 dark:bg-slate-800 rounded">user@host:/path</code>,{' '}
+          <code className="px-1 py-0.5 bg-slate-100 dark:bg-slate-800 rounded">host:/path</code>, or{' '}
+          <code className="px-1 py-0.5 bg-slate-100 dark:bg-slate-800 rounded">user@host:port:/path</code>
         </p>
       </div>
 
       {value.trim() && (
-        <div className="flex items-center justify-between p-3 rounded-lg bg-slate-50 dark:bg-gray-800/50 border border-slate-200 dark:border-gray-700">
+        <div className="flex items-center justify-between p-3 rounded-lg bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700">
           <div className="flex items-center gap-2">
             {getStatusIcon()}
             <span className={`text-sm ${

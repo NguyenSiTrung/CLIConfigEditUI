@@ -44,14 +44,14 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
         {label && (
           <label
             htmlFor={inputId}
-            className="block text-sm font-medium text-slate-700 dark:text-gray-300 mb-1.5"
+            className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5"
           >
             {label}
           </label>
         )}
         <div className="relative">
           {leftIcon && (
-            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400 dark:text-gray-500">
+            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400 dark:text-slate-500">
               {leftIcon}
             </div>
           )}
@@ -60,13 +60,13 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
             id={inputId}
             className={`
               w-full rounded-lg
-              bg-white dark:bg-gray-900/50
+              bg-white dark:bg-slate-900/50
               border ${hasError
                 ? 'border-rose-500 dark:border-rose-500 focus:ring-rose-500'
-                : 'border-slate-300 dark:border-gray-700 focus:ring-indigo-500 focus:border-indigo-500'
+                : 'border-slate-300 dark:border-slate-700 focus:ring-indigo-500 focus:border-indigo-500'
               }
               text-slate-900 dark:text-white
-              placeholder:text-slate-400 dark:placeholder:text-gray-500
+              placeholder:text-slate-400 dark:placeholder:text-slate-500
               transition-colors duration-200
               focus:outline-none focus:ring-2 focus:ring-offset-0
               disabled:opacity-50 disabled:cursor-not-allowed
@@ -78,13 +78,13 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
             {...props}
           />
           {rightIcon && (
-            <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-slate-400 dark:text-gray-500">
+            <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-slate-400 dark:text-slate-500">
               {rightIcon}
             </div>
           )}
         </div>
         {(error || hint) && (
-          <p className={`mt-1.5 text-xs ${hasError ? 'text-rose-500' : 'text-slate-500 dark:text-gray-400'}`}>
+          <p className={`mt-1.5 text-xs ${hasError ? 'text-rose-500' : 'text-slate-500 dark:text-slate-400'}`}>
             {error || hint}
           </p>
         )}

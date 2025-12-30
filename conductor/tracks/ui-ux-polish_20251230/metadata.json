@@ -1,0 +1,25 @@
+{
+  "track_id": "ui-ux-polish_20251230",
+  "type": "feature",
+  "status": "new",
+  "priority": "high",
+  "depends_on": [],
+  "estimated_hours": null,
+  "created_at": "2025-12-30T10:00:00Z",
+  "updated_at": "2025-12-30T10:00:00Z",
+  "description": "Comprehensive UI/UX Polish - Premium Dark Mode with VS Code Sensibility",
+  "beads_epic": "CLIConfigEditUI-oxo",
+  "beads_tasks": {
+    "phase1": "CLIConfigEditUI-oxo.1",
+    "phase2": "CLIConfigEditUI-oxo.2",
+    "phase3": "CLIConfigEditUI-oxo.3",
+    "phase4": "CLIConfigEditUI-oxo.4",
+    "phase5": "CLIConfigEditUI-oxo.5",
+    "phase6": "CLIConfigEditUI-oxo.6",
+    "phase7": "CLIConfigEditUI-oxo.7",
+    "phase8": "CLIConfigEditUI-oxo.8",
+    "phase9": "CLIConfigEditUI-oxo.9",
+    "phase10": "CLIConfigEditUI-oxo.10",
+    "phase11": "CLIConfigEditUI-oxo.11"
+  }
+}

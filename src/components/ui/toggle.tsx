@@ -38,12 +38,12 @@ export function Toggle({
       {(label || description) && (
         <div className="flex-1 min-w-0">
           {label && (
-            <p className="text-sm font-medium text-slate-700 dark:text-gray-300">
+            <p className="text-sm font-medium text-slate-700 dark:text-slate-300">
               {label}
             </p>
           )}
           {description && (
-            <p className="text-xs text-slate-500 dark:text-gray-500 mt-0.5">
+            <p className="text-xs text-slate-500 dark:text-slate-500 mt-0.5">
               {description}
             </p>
           )}
@@ -61,10 +61,10 @@ export function Toggle({
           border-2 border-transparent
           transition-colors duration-200 ease-in-out
           focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2
-          dark:focus:ring-offset-gray-800
+          dark:focus:ring-offset-slate-800
           disabled:opacity-50 disabled:cursor-not-allowed
           ${styles.track}
-          ${checked ? 'bg-indigo-600' : 'bg-slate-300 dark:bg-gray-600'}
+          ${checked ? 'bg-indigo-600' : 'bg-slate-300 dark:bg-slate-600'}
         `.trim().replace(/\s+/g, ' ')}
         {...props}
       >

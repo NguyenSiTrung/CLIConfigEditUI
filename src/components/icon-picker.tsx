@@ -119,11 +119,11 @@ export function IconPicker({ value, onChange }: IconPickerProps) {
         type="button"
         onClick={() => setIsOpen(!isOpen)}
         className={`w-14 h-14 flex items-center justify-center text-2xl rounded-xl border-2 
-                   dark:bg-gray-900/50 bg-slate-50 
+                   dark:bg-slate-900/50 bg-slate-50 
                    transition-all duration-200 hover:scale-105
                    ${isOpen 
                      ? 'border-violet-500 ring-2 ring-violet-500/20 dark:ring-violet-400/20' 
-                     : 'dark:border-gray-700/50 border-slate-200 hover:border-violet-400'}`}
+                     : 'dark:border-slate-700/50 border-slate-200 hover:border-violet-400'}`}
         title="Choose icon"
       >
         {displayValue}
@@ -138,13 +138,13 @@ export function IconPicker({ value, onChange }: IconPickerProps) {
           
           <div
             ref={popoverRef}
-            className="absolute z-40 dark:bg-gray-800 bg-white rounded-xl shadow-xl 
-                       border dark:border-gray-700 border-slate-200 overflow-hidden
+            className="absolute z-40 dark:bg-slate-800 bg-white rounded-xl shadow-xl 
+                       border dark:border-slate-700 border-slate-200 overflow-hidden
                        animate-in fade-in zoom-in-95 duration-150"
             style={{ width: '280px' }}
           >
             {/* Tabs */}
-            <div className="flex border-b dark:border-gray-700 border-slate-200">
+            <div className="flex border-b dark:border-slate-700 border-slate-200">
               {(['presets', 'icons', 'emojis'] as TabType[]).map((tab) => (
                 <button
                   key={tab}
@@ -163,7 +163,7 @@ export function IconPicker({ value, onChange }: IconPickerProps) {
 
             {/* Search (for icons and presets) */}
             {(activeTab === 'icons' || activeTab === 'presets') && (
-              <div className="p-2 border-b dark:border-gray-700 border-slate-200">
+              <div className="p-2 border-b dark:border-slate-700 border-slate-200">
                 <div className="relative">
                   <Search className="absolute left-2 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400" />
                   <input
@@ -172,9 +172,9 @@ export function IconPicker({ value, onChange }: IconPickerProps) {
                     onChange={(e) => setSearch(e.target.value)}
                     placeholder={activeTab === 'icons' ? 'Search icons...' : 'Search AI tools...'}
                     className="w-full pl-7 pr-2 py-1.5 text-xs rounded-lg
-                               dark:bg-gray-900 bg-slate-50 
-                               dark:text-gray-200 text-slate-700
-                               dark:border-gray-700 border-slate-200 border
+                               dark:bg-slate-900 bg-slate-50 
+                               dark:text-slate-200 text-slate-700
+                               dark:border-slate-700 border-slate-200 border
                                focus:outline-none focus:ring-2 focus:ring-violet-500/30"
                   />
                 </div>
@@ -195,7 +195,7 @@ export function IconPicker({ value, onChange }: IconPickerProps) {
                                  transition-all duration-150 hover:scale-105
                                  ${value === preset.emoji
                                    ? 'bg-violet-100 dark:bg-violet-500/20 ring-2 ring-violet-400'
-                                   : 'hover:bg-slate-100 dark:hover:bg-gray-700'
+                                   : 'hover:bg-slate-100 dark:hover:bg-slate-700'
                                  }`}
                     >
                       <span className="text-xl">{preset.emoji}</span>
@@ -228,7 +228,7 @@ export function IconPicker({ value, onChange }: IconPickerProps) {
                                    transition-all duration-150 hover:scale-110
                                    ${isSelected
                                      ? 'bg-violet-600 text-white shadow-md ring-2 ring-violet-400/50'
-                                     : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-gray-700'
+                                     : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700'
                                    }`}
                       >
                         <IconComponent className="w-4 h-4" />
@@ -261,7 +261,7 @@ export function IconPicker({ value, onChange }: IconPickerProps) {
                                        transition-all duration-150 hover:scale-110
                                        ${value === emoji
                                          ? 'bg-violet-600 text-white shadow-md ring-2 ring-violet-400/50'
-                                         : 'hover:bg-slate-100 dark:hover:bg-gray-700'
+                                         : 'hover:bg-slate-100 dark:hover:bg-slate-700'
                                        }`}
                           >
                             {emoji}

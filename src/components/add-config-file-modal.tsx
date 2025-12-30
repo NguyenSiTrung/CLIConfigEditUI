@@ -211,7 +211,7 @@ export function AddConfigFileModal({ isOpen, tool, onClose, onAdd }: AddConfigFi
     >
       {/* Suggestions Section */}
       {showSuggestions && suggestions.length > 0 && (
-        <div className="mb-4 pb-4 border-b border-slate-200 dark:border-gray-700/50">
+        <div className="mb-4 pb-4 border-b border-slate-200 dark:border-slate-700/50">
           <div className="flex items-center gap-2 mb-3">
             <Sparkles className="w-4 h-4 text-amber-500" />
             <span className="text-sm font-medium dark:text-slate-300 text-slate-700">
@@ -247,7 +247,7 @@ export function AddConfigFileModal({ isOpen, tool, onClose, onAdd }: AddConfigFi
                         Exists
                       </span>
                     )}
-                    <span className={`text-[11px] px-2 py-0.5 rounded-md uppercase font-bold tracking-wider ${FORMAT_OPTIONS.find(f => f.value === suggestion.format)?.color || 'bg-slate-200 dark:bg-gray-700 text-slate-500 dark:text-gray-400'
+                    <span className={`text-[11px] px-2 py-0.5 rounded-md uppercase font-bold tracking-wider ${FORMAT_OPTIONS.find(f => f.value === suggestion.format)?.color || 'bg-slate-200 dark:bg-slate-700 text-slate-500 dark:text-slate-400'
                       }`}>
                       {suggestion.format}
                     </span>
@@ -306,7 +306,7 @@ export function AddConfigFileModal({ isOpen, tool, onClose, onAdd }: AddConfigFi
         {/* Local Path Input */}
         {pathType === 'local' && (
           <div>
-            <label className="block text-sm font-medium text-slate-700 dark:text-gray-300 mb-1.5">
+            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
               File Path *
             </label>
             <div className="relative">
@@ -316,10 +316,10 @@ export function AddConfigFileModal({ isOpen, tool, onClose, onAdd }: AddConfigFi
                 onChange={(e) => setPath(e.target.value)}
                 placeholder="~/.config/tool/config.json"
                 className="w-full px-3 py-2 pr-12 rounded-lg text-sm font-mono
-                           bg-white dark:bg-gray-900/50
-                           border border-slate-300 dark:border-gray-700
+                           bg-white dark:bg-slate-900/50
+                           border border-slate-300 dark:border-slate-700
                            text-slate-900 dark:text-white
-                           placeholder:text-slate-400 dark:placeholder:text-gray-500
+                           placeholder:text-slate-400 dark:placeholder:text-slate-500
                            transition-colors duration-200
                            focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 focus:ring-offset-0"
                 required={pathType === 'local'}
@@ -334,7 +334,7 @@ export function AddConfigFileModal({ isOpen, tool, onClose, onAdd }: AddConfigFi
                 <FolderOpen className="w-4 h-4" />
               </button>
             </div>
-            <p className="mt-1.5 text-xs text-slate-500 dark:text-gray-400">
+            <p className="mt-1.5 text-xs text-slate-500 dark:text-slate-400">
               Use ~ for home directory. File will be created if it doesn't exist.
             </p>
           </div>
@@ -350,7 +350,7 @@ export function AddConfigFileModal({ isOpen, tool, onClose, onAdd }: AddConfigFi
         )}
 
         <div>
-          <label className="block text-sm font-medium text-slate-700 dark:text-gray-300 mb-1.5">
+          <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
             Format *
           </label>
           <div className="grid grid-cols-5 gap-2">

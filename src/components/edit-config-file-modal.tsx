@@ -100,7 +100,7 @@ export function EditConfigFileModal({ isOpen, configFile, toolName, onClose, onS
         />
 
         <div>
-          <label className="block text-sm font-medium text-slate-700 dark:text-gray-300 mb-1.5">
+          <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
             File Path
           </label>
           <div className="relative">
@@ -115,8 +115,8 @@ export function EditConfigFileModal({ isOpen, configFile, toolName, onClose, onS
               type="button"
               onClick={handleBrowse}
               className="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 rounded-md 
-                         text-slate-400 dark:text-gray-400 hover:text-slate-700 dark:hover:text-white 
-                         hover:bg-slate-200 dark:hover:bg-gray-700/50 transition-colors"
+                         text-slate-400 dark:text-slate-400 hover:text-slate-700 dark:hover:text-white 
+                         hover:bg-slate-200 dark:hover:bg-slate-700/50 transition-colors"
               title="Browse files"
             >
               <FolderOpen className="w-4 h-4" />
@@ -125,7 +125,7 @@ export function EditConfigFileModal({ isOpen, configFile, toolName, onClose, onS
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-slate-700 dark:text-gray-300 mb-2">
+          <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
             Format <span className="text-red-500">*</span>
           </label>
           <div className="grid grid-cols-5 gap-2">
@@ -138,7 +138,7 @@ export function EditConfigFileModal({ isOpen, configFile, toolName, onClose, onS
                            border transition-all
                            ${format === option.value
                              ? 'bg-indigo-600 border-indigo-500 text-white shadow-md'
-                             : 'bg-slate-50 dark:bg-gray-900/50 border-slate-200 dark:border-gray-700/50 text-slate-500 dark:text-gray-400 hover:text-slate-700 dark:hover:text-white hover:border-slate-300 dark:hover:border-gray-600'
+                             : 'bg-slate-50 dark:bg-slate-900/50 border-slate-200 dark:border-slate-700/50 text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-white hover:border-slate-300 dark:hover:border-slate-600'
                            }`}
               >
                 {option.icon}
@@ -149,7 +149,7 @@ export function EditConfigFileModal({ isOpen, configFile, toolName, onClose, onS
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-slate-700 dark:text-gray-300 mb-2">
+          <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
             Icon
           </label>
           <div className="flex gap-2 flex-wrap">
@@ -161,7 +161,7 @@ export function EditConfigFileModal({ isOpen, configFile, toolName, onClose, onS
                 className={`w-9 h-9 rounded-lg text-lg flex items-center justify-center border transition-all
                            ${icon === opt
                              ? 'bg-indigo-600 border-indigo-500 shadow-md'
-                             : 'bg-slate-50 dark:bg-gray-900/50 border-slate-200 dark:border-gray-700/50 hover:border-slate-300 dark:hover:border-gray-600'
+                             : 'bg-slate-50 dark:bg-slate-900/50 border-slate-200 dark:border-slate-700/50 hover:border-slate-300 dark:hover:border-slate-600'
                            }`}
               >
                 {opt}

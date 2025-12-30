@@ -19,12 +19,44 @@
   --easing-smooth: cubic-bezier(0.4, 0, 0.2, 1);
   --easing-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
 
+  /* Semantic Color Tokens - Light Mode */
+  --color-surface-primary: 248 250 252;      /* slate-50 */
+  --color-surface-elevated: 255 255 255;     /* white */
+  --color-surface-overlay: 0 0 0;            /* black for overlay */
+  
+  --color-border-subtle: 241 245 249;        /* slate-100 */
+  --color-border-default: 226 232 240;       /* slate-200 */
+  --color-border-strong: 203 213 225;        /* slate-300 */
+  
+  --color-text-primary: 15 23 42;            /* slate-900 */
+  --color-text-secondary: 71 85 105;         /* slate-600 */
+  --color-text-muted: 148 163 184;           /* slate-400 */
+  
+  --color-accent-primary: 99 102 241;        /* indigo-500 */
+  --color-accent-hover: 79 70 229;           /* indigo-600 */
+
   /* Light theme defaults */
   color: #334155; /* slate-700 */
   background-color: #f8fafc; /* slate-50 */
 }
 
 .dark {
+  /* Semantic Color Tokens - Dark Mode */
+  --color-surface-primary: 2 6 23;           /* slate-950 */
+  --color-surface-elevated: 30 41 59;        /* slate-800 */
+  --color-surface-overlay: 0 0 0;            /* black for overlay */
+  
+  --color-border-subtle: 51 65 85;           /* slate-700 */
+  --color-border-default: 71 85 105;         /* slate-600 */
+  --color-border-strong: 100 116 139;        /* slate-500 */
+  
+  --color-text-primary: 241 245 249;         /* slate-100 */
+  --color-text-secondary: 203 213 225;       /* slate-300 */
+  --color-text-muted: 148 163 184;           /* slate-400 */
+  
+  --color-accent-primary: 129 140 248;       /* indigo-400 */
+  --color-accent-hover: 99 102 241;          /* indigo-500 */
+
   color: #e2e8f0; /* slate-200 */
   background-color: #020617; /* slate-950 - deeper dark */
 }

@@ -13,6 +13,10 @@ This file lists all development tracks (features, bugs, improvements) for CLI Co
 
 ## Active Tracks
 
+### [~] ui-ux-polish_20251230 - Comprehensive UI/UX Polish
+*Link: [./conductor/tracks/ui-ux-polish_20251230/](./conductor/tracks/ui-ux-polish_20251230/)*
+*Priority: 🟠 High | Design: Premium Dark Mode + VS Code Sensibility*
+
 ### [x] ssh-remote-config_20251229 - SSH Remote Config Path for Custom Tools
 *Link: [./conductor/tracks/ssh-remote-config_20251229/](./conductor/tracks/ssh-remote-config_20251229/)*
 

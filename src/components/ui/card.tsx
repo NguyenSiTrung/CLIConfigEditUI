@@ -8,21 +8,21 @@ export interface CardProps extends HTMLAttributes<HTMLDivElement> {
 
 const variantStyles: Record<NonNullable<CardProps['variant']>, string> = {
   default: `
-    bg-white dark:bg-gray-800
-    border border-slate-200 dark:border-gray-700/50
+    bg-white dark:bg-slate-800
+    border border-slate-200 dark:border-slate-700/50
     shadow-sm
   `,
   elevated: `
-    bg-white dark:bg-gray-800
-    border border-slate-200 dark:border-gray-700/50
+    bg-white dark:bg-slate-800
+    border border-slate-200 dark:border-slate-700/50
     shadow-lg
   `,
   outline: `
     bg-transparent
-    border border-slate-200 dark:border-gray-700/50
+    border border-slate-200 dark:border-slate-700/50
   `,
   ghost: `
-    bg-slate-50 dark:bg-gray-900/50
+    bg-slate-50 dark:bg-slate-900/50
     border border-transparent
   `,
 };

@@ -83,7 +83,7 @@ export function SettingsModal({ isOpen, onClose, onOpenKeyboardShortcuts }: Sett
         </Button>
       )}
       <span className="flex-1" />
-      <p className="text-xs dark:text-gray-500 text-slate-400">
+      <p className="text-xs dark:text-slate-500 text-slate-400">
         CLI Config Editor v{APP_VERSION}
       </p>
     </>
@@ -98,7 +98,7 @@ export function SettingsModal({ isOpen, onClose, onOpenKeyboardShortcuts }: Sett
       footer={footer}
     >
       <div 
-        className="flex border-b dark:border-gray-700/50 border-slate-200 -mx-6 -mt-4 mb-6"
+        className="flex border-b dark:border-slate-700/50 border-slate-200 -mx-6 -mt-4 mb-6"
         role="tablist"
         aria-label="Settings sections"
       >
@@ -114,8 +114,8 @@ export function SettingsModal({ isOpen, onClose, onOpenKeyboardShortcuts }: Sett
             onKeyDown={(e) => handleTabKeyDown(e, index)}
             className={`flex-1 px-4 py-3 text-sm font-medium flex items-center justify-center gap-2 transition-colors
                        ${activeTab === tab.id
-                         ? 'dark:text-indigo-400 text-indigo-600 border-b-2 border-indigo-500 dark:bg-gray-700/30 bg-indigo-50/50'
-                         : 'dark:text-slate-300 text-slate-500 dark:hover:text-slate-100 hover:text-slate-700 hover:bg-slate-50 dark:hover:bg-gray-700/20'
+                         ? 'dark:text-indigo-400 text-indigo-600 border-b-2 border-indigo-500 dark:bg-slate-700/30 bg-indigo-50/50'
+                         : 'dark:text-slate-300 text-slate-500 dark:hover:text-slate-100 hover:text-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700/20'
                        }`}
           >
             {tab.icon}
@@ -127,7 +127,7 @@ export function SettingsModal({ isOpen, onClose, onOpenKeyboardShortcuts }: Sett
       <div className="space-y-6" role="tabpanel" id={`settings-panel-${activeTab}`} aria-labelledby={`settings-tab-${activeTab}`}>
         {activeTab === 'appearance' && (
           <div>
-            <label className="block text-sm font-medium dark:text-gray-300 text-slate-700 mb-3">
+            <label className="block text-sm font-medium dark:text-slate-300 text-slate-700 mb-3">
               Theme
             </label>
             <div className="grid grid-cols-3 gap-3">
@@ -137,7 +137,7 @@ export function SettingsModal({ isOpen, onClose, onOpenKeyboardShortcuts }: Sett
                            border transition-all
                            ${theme === 'dark'
                              ? 'bg-indigo-600 border-indigo-500 text-white shadow-md'
-                             : 'dark:bg-gray-900/50 bg-slate-50 dark:border-gray-700/50 border-slate-200 dark:text-gray-400 text-slate-500 dark:hover:text-white hover:text-slate-700 dark:hover:border-gray-600 hover:border-slate-300 hover:bg-slate-100'
+                             : 'dark:bg-slate-900/50 bg-slate-50 dark:border-slate-700/50 border-slate-200 dark:text-slate-400 text-slate-500 dark:hover:text-white hover:text-slate-700 dark:hover:border-slate-600 hover:border-slate-300 hover:bg-slate-100'
                            }`}
               >
                 <Moon className="w-4 h-4" />
@@ -149,7 +149,7 @@ export function SettingsModal({ isOpen, onClose, onOpenKeyboardShortcuts }: Sett
                            border transition-all
                            ${theme === 'light'
                              ? 'bg-indigo-600 border-indigo-500 text-white shadow-md'
-                             : 'dark:bg-gray-900/50 bg-slate-50 dark:border-gray-700/50 border-slate-200 dark:text-gray-400 text-slate-500 dark:hover:text-white hover:text-slate-700 dark:hover:border-gray-600 hover:border-slate-300 hover:bg-slate-100'
+                             : 'dark:bg-slate-900/50 bg-slate-50 dark:border-slate-700/50 border-slate-200 dark:text-slate-400 text-slate-500 dark:hover:text-white hover:text-slate-700 dark:hover:border-slate-600 hover:border-slate-300 hover:bg-slate-100'
                            }`}
               >
                 <Sun className="w-4 h-4" />
@@ -161,7 +161,7 @@ export function SettingsModal({ isOpen, onClose, onOpenKeyboardShortcuts }: Sett
                            border transition-all
                            ${theme === 'system'
                              ? 'bg-indigo-600 border-indigo-500 text-white shadow-md'
-                             : 'dark:bg-gray-900/50 bg-slate-50 dark:border-gray-700/50 border-slate-200 dark:text-gray-400 text-slate-500 dark:hover:text-white hover:text-slate-700 dark:hover:border-gray-600 hover:border-slate-300 hover:bg-slate-100'
+                             : 'dark:bg-slate-900/50 bg-slate-50 dark:border-slate-700/50 border-slate-200 dark:text-slate-400 text-slate-500 dark:hover:text-white hover:text-slate-700 dark:hover:border-slate-600 hover:border-slate-300 hover:bg-slate-100'
                            }`}
               >
                 <Monitor className="w-4 h-4" />
@@ -169,11 +169,11 @@ export function SettingsModal({ isOpen, onClose, onOpenKeyboardShortcuts }: Sett
               </button>
             </div>
             {theme === 'system' && (
-              <p className="text-xs dark:text-gray-500 text-slate-400 mt-2">
+              <p className="text-xs dark:text-slate-500 text-slate-400 mt-2">
                 Theme will automatically match your system preference
               </p>
             )}
-            <p className="text-xs dark:text-gray-500 text-slate-400 mt-2">
+            <p className="text-xs dark:text-slate-500 text-slate-400 mt-2">
               💡 You can also toggle between light and dark mode from the top bar.
             </p>
           </div>
@@ -182,7 +182,7 @@ export function SettingsModal({ isOpen, onClose, onOpenKeyboardShortcuts }: Sett
         {activeTab === 'editor' && (
           <div className="space-y-5">
             <div>
-              <label className="block text-sm font-medium dark:text-gray-300 text-slate-700 mb-2">
+              <label className="block text-sm font-medium dark:text-slate-300 text-slate-700 mb-2">
                 <Type className="w-4 h-4 inline mr-2" />
                 Font Size
               </label>
@@ -195,14 +195,14 @@ export function SettingsModal({ isOpen, onClose, onOpenKeyboardShortcuts }: Sett
                   onChange={(e) => updateEditorSettings({ fontSize: Number(e.target.value) })}
                   className="flex-1 accent-indigo-500"
                 />
-                <span className="w-12 text-center dark:text-gray-300 text-slate-700 font-mono text-sm">
+                <span className="w-12 text-center dark:text-slate-300 text-slate-700 font-mono text-sm">
                   {editorSettings.fontSize}px
                 </span>
               </div>
             </div>
 
             <div>
-              <label className="block text-sm font-medium dark:text-gray-300 text-slate-700 mb-2">
+              <label className="block text-sm font-medium dark:text-slate-300 text-slate-700 mb-2">
                 Tab Size
               </label>
               <div className="flex gap-2">
@@ -213,7 +213,7 @@ export function SettingsModal({ isOpen, onClose, onOpenKeyboardShortcuts }: Sett
                     className={`px-4 py-2 rounded-lg text-sm font-medium border transition-all
                                ${editorSettings.tabSize === size
                                  ? 'bg-indigo-600 border-indigo-500 text-white'
-                                 : 'dark:bg-gray-900/50 bg-slate-50 dark:border-gray-700/50 border-slate-200 dark:text-gray-400 text-slate-500 hover:border-slate-300 dark:hover:border-gray-600'
+                                 : 'dark:bg-slate-900/50 bg-slate-50 dark:border-slate-700/50 border-slate-200 dark:text-slate-400 text-slate-500 hover:border-slate-300 dark:hover:border-slate-600'
                                }`}
                   >
                     {size} spaces
@@ -223,7 +223,7 @@ export function SettingsModal({ isOpen, onClose, onOpenKeyboardShortcuts }: Sett
             </div>
 
             <div>
-              <label className="block text-sm font-medium dark:text-gray-300 text-slate-700 mb-2">
+              <label className="block text-sm font-medium dark:text-slate-300 text-slate-700 mb-2">
                 Word Wrap
               </label>
               <div className="flex gap-2">
@@ -237,7 +237,7 @@ export function SettingsModal({ isOpen, onClose, onOpenKeyboardShortcuts }: Sett
                     className={`px-4 py-2 rounded-lg text-sm font-medium border transition-all
                                ${editorSettings.wordWrap === option.value
                                  ? 'bg-indigo-600 border-indigo-500 text-white'
-                                 : 'dark:bg-gray-900/50 bg-slate-50 dark:border-gray-700/50 border-slate-200 dark:text-gray-400 text-slate-500 hover:border-slate-300 dark:hover:border-gray-600'
+                                 : 'dark:bg-slate-900/50 bg-slate-50 dark:border-slate-700/50 border-slate-200 dark:text-slate-400 text-slate-500 hover:border-slate-300 dark:hover:border-slate-600'
                                }`}
                   >
                     {option.label}
@@ -268,7 +268,7 @@ export function SettingsModal({ isOpen, onClose, onOpenKeyboardShortcuts }: Sett
             </div>
 
             <div>
-              <label className="block text-sm font-medium dark:text-gray-300 text-slate-700 mb-2">
+              <label className="block text-sm font-medium dark:text-slate-300 text-slate-700 mb-2">
                 Line Numbers
               </label>
               <div className="flex gap-2">
@@ -283,7 +283,7 @@ export function SettingsModal({ isOpen, onClose, onOpenKeyboardShortcuts }: Sett
                     className={`px-4 py-2 rounded-lg text-sm font-medium border transition-all
                                ${editorSettings.lineNumbers === option.value
                                  ? 'bg-indigo-600 border-indigo-500 text-white'
-                                 : 'dark:bg-gray-900/50 bg-slate-50 dark:border-gray-700/50 border-slate-200 dark:text-gray-400 text-slate-500 hover:border-slate-300 dark:hover:border-gray-600'
+                                 : 'dark:bg-slate-900/50 bg-slate-50 dark:border-slate-700/50 border-slate-200 dark:text-slate-400 text-slate-500 hover:border-slate-300 dark:hover:border-slate-600'
                                }`}
                   >
                     {option.label}
@@ -304,7 +304,7 @@ export function SettingsModal({ isOpen, onClose, onOpenKeyboardShortcuts }: Sett
             />
 
             <div className={backupSettings.enabled ? '' : 'opacity-50 pointer-events-none'}>
-              <label className="block text-sm font-medium dark:text-gray-300 text-slate-700 mb-2">
+              <label className="block text-sm font-medium dark:text-slate-300 text-slate-700 mb-2">
                 Maximum Backups to Keep
               </label>
               <div className="flex items-center gap-3">
@@ -317,11 +317,11 @@ export function SettingsModal({ isOpen, onClose, onOpenKeyboardShortcuts }: Sett
                   className="flex-1 accent-indigo-500"
                   disabled={!backupSettings.enabled}
                 />
-                <span className="w-12 text-center dark:text-gray-300 text-slate-700 font-mono text-sm">
+                <span className="w-12 text-center dark:text-slate-300 text-slate-700 font-mono text-sm">
                   {backupSettings.maxBackups}
                 </span>
               </div>
-              <p className="text-xs dark:text-gray-500 text-slate-400 mt-1">
+              <p className="text-xs dark:text-slate-500 text-slate-400 mt-1">
                 Older backups will be automatically deleted
               </p>
             </div>
@@ -349,8 +349,8 @@ export function SettingsModal({ isOpen, onClose, onOpenKeyboardShortcuts }: Sett
               onChange={(checked) => updateBehaviorSettings({ rememberLastOpenedFile: checked })}
             />
 
-            <div className="pt-2 border-t dark:border-gray-700/50 border-slate-200">
-              <label className="block text-sm font-medium dark:text-gray-300 text-slate-700 mb-2">
+            <div className="pt-2 border-t dark:border-slate-700/50 border-slate-200">
+              <label className="block text-sm font-medium dark:text-slate-300 text-slate-700 mb-2">
                 Reduce Motion
               </label>
               <div className="flex gap-2">
@@ -365,14 +365,14 @@ export function SettingsModal({ isOpen, onClose, onOpenKeyboardShortcuts }: Sett
                     className={`px-4 py-2 rounded-lg text-sm font-medium border transition-all
                                ${behaviorSettings.reduceMotion === option.value
                                  ? 'bg-indigo-600 border-indigo-500 text-white'
-                                 : 'dark:bg-gray-900/50 bg-slate-50 dark:border-gray-700/50 border-slate-200 dark:text-gray-400 text-slate-500 hover:border-slate-300 dark:hover:border-gray-600'
+                                 : 'dark:bg-slate-900/50 bg-slate-50 dark:border-slate-700/50 border-slate-200 dark:text-slate-400 text-slate-500 hover:border-slate-300 dark:hover:border-slate-600'
                                }`}
                   >
                     {option.label}
                   </button>
                 ))}
               </div>
-              <p className="text-xs dark:text-gray-500 text-slate-400 mt-1">
+              <p className="text-xs dark:text-slate-500 text-slate-400 mt-1">
                 {behaviorSettings.reduceMotion === 'system' 
                   ? 'Follows your system\'s motion preference'
                   : behaviorSettings.reduceMotion === 'on'

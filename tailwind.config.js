@@ -4,6 +4,26 @@ export default {
   theme: {
     extend: {
       colors: {
+        // Semantic color tokens using CSS variables
+        surface: {
+          primary: 'rgb(var(--color-surface-primary) / <alpha-value>)',
+          elevated: 'rgb(var(--color-surface-elevated) / <alpha-value>)',
+          overlay: 'rgb(var(--color-surface-overlay) / <alpha-value>)',
+        },
+        border: {
+          subtle: 'rgb(var(--color-border-subtle) / <alpha-value>)',
+          DEFAULT: 'rgb(var(--color-border-default) / <alpha-value>)',
+          strong: 'rgb(var(--color-border-strong) / <alpha-value>)',
+        },
+        content: {
+          primary: 'rgb(var(--color-text-primary) / <alpha-value>)',
+          secondary: 'rgb(var(--color-text-secondary) / <alpha-value>)',
+          muted: 'rgb(var(--color-text-muted) / <alpha-value>)',
+        },
+        accent: {
+          primary: 'rgb(var(--color-accent-primary) / <alpha-value>)',
+          hover: 'rgb(var(--color-accent-hover) / <alpha-value>)',
+        },
         // Dark theme colors
         header: {
           DEFAULT: '#0d0d0d',

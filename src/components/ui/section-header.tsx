@@ -31,7 +31,7 @@ export function SectionHeader({
             {title}
           </h3>
           {description && (
-            <p className="text-xs text-slate-500 dark:text-gray-400 truncate mt-0.5">
+            <p className="text-xs text-slate-500 dark:text-slate-400 truncate mt-0.5">
               {description}
             </p>
           )}

@@ -141,7 +141,7 @@ export function BackupModal({
             <span>{error}</span>
           </div>
         ) : (
-          <div className="flex items-center gap-2 text-sm dark:text-gray-400 text-slate-500">
+          <div className="flex items-center gap-2 text-sm dark:text-slate-400 text-slate-500">
             <AlertTriangle className="w-4 h-4" />
             <span>Restoring will create a backup of the current file first</span>
           </div>
@@ -173,7 +173,7 @@ export function BackupModal({
     >
       <div className="flex flex-col h-full -mx-6 -my-4">
         {/* Custom Header */}
-        <div className="flex items-center gap-3 px-5 py-4 border-b dark:border-gray-700 border-slate-200">
+        <div className="flex items-center gap-3 px-5 py-4 border-b dark:border-slate-700 border-slate-200">
           <div className="w-10 h-10 rounded-lg dark:bg-blue-500/20 bg-blue-100 flex items-center justify-center">
             <History className="w-5 h-5 text-blue-500" />
           </div>
@@ -181,7 +181,7 @@ export function BackupModal({
             <h2 className="text-lg font-semibold dark:text-white text-slate-800">
               Backup History
             </h2>
-            <p className="text-sm dark:text-gray-400 text-slate-500">
+            <p className="text-sm dark:text-slate-400 text-slate-500">
               Compare and restore previous versions
             </p>
           </div>
@@ -190,9 +190,9 @@ export function BackupModal({
         {/* Content */}
         <div className="flex-1 flex overflow-hidden">
           {/* Backup List Sidebar */}
-          <div className="w-72 border-r dark:border-gray-700 border-slate-200 flex flex-col">
-            <div className="px-4 py-3 border-b dark:border-gray-700/50 border-slate-100">
-              <h3 className="text-sm font-medium dark:text-gray-300 text-slate-600">
+          <div className="w-72 border-r dark:border-slate-700 border-slate-200 flex flex-col">
+            <div className="px-4 py-3 border-b dark:border-slate-700/50 border-slate-100">
+              <h3 className="text-sm font-medium dark:text-slate-300 text-slate-600">
                 Available Backups
               </h3>
             </div>
@@ -204,11 +204,11 @@ export function BackupModal({
                 </div>
               ) : backups.length === 0 ? (
                 <div className="flex flex-col items-center justify-center py-8 px-4 text-center">
-                  <FileText className="w-10 h-10 dark:text-gray-600 text-slate-300 mb-2" />
-                  <p className="text-sm dark:text-gray-500 text-slate-400">
+                  <FileText className="w-10 h-10 dark:text-slate-600 text-slate-300 mb-2" />
+                  <p className="text-sm dark:text-slate-500 text-slate-400">
                     No backups found
                   </p>
-                  <p className="text-xs dark:text-gray-600 text-slate-400 mt-1">
+                  <p className="text-xs dark:text-slate-600 text-slate-400 mt-1">
                     Backups are created when you save
                   </p>
                 </div>
@@ -221,24 +221,24 @@ export function BackupModal({
                       className={`w-full text-left px-3 py-3 rounded-lg transition-all
                                 ${selectedBackup?.path === backup.path
                                   ? 'dark:bg-blue-500/20 bg-blue-50 border dark:border-blue-500/30 border-blue-200'
-                                  : 'dark:hover:bg-gray-700/50 hover:bg-slate-50'
+                                  : 'dark:hover:bg-slate-700/50 hover:bg-slate-50'
                                 }`}
                     >
                       <div className="flex items-center justify-between mb-1">
                         <span className={`text-sm font-medium
                                         ${selectedBackup?.path === backup.path
                                           ? 'dark:text-blue-400 text-blue-600'
-                                          : 'dark:text-gray-300 text-slate-700'
+                                          : 'dark:text-slate-300 text-slate-700'
                                         }`}>
                           {backup.name}
                         </span>
                         <ChevronRight className={`w-4 h-4 transition-transform
                                                 ${selectedBackup?.path === backup.path
                                                   ? 'dark:text-blue-400 text-blue-500'
-                                                  : 'dark:text-gray-500 text-slate-400'
+                                                  : 'dark:text-slate-500 text-slate-400'
                                                 }`} />
                       </div>
-                      <div className="flex items-center gap-2 text-xs dark:text-gray-500 text-slate-400">
+                      <div className="flex items-center gap-2 text-xs dark:text-slate-500 text-slate-400">
                         <Clock className="w-3 h-3" />
                         <span>{formatTimeAgo(backup.modifiedAt)}</span>
                         <span>•</span>
@@ -255,17 +255,17 @@ export function BackupModal({
           <div className="flex-1 flex flex-col">
             {selectedBackup ? (
               <>
-                <div className="flex items-center justify-between px-4 py-2 border-b dark:border-gray-700/50 border-slate-100 dark:bg-gray-900/30 bg-slate-50">
+                <div className="flex items-center justify-between px-4 py-2 border-b dark:border-slate-700/50 border-slate-100 dark:bg-slate-900/30 bg-slate-50">
                   <div className="flex items-center gap-4 text-sm">
                     <div className="flex items-center gap-2">
                       <span className="px-2 py-0.5 rounded dark:bg-red-500/20 bg-red-100 dark:text-red-400 text-red-600 text-xs font-medium">
                         Backup
                       </span>
-                      <span className="dark:text-gray-400 text-slate-500">
+                      <span className="dark:text-slate-400 text-slate-500">
                         {formatDate(selectedBackup.modifiedAt)}
                       </span>
                     </div>
-                    <span className="dark:text-gray-600 text-slate-300">→</span>
+                    <span className="dark:text-slate-600 text-slate-300">→</span>
                     <div className="flex items-center gap-2">
                       <span className="px-2 py-0.5 rounded dark:bg-green-500/20 bg-green-100 dark:text-green-400 text-green-600 text-xs font-medium">
                         Current
@@ -299,7 +299,7 @@ export function BackupModal({
                 </div>
               </>
             ) : (
-              <div className="flex-1 flex items-center justify-center dark:text-gray-500 text-slate-400">
+              <div className="flex-1 flex items-center justify-center dark:text-slate-500 text-slate-400">
                 <p className="text-sm">Select a backup to view differences</p>
               </div>
             )}

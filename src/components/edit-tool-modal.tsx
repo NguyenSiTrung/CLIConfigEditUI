@@ -90,7 +90,7 @@ export function EditToolModal({ isOpen, tool, onClose, onSave }: EditToolModalPr
       <form id="edit-tool-form" onSubmit={handleSubmit} className="space-y-5">
         <div className="flex gap-4 items-start">
           <div>
-            <label className="block text-sm font-medium dark:text-gray-300 text-slate-700 mb-2">
+            <label className="block text-sm font-medium dark:text-slate-300 text-slate-700 mb-2">
               Icon
             </label>
             <IconPicker value={icon} onChange={setIcon} />
@@ -109,7 +109,7 @@ export function EditToolModal({ isOpen, tool, onClose, onSave }: EditToolModalPr
         </div>
 
         <div>
-          <label className="block text-sm font-medium dark:text-gray-300 text-slate-700 mb-2">
+          <label className="block text-sm font-medium dark:text-slate-300 text-slate-700 mb-2">
             Config File Path <span className="text-red-500">*</span>
           </label>
           <div className="relative">
@@ -118,8 +118,8 @@ export function EditToolModal({ isOpen, tool, onClose, onSave }: EditToolModalPr
               value={configPath}
               onChange={(e) => setConfigPath(e.target.value)}
               placeholder="~/.mycli/config.json"
-              className="w-full px-4 py-2.5 pr-12 dark:bg-gray-900/50 bg-slate-50 dark:text-white text-slate-800 rounded-lg text-sm
-                         dark:placeholder-gray-500 placeholder-slate-400 border dark:border-gray-700/50 border-slate-200 font-mono
+              className="w-full px-4 py-2.5 pr-12 dark:bg-slate-900/50 bg-slate-50 dark:text-white text-slate-800 rounded-lg text-sm
+                         dark:placeholder-slate-500 placeholder-slate-400 border dark:border-slate-700/50 border-slate-200 font-mono
                          focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500
                          transition-all"
               required
@@ -129,18 +129,18 @@ export function EditToolModal({ isOpen, tool, onClose, onSave }: EditToolModalPr
               onClick={handleBrowse}
               aria-label="Browse files"
               className="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 rounded-md 
-                         dark:text-gray-400 text-slate-400 dark:hover:text-white hover:text-slate-700 dark:hover:bg-gray-700/50 hover:bg-slate-200 transition-colors"
+                         dark:text-slate-400 text-slate-400 dark:hover:text-white hover:text-slate-700 dark:hover:bg-slate-700/50 hover:bg-slate-200 transition-colors"
             >
               <FolderOpen className="w-4 h-4" />
             </button>
           </div>
-          <p className="mt-1.5 text-xs dark:text-gray-500 text-slate-400">
+          <p className="mt-1.5 text-xs dark:text-slate-500 text-slate-400">
             Use ~ for home directory, or provide absolute path
           </p>
         </div>
 
         <div>
-          <label className="block text-sm font-medium dark:text-gray-300 text-slate-700 mb-2">
+          <label className="block text-sm font-medium dark:text-slate-300 text-slate-700 mb-2">
             Config Format <span className="text-red-500">*</span>
           </label>
           <div className="grid grid-cols-4 gap-2">
@@ -154,7 +154,7 @@ export function EditToolModal({ isOpen, tool, onClose, onSave }: EditToolModalPr
                            border transition-all
                            ${configFormat === option.value
                              ? 'bg-blue-600 border-blue-500 text-white shadow-md'
-                             : 'dark:bg-gray-900/50 bg-slate-50 dark:border-gray-700/50 border-slate-200 dark:text-gray-400 text-slate-500 dark:hover:text-white hover:text-slate-700 dark:hover:border-gray-600 hover:border-slate-300 hover:bg-slate-100'
+                             : 'dark:bg-slate-900/50 bg-slate-50 dark:border-slate-700/50 border-slate-200 dark:text-slate-400 text-slate-500 dark:hover:text-white hover:text-slate-700 dark:hover:border-slate-600 hover:border-slate-300 hover:bg-slate-100'
                            }`}
               >
                 {option.icon}

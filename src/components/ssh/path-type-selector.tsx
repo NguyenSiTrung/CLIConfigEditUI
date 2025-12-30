@@ -25,7 +25,7 @@ export function PathTypeSelector({ value, onChange, disabled = false }: PathType
 
   return (
     <div>
-      <label className="block text-sm font-medium text-slate-700 dark:text-gray-300 mb-2">
+      <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
         Path Type
       </label>
       <div className="grid grid-cols-2 gap-3">
@@ -43,7 +43,7 @@ export function PathTypeSelector({ value, onChange, disabled = false }: PathType
                 p-3 rounded-lg border text-left transition-all
                 ${isSelected
                   ? 'border-indigo-500 bg-indigo-50 dark:bg-indigo-500/10 ring-1 ring-indigo-500/30'
-                  : 'border-slate-200 dark:border-gray-700 bg-white dark:bg-gray-900/50 hover:border-slate-300 dark:hover:border-gray-600'
+                  : 'border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900/50 hover:border-slate-300 dark:hover:border-slate-600'
                 }
                 ${disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}
               `}
@@ -53,7 +53,7 @@ export function PathTypeSelector({ value, onChange, disabled = false }: PathType
                   p-2 rounded-md
                   ${isSelected
                     ? 'bg-indigo-100 dark:bg-indigo-500/20 text-indigo-600 dark:text-indigo-400'
-                    : 'bg-slate-100 dark:bg-gray-800 text-slate-500 dark:text-gray-400'
+                    : 'bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400'
                   }
                 `}>
                   <Icon className="w-4 h-4" />
@@ -62,11 +62,11 @@ export function PathTypeSelector({ value, onChange, disabled = false }: PathType
                   <div className={`text-sm font-medium ${
                     isSelected 
                       ? 'text-indigo-900 dark:text-indigo-200' 
-                      : 'text-slate-700 dark:text-gray-300'
+                      : 'text-slate-700 dark:text-slate-300'
                   }`}>
                     {option.label}
                   </div>
-                  <div className="text-xs text-slate-500 dark:text-gray-500">
+                  <div className="text-xs text-slate-500 dark:text-slate-500">
                     {option.description}
                   </div>
                 </div>
