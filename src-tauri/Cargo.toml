@@ -1,6 +1,6 @@
 [package]
 name = "cli-config-editor"
-version = "0.1.0"
+version = "0.1.1"
 description = "A cross-platform CLI config editor"
 authors = ["CLI Config Editor"]
 edition = "2021"
