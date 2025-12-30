@@ -85,27 +85,27 @@ Unify all modal styling for consistency.
 
 Improve visual hierarchy and reduce density.
 
-- [ ] Task 3.1: Update sidebar container (sidebar/index.tsx)
+- [x] Task 3.1: Update sidebar container (sidebar/index.tsx)
   - Refine background gradient
   - Improve section spacing
   - Better resize handle visibility
 
-- [ ] Task 3.2: Update SidebarSection component
+- [x] Task 3.2: Update SidebarSection component
   - Better header styling
   - Improved expand/collapse animation
   - Clearer section boundaries
 
-- [ ] Task 3.3: Update tool item components
+- [x] Task 3.3: Update tool item components
   - SidebarToolItem styling
   - ConfigFileItem refinement
   - Better active/selected states
 
-- [ ] Task 3.4: Update hover actions and menus
+- [x] Task 3.4: Update hover actions and menus
   - ToolHoverActions timing
   - ToolActionsMenu styling
   - Consistent dropdown appearance
 
-- [ ] Task 3.5: Update search bar styling
+- [x] Task 3.5: Update search bar styling
   - Refined focus state
   - Better placeholder styling
   - Clear button visibility

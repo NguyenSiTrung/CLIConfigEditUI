@@ -198,7 +198,7 @@ export function Sidebar({
       </div>
 
       {/* Content area with sections */}
-      <div className="flex-1 overflow-y-auto px-3 pb-4 scrollbar-thin space-y-1">
+      <div className="flex-1 overflow-y-auto px-3 pb-4 scrollbar-thin space-y-2">
         {/* No matches message */}
         {hasSearch && !hasMatches && (
           <div className="mx-1 rounded-xl border border-dashed border-slate-200/70 dark:border-slate-700/50 
@@ -242,7 +242,7 @@ export function Sidebar({
               isDirty={isDirty}
             />
 
-            <div className="mx-2 my-3 border-t border-slate-200/50 dark:border-slate-700/30" />
+            <div className="mx-1 my-2 h-px bg-gradient-to-r from-transparent via-slate-200 dark:via-slate-700 to-transparent" />
           </>
         )}
 
@@ -250,7 +250,7 @@ export function Sidebar({
           onExtensionConfigSelect={onIdeExtensionConfigSelect}
         />
 
-        <div className="mx-2 my-3 border-t border-slate-200/50 dark:border-slate-700/30" />
+        <div className="mx-1 my-2 h-px bg-gradient-to-r from-transparent via-slate-200 dark:via-slate-700 to-transparent" />
 
         <CustomToolsSection
           tools={custom}
