@@ -79,7 +79,28 @@ List all tasks marked with `[!]`:
 [Last 3 tasks marked [x] with their commit SHAs]
 ```
 
-## 5. Suggestions
+## 5a. Parallel Execution Status
+
+If any track has `parallel_state.json`:
+
+```
+### Parallel Execution (Phase: [phase_name])
+
+**Status:** Running | Waiting for workers | Complete
+
+**Workers:**
+- 🟢 worker_1_auth: Completed (commit: abc1234)
+- 🔵 worker_2_config: In Progress (45 min)
+- ⚪ worker_3_utils: Pending (depends on worker_1)
+
+**File Locks:**
+- src/auth/index.ts → worker_1_auth
+- src/config/index.ts → worker_2_config
+
+**Progress:** 1/3 workers complete
+```
+
+## 6. Suggestions
 
 Based on status:
 - If no tracks: "Run `/conductor-newtrack` to create your first track"
@@ -88,7 +109,7 @@ Based on status:
 
 ---
 
-## 6. BEADS STATUS
+## 7. BEADS STATUS
 
 **PROTOCOL: Show Beads task status.**
 

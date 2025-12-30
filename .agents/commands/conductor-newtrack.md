@@ -115,7 +115,81 @@ Create a new track for: $ARGUMENTS
      ```
    - Replace `<Phase Name>` with actual phase name
 
-3. **User Confirmation:**
+3. **Analyze for Parallel Execution Potential:**
+   
+   a. **Identify Parallelizable Tasks (within phases):**
+      - For each phase, analyze tasks for:
+        - File ownership conflicts (do any two tasks modify the same files?)
+        - Logical dependencies (does task B need output from task A?)
+        - Independent work (can tasks run without coordination?)
+   
+   b. **Identify Parallelizable Phases:**
+      - Analyze phases for:
+        - Cross-phase dependencies (does Phase B need Phase A's output?)
+        - Independent scopes (can Phase 1 and Phase 2 run without coordination?)
+        - Example: "Core Backend" and "UI Components" often have no dependencies
+   
+   c. **Present Parallel Execution Options:**
+      > "I've analyzed the plan for parallel execution potential:"
+      > 
+      > **Task-Level Parallelism:**
+      > - **Phase 1: [Phase Name]** ([N] tasks)
+      >   - Tasks [list] can run in parallel (no file conflicts)
+      >   - Task [X] depends on Task [Y] → must be sequential
+      > - **Phase 2: [Phase Name]** ([N] tasks)
+      >   - All tasks share files → sequential execution only
+      > 
+      > **Phase-Level Parallelism:**
+      > - Phase 1 and Phase 2 are independent → can run in parallel
+      > - Phase 3 requires Phase 1 and Phase 2 → must wait for both
+      >
+      > "Would you like to enable parallel execution? (yes/no)"
+   
+   d. **If User Confirms Parallel:**
+      - **For task-level parallelism:**
+        - Add `<!-- execution: parallel -->` annotation after eligible phase headings
+        - Add `<!-- files: path1, path2 -->` annotation to each task with its file ownership
+        - Add `<!-- depends: taskN -->` annotation where task dependencies exist within phase
+      
+      - **For phase-level parallelism:**
+        - Add `<!-- depends: -->` (empty) for phases with no dependencies (can run immediately)
+        - Add `<!-- depends: phase1, phase2 -->` for phases that depend on specific phases
+        - Phases WITHOUT any `<!-- depends: -->` annotation default to sequential (depends on previous phase)
+      
+      **Example Output:**
+      ```markdown
+      ## Phase 1: Core Setup
+      <!-- execution: parallel -->
+      
+      - [ ] Task 1: Create auth module
+        <!-- files: src/auth/index.ts, src/auth/index.test.ts -->
+        
+      - [ ] Task 2: Create config module
+        <!-- files: src/config/index.ts -->
+        
+      - [ ] Task 3: Create utilities
+        <!-- files: src/utils/index.ts -->
+        <!-- depends: task1 -->
+      
+      ## Phase 2: UI Components
+      <!-- execution: parallel -->
+      <!-- depends: -->
+      
+      - [ ] Task 1: Create login page
+        <!-- files: src/pages/login.tsx -->
+      
+      ## Phase 3: Integration
+      <!-- execution: sequential -->
+      <!-- depends: phase1, phase2 -->
+      
+      - [ ] Task 1: Wire up auth with UI
+      ```
+   
+   e. **If User Declines Parallel:**
+      - Keep all phases as default sequential (no annotations needed)
+      - Announce: "All phases and tasks will execute sequentially."
+
+4. **User Confirmation:**
    > "I've drafted the implementation plan. Please review:"
    > ```markdown
    > [Drafted plan.md content]
@@ -239,9 +313,21 @@ Create a new track for: $ARGUMENTS
      ```
 
 4. **Set Up Dependencies:**
-   - Phase 2 blocked by Phase 1: `bd dep add <phase2_id> <phase1_id>`
-   - Task dependencies within phases: `bd dep add <task2_id> <task1_id>`
-   - Continue for all phases
+   - **Phase-level dependencies (CRITICAL - depends on annotations):**
+     - **If phase has NO `<!-- depends: -->` annotation (default):**
+       - Add sequential dependency: `bd dep add <phase2_id> <phase1_id>` (depends on previous phase)
+     - **If phase has `<!-- depends: -->` (empty):**
+       - Do NOT add any phase dependencies (can start immediately, parallel with other phases)
+     - **If phase has `<!-- depends: phase1, phase2 -->`:**
+       - Add ONLY listed dependencies: `bd dep add <current_phase_id> <phase1_id>`, `bd dep add <current_phase_id> <phase2_id>`
+   
+   - **Task-level dependencies (CRITICAL - depends on execution mode):**
+     - **If phase is `<!-- execution: sequential -->` (or no annotation):**
+       - Add sequential dependencies: `bd dep add <task2_id> <task1_id>` for each consecutive task pair
+     - **If phase is `<!-- execution: parallel -->`:**
+       - Do NOT add automatic sequential dependencies between tasks
+       - ONLY add dependencies for tasks with explicit `<!-- depends: taskN -->` annotations
+       - Example: Task 3 has `<!-- depends: task1 -->` → `bd dep add <task3_id> <task1_id>`
 
 5. **Update Metadata:**
    - Add to `conductor/tracks/<track_id>/metadata.json`:
@@ -265,7 +351,16 @@ Create a new track for: $ARGUMENTS
 
 7. **Announce:** "Track synced to Beads as epic <epic_id>."
 
-**ERROR HANDLING:** If any `bd` command fails during steps 2-6:
+8. **Parallel Execution Notes (if parallel enabled):**
+   - For each task in a parallel phase, add file ownership to Beads notes:
+     ```bash
+     bd update <task_id> --notes "PARALLEL_ENABLED: true
+     FILES_OWNED: <comma-separated file list from <!-- files: --> annotation>
+     DEPENDS_ON: <task dependencies from <!-- depends: --> annotation>" --json
+     ```
+   - This enables workers to query their exclusive files from Beads
+
+**ERROR HANDLING:** If any `bd` command fails during steps 2-8:
 - Announce the specific error
 - Ask user:
   > "⚠️ Beads command failed: <error message>"

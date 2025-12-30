@@ -133,13 +133,168 @@ Implement track: $ARGUMENTS
      }
      ```
 
-5. **Execute Tasks and Update Track Plan:**
+5. **Determine Execution Mode and Execute Phases/Tasks:**
 
-   a. **Announce:** "Executing tasks from plan.md following workflow.md procedures."
+   a. **Parse Phase Dependencies and Build Phase Graph:**
+      - For each phase in plan.md, check for `<!-- depends: -->` annotation
+      - **If NO annotation:** Phase depends on previous phase (sequential, default)
+      - **If `<!-- depends: -->` (empty):** Phase has no dependencies (can start immediately)
+      - **If `<!-- depends: phase1, phase2 -->`:** Phase waits for listed phases only
+      - Build a phase dependency graph to determine which phases can run in parallel
 
-   b. **Iterate Through Tasks:** Loop through each task in `plan.md` one by one.
+   a2. **Identify Ready Phases:**
+      - Find phases with no unmet dependencies (all dependent phases completed)
+      - If multiple phases are ready simultaneously, they can run in parallel
+      - Process ready phases (may be single or multiple)
 
-   c. **For Each Task:**
+   b. **Parse Task Execution Mode (for current phase):**
+      - For the current phase, check for `<!-- execution: parallel -->` annotation
+      - If found: Go to step 5c (Parallel Task Execution)
+      - If not found or `<!-- execution: sequential -->`: Go to step 5d (Sequential Task Execution)
+
+   c. **PARALLEL TASK EXECUTION FLOW:**
+   
+      **c1. Parse Parallel Task Metadata:**
+      - For each task in the phase, extract:
+        - `<!-- files: path1, path2 -->` - Files this task owns exclusively
+        - `<!-- depends: task1, task2 -->` - Dependencies on other tasks in phase
+        - `<!-- parallel-group: groupName -->` - Optional grouping
+      
+      **c2. Build Dependency Graph:**
+      - Identify tasks with no `depends:` annotation (can start immediately)
+      - Identify dependent tasks (must wait for dependencies to complete)
+      - Create execution order respecting dependencies
+      
+      **c3. Detect File Conflicts:**
+      - Check if any two tasks claim the same file in `files:` annotation
+      - If conflicts detected:
+        > "⚠️ File conflict detected: [files] claimed by multiple tasks"
+        > "A) Make conflicting tasks sequential (recommended)"
+        > "B) Continue anyway - I'll handle manually"
+        > "C) Stop and revise plan"
+        - If A: Remove parallel annotation from conflicting tasks
+        - If B: Proceed with warning
+        - If C: HALT
+      
+      **c4. Initialize Parallel State:**
+      - Create `conductor/tracks/<track_id>/parallel_state.json`:
+        ```json
+        {
+          "phase": "<phase_name>",
+          "execution_mode": "parallel",
+          "started_at": "<timestamp>",
+          "workers": [],
+          "file_locks": {},
+          "completed_workers": 0,
+          "total_workers": <count>
+        }
+        ```
+      
+      **c5. Spawn Parallel Workers:**
+      - **If Beads enabled:** Pre-assign all tasks in Beads:
+        ```bash
+        # For each parallel task, assign to worker
+        bd update <beads_task_id> --status in_progress \
+          --assignee worker_<N>_<name> \
+          --notes "PARALLEL WORKER: Started" \
+          --json
+        ```
+      - For each task with no unmet dependencies, spawn a sub-agent using Task():
+        ```
+        Task({
+          description: "Implement: <task_name>",
+          prompt: "
+            You are a Conductor sub-agent implementing a single task.
+            
+            ## Context
+            - Track: <track_id>
+            - Phase: <phase_name>
+            - Task: <task_description>
+            - Worker ID: <worker_id>
+            - Beads Task ID: <beads_task_id> (if Beads enabled)
+            
+            ## Files Owned (ONLY modify these files)
+            <files_list>
+            
+            ## Instructions
+            1. Follow workflow.md TDD process (Red → Green → Refactor)
+            2. ONLY create/modify files in your owned list above
+            3. Run tests and ensure >80% coverage
+            4. Commit with message: <type>(<scope>): <description>
+            5. After commit, update parallel_state.json:
+               - Find your worker entry by worker_id
+               - Set status to 'completed'
+               - Set commit_sha to your commit hash
+               - Set completed_at to current timestamp
+            6. If Beads enabled:
+               - bd update <beads_task_id> --notes 'COMPLETED: commit <sha>' --json
+               - bd close <beads_task_id> --reason 'Task completed' --json
+               - bd sync  # CRITICAL: Force sync
+            
+            ## Spec Context
+            <relevant_spec_excerpt>
+            
+            ## Success Criteria
+            - All tests pass
+            - Code coverage >80%
+            - Only owned files modified
+            - Commit created with proper message
+            - parallel_state.json updated
+            - Beads synced (if enabled)
+          "
+        })
+        ```
+      - Record each spawned worker in `parallel_state.json`:
+        ```json
+        {
+          "worker_id": "worker_<task_index>_<sanitized_name>",
+          "task": "<task_description>",
+          "task_index": <index>,
+          "beads_task_id": "<beads_id>",
+          "files": ["<file1>", "<file2>"],
+          "depends_on": ["<task_id>"],
+          "status": "in_progress",
+          "started_at": "<timestamp>"
+        }
+        ```
+      - Update `file_locks` with each worker's file ownership
+      
+      **c6. Monitor Worker Completion:**
+      - Periodically read `parallel_state.json` (every 30 seconds)
+      - When a worker completes (status = "completed"):
+        - Check if any dependent tasks can now start
+        - Spawn newly unblocked workers
+        - Increment `completed_workers` count
+      - Handle worker failures:
+        - If worker status = "failed": Log error, ask user for resolution
+        - If worker hasn't updated in 60 minutes: Mark as "timed_out"
+        - **If Beads enabled:** Clear assignee for retry: `bd update <id> --assignee "" --status open --json`
+      
+      **c7. Aggregate Results:**
+      - Wait until all workers complete
+      - **If Beads enabled:** Force sync all changes:
+        ```bash
+        bd sync
+        bd ready --epic <epic_id> --json  # Verify all complete
+        bd update <epic_id> --notes "PARALLEL PHASE COMPLETE: <phase>
+        WORKERS: <N> succeeded
+        COMMITS: <sha_list>" --json
+        ```
+      - Update `plan.md`:
+        - Mark all parallel tasks as `[x]` complete
+        - Append commit SHAs from each worker
+      - Delete `parallel_state.json`
+      - Check phase graph: are there other ready phases to process?
+      - If yes: Go back to step 5a2 to process next ready phase(s)
+      - If no more phases: Proceed to step 6 (Finalize Track)
+
+   d. **SEQUENTIAL EXECUTION FLOW:**
+   
+      **d1. Announce:** "Executing tasks from plan.md following workflow.md procedures."
+
+      **d2. Iterate Through Tasks:** Loop through each task in `plan.md` one by one.
+
+      **d3. For Each Task:**
           - **i. Defer to Workflow:** `workflow.md` is the **single source of truth** for task lifecycle. Follow its "Task Workflow" section for implementation, testing, and committing.
            - **i-a. Beads Task Start (If Enabled):** After marking task `[~]` in progress:
              - **ONLY if `beads_enabled` is true:**
@@ -177,8 +332,6 @@ Implement track: $ARGUMENTS
       - **iii. On Phase Completion:** When all tasks in a phase are complete:
         - Add phase name to `completed_phases` array
         - Reset `current_task_index` to 0
-        - Increment `current_phase_index`
-        - Update `current_phase` to next phase name
         - **If `beads_enabled` is true:** Update epic notes for compaction survival:
           ```bash
           bd update <epic_id> --notes "COMPLETED: Phase N - <phase_name>
@@ -186,8 +339,12 @@ Implement track: $ARGUMENTS
           NEXT: <first_task_of_next_phase>
           KEY DECISIONS: <major decisions made this phase>"
           ```
+        - **Check phase graph for next ready phases:**
+          - If other phases now have all dependencies met → Go back to step 5a2
+          - If next sequential phase is ready → Process it
+          - If all phases complete → Proceed to step 6 (Finalize Track)
 
-   d. **Handle Blocked Tasks:**
+      **d4. Handle Blocked Tasks:**
        - If task marked `[!]`:
          > "⚠️ Task is blocked: [reason]"
          > "What would you like to do?"
@@ -196,7 +353,7 @@ Implement track: $ARGUMENTS
          > C) Stop implementation here
        - If B: Change `[!]` to `[~]` and proceed
 
-   e. **Self-Check & Issue Handling:**
+      **d5. Self-Check & Issue Handling:**
       - After implementation, run tests, linting, type checks
       - If issues found, analyze the root cause:
       

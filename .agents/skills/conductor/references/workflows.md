@@ -1457,3 +1457,68 @@ If a `bd` command fails unexpectedly:
 - `[x]` - Completed
 - `[!]` - Blocked (followed by reason)
 - `[-]` - Skipped (followed by reason)
+
+---
+
+## Parallel Execution
+
+Conductor supports parallel task execution for phases with independent tasks.
+
+### Plan.md Format for Parallel Phases
+
+```markdown
+## Phase 1: Core Setup
+<!-- execution: parallel -->
+
+- [ ] Task 1: Create auth module
+  <!-- files: src/auth/index.ts, src/auth/index.test.ts -->
+  
+- [ ] Task 2: Create config module
+  <!-- files: src/config/index.ts -->
+  
+- [ ] Task 3: Create utilities
+  <!-- files: src/utils/index.ts -->
+  <!-- depends: task1 -->
+```
+
+### Parallel Execution Flow
+
+1. **Parse annotations**: Check for `<!-- execution: parallel -->`
+2. **Build dependency graph**: Extract `files:` and `depends:` annotations
+3. **Detect file conflicts**: Ensure no two tasks share files
+4. **Initialize state**: Create `parallel_state.json`
+5. **Spawn workers**: Use Task() to spawn sub-agents for independent tasks
+6. **Monitor completion**: Poll `parallel_state.json` for worker status
+7. **Aggregate results**: Collect commits, update plan.md
+
+### parallel_state.json Schema
+
+```json
+{
+  "phase": "Phase 1: Core Setup",
+  "execution_mode": "parallel",
+  "started_at": "2024-12-30T10:00:00Z",
+  "workers": [
+    {
+      "worker_id": "worker_1_auth",
+      "task": "Task 1: Create auth module",
+      "files": ["src/auth/index.ts"],
+      "status": "completed",
+      "commit_sha": "abc1234"
+    }
+  ],
+  "file_locks": {
+    "src/auth/index.ts": "worker_1_auth"
+  },
+  "completed_workers": 1,
+  "total_workers": 3
+}
+```
+
+### When to Use Parallel Execution
+
+- ✅ Tasks modifying different files
+- ✅ Independent components (auth, config, utils)
+- ✅ Multiple test file creation
+- ❌ Tasks with shared state
+- ❌ Tasks with sequential dependencies

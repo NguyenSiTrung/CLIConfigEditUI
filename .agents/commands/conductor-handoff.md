@@ -10,6 +10,21 @@ Create a comprehensive context handoff document when you need to transfer implem
 - Find track marked `[~]` in `conductor/tracks.md`
 - If no active track, ask user to specify or halt
 - Load `spec.md`, `plan.md`, and `implement_state.json`
+- Check for `parallel_state.json` (indicates parallel execution in progress)
+
+## 1a. Parallel Execution Check
+
+If `parallel_state.json` exists:
+> "⚠️ This track has parallel workers currently running:"
+> [List workers and their status]
+> 
+> "A) Wait for workers to complete before handoff"
+> "B) Create handoff anyway (workers will continue)"
+> "C) Cancel handoff"
+
+- If A: Monitor `parallel_state.json` until all complete, then proceed
+- If B: Include parallel state in handoff document
+- If C: HALT
 
 ## 2. Gather Handoff Context
 
@@ -59,6 +74,7 @@ Create `conductor/tracks/<track_id>/handoff_<YYYYMMDD_HHMMSS>.md` with:
 
 - **Header:** Track info, section number, timestamp, link to previous handoff
 - **Progress Summary:** Overall %, current phase/task, completed/remaining tasks
+- **Parallel Execution State:** (if applicable) Worker status, file locks, pending workers
 - **Key Implementation Decisions:** Important choices made during this section
 - **Code Changes Summary:** Files modified, new files, recent commits
 - **Unresolved Issues:** Blockers, pending decisions, questions
@@ -127,11 +143,27 @@ Display:
      - If B: Retry the command
      - If C: HALT and wait for user
 
-3. **Format for Compaction Recovery:**
+3. **Parallel Workers Handoff (if parallel_state.json exists):**
+   - For each active parallel worker, save Beads context:
+     ```bash
+     bd update <worker_beads_task_id> --notes "HANDOFF: Worker <id> state saved
+     STATUS: <in_progress|completed|pending>
+     FILES_OWNED: <exclusive files>
+     PROGRESS: <description of work done>
+     ASSIGNEE: <worker_id>" --json
+     ```
+   - Include parallel state summary in epic notes:
+     ```bash
+     bd update <epic_id> --notes "...
+     PARALLEL_STATE: <N> workers, <M> completed, <K> in progress
+     WORKERS: <list of worker_ids and their status>" --json
+     ```
+
+4. **Format for Compaction Recovery:**
    Notes should be self-contained - no conversation context assumed.
    Include technical specifics, not vague progress.
 
-4. **Force Sync to Remote:**
+5. **Force Sync to Remote:**
    ```bash
    bd sync  # Ensures changes reach remote immediately
    ```

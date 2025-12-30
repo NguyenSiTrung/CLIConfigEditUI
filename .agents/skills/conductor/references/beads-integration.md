@@ -283,6 +283,113 @@ def should_use_beads():
     return config.get("enabled", False)
 ```
 
+## Parallel Execution Integration
+
+When Conductor executes tasks in parallel, Beads provides coordination:
+
+### Worker Assignment Protocol
+
+Each parallel worker claims its task with a unique assignee:
+
+```bash
+# Coordinator assigns tasks to workers
+bd update <task_id> --status in_progress --assignee worker_1_auth --json
+
+# Worker can query only its assigned tasks
+bd ready --assignee worker_1_auth --json
+```
+
+### Parallel Worker Best Practices
+
+1. **Claim Before Work:**
+   ```bash
+   # Worker claims task at start
+   bd update <task_id> --status in_progress \
+     --assignee <worker_id> \
+     --notes "Started: <task_description>" \
+     --json
+   ```
+
+2. **Use Hash IDs for New Tasks:**
+   - Beads hash-based IDs prevent collisions when parallel workers create tasks
+   - Each worker can safely run `bd create` without coordination
+
+3. **Discovered Issues:**
+   ```bash
+   # Worker finds new issue during work
+   bd create "Found race condition" \
+     -t bug -p 2 \
+     --deps discovered-from:<current_task_id> \
+     --assignee <worker_id> \
+     --json
+   ```
+
+4. **Completion with Sync:**
+   ```bash
+   # Worker completes task
+   bd close <task_id> --reason "Completed" --json
+   
+   # CRITICAL: Force sync after parallel work
+   bd sync
+   ```
+
+### Coordinator Protocol
+
+The coordinator manages parallel workers through Beads:
+
+```bash
+# 1. Before spawning workers
+for task in parallel_tasks:
+    bd update <task_id> --status in_progress \
+      --assignee worker_<N>_<name> \
+      --json
+
+# 2. Workers execute independently
+# (Each worker updates its own assigned task)
+
+# 3. After all workers complete
+bd sync  # Force sync all changes
+bd ready --epic <epic_id> --json  # Verify all complete
+```
+
+### Concurrent Safety
+
+Beads handles concurrent updates safely:
+
+| Scenario | Beads Behavior |
+|----------|----------------|
+| **Multiple `bd update` simultaneously** | SQLite transactions serialize writes |
+| **Same task updated by two workers** | Last writer wins (avoid via assignee) |
+| **Parallel `bd create`** | Hash IDs prevent collisions |
+| **Rapid status changes** | 30s debounce batches updates |
+
+### Notes Format for Parallel Context
+
+Workers should include worker context in notes:
+
+```bash
+bd update <task_id> --notes "WORKER: worker_1_auth
+TASK: Create auth module
+FILES: src/auth/index.ts, src/auth/index.test.ts
+STATUS: Completed
+COMMIT: abc1234
+DURATION: 5 min"
+```
+
+### Error Recovery
+
+If a worker fails mid-execution:
+
+```bash
+# Coordinator detects worker timeout/failure
+bd update <task_id> --status open \
+  --notes "Worker failed/timed out. Reassigning." \
+  --json
+
+# Clear assignee for retry
+bd update <task_id> --assignee "" --json
+```
+
 ## Quick Reference
 
 ```bash

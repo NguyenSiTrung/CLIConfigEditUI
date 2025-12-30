@@ -37,6 +37,16 @@ For each `plan.md`:
 - Must have at least one phase and task
 - Valid markers only: `[ ]`, `[~]`, `[x]`, `[!]`
 - Completed tracks should have all tasks completed
+- Validate parallel execution annotations if present
+
+## 5a. Parallel Execution Validation
+
+For tracks with parallel execution annotations:
+- Check `<!-- execution: parallel -->` is after valid phase heading
+- Verify all tasks in parallel phases have `<!-- files: ... -->` annotation
+- Detect file conflicts (same file in multiple tasks)
+- Verify `<!-- depends: ... -->` references valid task IDs
+- If `parallel_state.json` exists, check for stale/orphan workers
 
 ## 6. Report
 

@@ -52,6 +52,7 @@ Throughout conductor files:
 | `conductor/tracks/<id>/spec.md` | Requirements |
 | `conductor/tracks/<id>/plan.md` | Phased task list |
 | `conductor/tracks/<id>/implement_state.json` | Phase-aware implementation resume state |
+| `conductor/tracks/<id>/parallel_state.json` | Parallel worker state (for parallel phases) |
 | `conductor/tracks/<id>/handoff_*.md` | Section handoff documents |
 | `conductor/tracks/<id>/blockers.md` | Block history log |
 | `conductor/tracks/<id>/skipped.md` | Skipped tasks log |
@@ -60,6 +61,17 @@ Throughout conductor files:
 | `conductor/beads.json` | Beads integration config |
 | `conductor/archive/` | Archived completed tracks |
 | `conductor/exports/` | Exported summaries |
+
+## Parallel Execution Annotations
+
+Plan.md can include annotations for parallel task execution:
+
+| Annotation | Location | Purpose |
+|------------|----------|---------|
+| `<!-- execution: parallel -->` | After phase heading | Enable parallel execution for phase |
+| `<!-- files: path1, path2 -->` | After task line | Exclusive file ownership |
+| `<!-- depends: task1, task2 -->` | After task line | Task dependencies within phase |
+| `<!-- parallel-group: name -->` | After task line | Optional grouping |
 
 ## Gemini CLI Compatibility
 

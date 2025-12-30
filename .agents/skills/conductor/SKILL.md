@@ -25,6 +25,48 @@ Conductor enables context-driven development by:
 2. Organizing work into "tracks" (features, bugs, improvements)
 3. Creating specs and phased implementation plans
 4. Executing with TDD practices and progress tracking
+5. **Parallel execution** of independent tasks using sub-agents
+
+## Parallel Execution (New Feature)
+
+Conductor now supports parallel task execution for eligible phases:
+
+### How It Works
+- During `/conductor-newtrack`, tasks are analyzed for parallelization potential
+- Tasks with no file conflicts and no dependencies can run in parallel
+- Parallel phases use `<!-- execution: parallel -->` annotation
+- Each task has `<!-- files: ... -->` for exclusive file ownership
+- Dependencies use `<!-- depends: ... -->` annotation
+
+### Plan.md Format for Parallel Phases
+```markdown
+## Phase 1: Core Setup
+<!-- execution: parallel -->
+
+- [ ] Task 1: Create auth module
+  <!-- files: src/auth/index.ts, src/auth/index.test.ts -->
+  
+- [ ] Task 2: Create config module
+  <!-- files: src/config/index.ts -->
+  
+- [ ] Task 3: Create utilities
+  <!-- files: src/utils/index.ts -->
+  <!-- depends: task1 -->
+```
+
+### Execution Flow
+1. **Coordinator** parses parallel annotations
+2. Detects file conflicts (fails safe if found)
+3. Spawns sub-agents via `Task()` for independent tasks
+4. Monitors `parallel_state.json` for completion
+5. Aggregates results and updates plan.md
+
+### When to Use Parallel Execution
+- ✅ Tasks modifying different files
+- ✅ Independent components (auth, config, utils)
+- ✅ Multiple test file creation
+- ❌ Tasks with shared state
+- ❌ Tasks with sequential dependencies
 
 ## Context Loading
 

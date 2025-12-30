@@ -9,6 +9,21 @@ Update specifications and plans when implementation reveals issues, requirements
 ## 1. Identify Track
 - Find active track (marked `[~]` in tracks.md)
 - If no active track, ask which track to revise
+- Check for `parallel_state.json` (parallel execution in progress)
+
+## 1a. Parallel Execution Check
+
+If `parallel_state.json` exists:
+> "⚠️ This track has parallel workers currently running."
+> "Revising the plan may affect in-progress workers."
+> 
+> "A) Wait for workers to complete, then revise"
+> "B) Revise now (affected workers may need restart)"
+> "C) Cancel revision"
+
+- If A: Monitor until complete, then proceed
+- If B: Note affected tasks in revision, workers operating on changed tasks should abort
+- If C: HALT
 
 ## 2. Determine Revision Type
 Ask what needs revision:
@@ -31,6 +46,13 @@ Append to `conductor/tracks/<track_id>/revisions.md`:
 - Update `spec.md` and/or `plan.md` as needed
 - Add "Last Revised" marker at top of updated files
 - New tasks: `[ ]`, Removed tasks: `[-] [REMOVED: reason]`
+- **Phase-level parallel changes:**
+  - Add/modify `<!-- depends: -->` annotations for phase dependencies
+  - Add/modify `<!-- depends: phase1, phase2 -->` for specific phase dependencies
+  - If removing a phase that others depend on, update dependent phases
+- **Task-level parallel changes:**
+  - Update `<!-- files: ... -->` and `<!-- depends: ... -->` annotations
+  - If parallel phase removed: Mark for sequential execution or update annotations
 
 ## 6. Commit
 ```bash
@@ -82,3 +104,29 @@ Report what was revised and suggest `/conductor-implement` to continue.
    IMPACT: +X tasks added, -Y tasks removed, ~Z modified
    KEY DECISION: <if any major decisions made during revision>"
    ```
+
+4. **Parallel Execution Changes (if parallel annotations modified):**
+   
+   **Phase-Level Dependencies:**
+   - If phase `<!-- depends: -->` annotations changed:
+     - For phases with NEW dependencies: `bd dep add <phase_id> <dependency_phase_id>`
+     - For phases with REMOVED dependencies: Update epic notes to reflect new structure
+     - For phases changed to `<!-- depends: -->` (empty - no dependencies):
+       - Remove all phase-level dependencies in Beads for this phase
+   
+   **Task-Level Parallel Config:**
+   - For NEW parallel tasks: Add file ownership notes:
+     ```bash
+     bd update <new_task_id> --notes "PARALLEL_ENABLED: true
+     FILES_OWNED: <comma-separated file list>
+     DEPENDS_ON: <task dependencies>" --json
+     ```
+   - For MODIFIED parallel annotations (files/depends changed):
+     ```bash
+     bd update <task_id> --notes "REVISED: Parallel config changed
+     FILES_OWNED: <new file list>
+     DEPENDS_ON: <new dependencies>" --json
+     ```
+   - If parallel phase changed to sequential (or vice versa):
+     - Clear/set `PARALLEL_ENABLED` in task notes
+     - Clear assignees if reverting to sequential: `bd update <id> --assignee "" --json`
