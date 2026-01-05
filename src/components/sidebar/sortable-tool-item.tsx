@@ -36,7 +36,7 @@ export const SortableToolItem = memo(function SortableToolItem({
           {...attributes}
           {...listeners}
           className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-2
-                     opacity-0 group-hover/sortable:opacity-100
+                     opacity-0 pointer-events-none group-hover/sortable:opacity-100 group-hover/sortable:pointer-events-auto
                      cursor-grab active:cursor-grabbing
                      p-1 rounded text-slate-300 dark:text-slate-600
                      hover:text-slate-400 dark:hover:text-slate-500

@@ -106,7 +106,7 @@ export const CollapsibleTreeItem = memo(function CollapsibleTreeItem({
         
         {actions && (
           <div className="absolute right-1 top-1/2 -translate-y-1/2 
-                         opacity-0 group-hover/row:opacity-100 transition-opacity duration-150">
+                         opacity-0 pointer-events-none group-hover/row:opacity-100 group-hover/row:pointer-events-auto transition-opacity duration-150">
             {actions}
           </div>
         )}
