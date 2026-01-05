@@ -76,6 +76,8 @@ When this skill activates, load these files to understand the project:
 3. `conductor/workflow.md` - Development methodology (TDD, commits)
 4. `conductor/tracks.md` - Current work status
 
+**Important**: Conductor commits locally but never pushes. Users decide when to push to remote.
+
 For active tracks, also load:
 - `conductor/tracks/<track_id>/spec.md`
 - `conductor/tracks/<track_id>/plan.md`

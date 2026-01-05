@@ -1,13 +1,11 @@
 ---
 name: beads
 description: >
-  Tracks complex, multi-session work using the Beads issue tracker and dependency graphs, and provides
-  persistent memory that survives conversation compaction. Use when work spans multiple sessions, has
-  complex dependencies, or needs persistent context across compaction cycles. Trigger with phrases like
-  "create task for", "what's ready to work on", "show task", "track this work", "what's blocking", or
-  "update status".
+  Git-backed issue tracker for multi-session work with dependencies and persistent
+  memory across conversation compaction. Use when work spans sessions, has blockers,
+  or needs context recovery after compaction.
 allowed-tools: "Read,Bash(bd:*)"
-version: "0.34.0"
+version: "0.43.0"
 author: "Steve Yegge <https://github.com/steveyegge>"
 license: "MIT"
 ---
@@ -16,124 +14,87 @@ license: "MIT"
 
 Graph-based issue tracker that survives conversation compaction. Provides persistent memory for multi-session work with complex dependencies.
 
-## Overview
+## bd vs TodoWrite
 
-**bd (beads)** replaces markdown task lists with a dependency-aware graph stored in git. Unlike TodoWrite (session-scoped), bd persists across compactions and tracks complex dependencies.
+| bd (persistent) | TodoWrite (ephemeral) |
+|-----------------|----------------------|
+| Multi-session work | Single-session tasks |
+| Complex dependencies | Linear execution |
+| Survives compaction | Conversation-scoped |
+| Git-backed, team sync | Local to session |
 
-**Key Distinction**:
-- **bd**: Multi-session work, dependencies, survives compaction, git-backed
-- **TodoWrite**: Single-session tasks, linear execution, conversation-scoped
+**Decision test**: "Will I need this context in 2 weeks?" → YES = bd
 
-**Core Capabilities**:
-- 📊 **Dependency Graphs**: Track what blocks what (blocks, parent-child, discovered-from, related)
-- 💾 **Compaction Survival**: Tasks persist when conversation history is compacted
-- 🐙 **Git Integration**: Issues versioned in `.beads/issues.jsonl`, sync with `bd sync`
-- 🔍 **Smart Discovery**: Auto-finds ready work (`bd ready`), blocked work (`bd blocked`)
-- 📝 **Audit Trails**: Complete history of status changes, notes, and decisions
-- 🏷️ **Rich Metadata**: Priority (P0-P4), types (bug/feature/task/epic), labels, assignees
+**When to use bd**:
+- Work spans multiple sessions or days
+- Tasks have dependencies or blockers
+- Need to survive conversation compaction
+- Exploratory/research work with fuzzy boundaries
+- Collaboration with team (git sync)
 
-**When to Use bd vs TodoWrite**:
-- ❓ "Will I need this context in 2 weeks?" → **YES** = bd
-- ❓ "Could conversation history get compacted?" → **YES** = bd
-- ❓ "Does this have blockers/dependencies?" → **YES** = bd
-- ❓ "Is this fuzzy/exploratory work?" → **YES** = bd
-- ❓ "Will this be done in this session?" → **YES** = TodoWrite
-- ❓ "Is this just a task list for me right now?" → **YES** = TodoWrite
-
-**Decision Rule**: If resuming in 2 weeks would be hard without bd, use bd.
+**When to use TodoWrite**:
+- Single-session linear tasks
+- Simple checklist for immediate work
+- All context is in current conversation
+- Will complete within current session
 
 ## Prerequisites
 
-**Required**:
-- **bd CLI**: Version 0.34.0 or later installed and in PATH
-- **Git Repository**: Current directory must be a git repo
-- **Initialization**: `bd init` must be run once (humans do this, not agents)
-
-**Verify Installation**:
 ```bash
-bd --version  # Should return 0.34.0 or later
+bd --version  # Requires v0.34.0+
 ```
 
-**First-Time Setup** (humans run once):
-```bash
-cd /path/to/your/repo
-bd init  # Creates .beads/ directory with database
-```
+- **bd CLI** installed and in PATH
+- **Git repository** (bd requires git for sync)
+- **Initialization**: `bd init` run once (humans do this, not agents)
 
-## Instructions
+## CLI Reference
 
-### Session Start Protocol
+**Run `bd prime`** for AI-optimized workflow context (auto-loaded by hooks).
+**Run `bd <command> --help`** for specific command usage.
 
-**Every session, start here:**
+Essential commands: `bd ready`, `bd create`, `bd show`, `bd update`, `bd close`, `bd sync`
 
-1. **Check for Ready Work**: `bd ready` - shows tasks with no open blockers
-2. **Pick Highest Priority**: Choose P0 > P1 > P2 > P3 > P4
-3. **Get Full Context**: `bd show <task-id>` - view details and dependencies
-4. **Start Working**: `bd update <task-id> --status in_progress`
-5. **Add Notes as You Work**: `bd update <task-id> --notes "Progress..."` (critical for compaction survival)
+## Session Protocol
 
-### Task Creation
+1. `bd ready` — Find unblocked work
+2. `bd show <id>` — Get full context
+3. `bd update <id> --status in_progress` — Start work
+4. Add notes as you work (critical for compaction survival)
+5. `bd close <id> --reason "..."` — Complete task
+6. `bd sync` — Persist to git (always run at session end)
 
-```bash
-bd create "Task title" -p 1 --type task
-```
+## Advanced Features
 
-**Arguments**:
-- **Priority**: 0-4 where 0=critical, 1=high, 2=medium, 3=low, 4=backlog
-- **Type**: bug, feature, task, epic, chore
-
-**Epic with Children**:
-```bash
-bd create "Epic: OAuth Implementation" -p 0 --type epic
-# Returns: myproject-abc
-
-bd create "Research OAuth providers" -p 1 --parent myproject-abc
-bd create "Implement auth endpoints" -p 1 --parent myproject-abc
-```
-
-### Dependency Management
-
-```bash
-bd dep add <child-id> <parent-id>  # parent blocks child
-```
-
-**View Dependencies**: `bd dep list <task-id>`
-
-### Completion
-
-```bash
-bd close <task-id> --reason "Completion summary"
-bd ready  # Check newly unblocked work
-```
-
-## Essential Commands
-
-| Command | Purpose |
-|---------|---------|
-| `bd ready` | Show tasks ready to work on |
-| `bd create "Title" -p 1` | Create new task |
-| `bd show <id>` | View task details |
-| `bd update <id> --status in_progress` | Start working |
-| `bd update <id> --notes "Progress"` | Add progress notes |
-| `bd close <id> --reason "Done"` | Complete task |
-| `bd dep add <child> <parent>` | Add dependency |
-| `bd list` | See all tasks |
-| `bd search <query>` | Find tasks by keyword |
-| `bd sync` | Sync with git remote |
-
-## Conductor Integration
-
-When used with Conductor, Beads provides persistent task memory:
-
-- Each Conductor track becomes a Beads epic
-- Tasks in plan.md sync to Beads subtasks
-- `bd ready` helps select next task
-- Notes survive context compaction
-- Phase dependencies map to Beads graph
-
-See `conductor/beads.json` for integration config.
+| Feature | CLI | Resource |
+|---------|-----|----------|
+| Molecules (templates) | `bd mol --help` | [MOLECULES.md](resources/MOLECULES.md) |
+| Chemistry (pour/wisp) | `bd pour`, `bd wisp` | [CHEMISTRY_PATTERNS.md](resources/CHEMISTRY_PATTERNS.md) |
+| Agent beads | `bd agent --help` | [AGENTS.md](resources/AGENTS.md) |
+| Async gates | `bd gate --help` | [ASYNC_GATES.md](resources/ASYNC_GATES.md) |
+| Worktrees | `bd worktree --help` | [WORKTREES.md](resources/WORKTREES.md) |
 
 ## Resources
 
-- Full documentation: https://github.com/steveyegge/beads
-- Conductor integration: See [conductor skill](../conductor/SKILL.md)
+| Resource | Content |
+|----------|---------|
+| [BOUNDARIES.md](resources/BOUNDARIES.md) | bd vs TodoWrite detailed comparison |
+| [CLI_REFERENCE.md](resources/CLI_REFERENCE.md) | Complete command syntax |
+| [DEPENDENCIES.md](resources/DEPENDENCIES.md) | Dependency system deep dive |
+| [INTEGRATION_PATTERNS.md](resources/INTEGRATION_PATTERNS.md) | TodoWrite and tool integration |
+| [ISSUE_CREATION.md](resources/ISSUE_CREATION.md) | When and how to create issues |
+| [MOLECULES.md](resources/MOLECULES.md) | Proto definitions, component labels |
+| [PATTERNS.md](resources/PATTERNS.md) | Common usage patterns |
+| [RESUMABILITY.md](resources/RESUMABILITY.md) | Compaction survival guide |
+| [STATIC_DATA.md](resources/STATIC_DATA.md) | Database schema reference |
+| [TROUBLESHOOTING.md](resources/TROUBLESHOOTING.md) | Error handling and fixes |
+| [WORKFLOWS.md](resources/WORKFLOWS.md) | Step-by-step workflow patterns |
+| [AGENTS.md](resources/AGENTS.md) | Agent bead tracking (v0.40+) |
+| [ASYNC_GATES.md](resources/ASYNC_GATES.md) | Human-in-the-loop gates |
+| [CHEMISTRY_PATTERNS.md](resources/CHEMISTRY_PATTERNS.md) | Mol vs Wisp decision tree |
+| [WORKTREES.md](resources/WORKTREES.md) | Parallel development patterns |
+
+## Full Documentation
+
+- **bd prime**: AI-optimized workflow context
+- **GitHub**: [github.com/steveyegge/beads](https://github.com/steveyegge/beads)

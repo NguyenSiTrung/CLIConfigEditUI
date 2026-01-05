@@ -221,7 +221,8 @@ Implement track: $ARGUMENTS
             2. ONLY create/modify files in your owned list above
             3. Run tests and ensure >80% coverage
             4. Commit with message: <type>(<scope>): <description>
-            5. After commit, update parallel_state.json:
+            5. NEVER run `git push` - all commits stay local
+            6. After commit, update parallel_state.json:
                - Find your worker entry by worker_id
                - Set status to 'completed'
                - Set commit_sha to your commit hash
@@ -296,6 +297,7 @@ Implement track: $ARGUMENTS
 
       **d3. For Each Task:**
           - **i. Defer to Workflow:** `workflow.md` is the **single source of truth** for task lifecycle. Follow its "Task Workflow" section for implementation, testing, and committing.
+           - **CRITICAL: NEVER run `git push`. All commits stay local. Users decide when to push.**
            - **i-a. Beads Task Start (If Enabled):** After marking task `[~]` in progress:
              - **ONLY if `beads_enabled` is true:**
                - Generate task key from phase index and task index (e.g., `phase1_task1` for first task in first phase)
